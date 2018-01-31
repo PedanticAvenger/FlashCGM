@@ -149,6 +149,7 @@ function updateClock() {
   myBGTrend.href = "trend-normal.png";
   myBGTrendIcon.groupTransform.rotate.angle = 90;
   //updateStats.groupTransform.rotate.angle = 45;
+updateStats();
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
