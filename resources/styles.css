@@ -1,0 +1,110 @@
+.background {
+  viewport-fill: black;
+}
+
+#myLabel {
+  font-size: 75;
+  font-weight: bold;
+  font-family: Colfax-Medium;
+  text-length: 80;
+  text-anchor: middle;
+  x: 30%;
+  y: 0%+80;
+  fill: #f8fcf8;
+}
+
+#myDate {
+  font-size: 25;
+  font-family: Colfax-Regular;
+  text-length: 40;
+  text-anchor: start;
+  x: 5%;
+  y: 0%+129;
+  fill: #707070;
+}
+
+
+#myCurrentBG {
+  font-size: 70;
+  font-family: Seville-Bold-Condensed;
+  text-length: 20;
+  text-anchor: start;
+  x: 63%;
+  y: 0%+60;
+  fill: orangered;
+}
+
+
+#myBGUnits {
+  font-size: 25;
+  font-family: Seville-Regular;
+  text-length: 20;
+  text-anchor: start;
+  x: 63%;
+  y: 20%+40;
+  fill: orangered;
+}
+
+
+#myBGUpdateTime {
+  font-size: 25;
+  font-family: Colfax-Regular;
+  text-length: 20;
+  text-anchor: start;
+  x: 63%;
+  y: 30%+50;
+  fill: orangered;
+}
+
+
+#mySteps {
+  font-size: 28;
+  font-family: System-Regular;
+  text-length: 80;
+  text-anchor: middle;
+  x: 0%+40;
+  y: 235;
+  fill: #f8fcf8;
+}
+
+#myStairs {
+  font-size: 28;
+  font-family: System-Regular;
+  text-length: 30;
+  text-anchor: middle;
+  x: 25%+20;
+  y: 188;
+  fill: #f8fcf8;
+}
+
+
+#myCals {
+  font-size: 28;
+  font-family: System-Regular;
+  text-length: 80;
+  text-anchor: middle;
+  x: 50%;
+  y: 235;
+  fill: #f8fcf8;
+}
+
+#myMins {
+  font-size: 28;
+  font-family: System-Regular;
+  text-length: 30;
+  text-anchor: middle;
+  x: 75%-17;
+  y: 188;
+  fill: #f8fcf8;
+}
+
+
+#myHR {
+  font-size: 28;
+  font-family: System-Regular;
+  text-length: 80;
+  text-anchor: end;
+  x: 100%-20;
+  y: 235;
+  fill: #f8fcf8;
+}
