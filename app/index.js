@@ -77,7 +77,7 @@ function updateStats() {
   const metricActive = "activeMinutes";
   const amountActive = userActivity.today.adjusted[metricActive] || 0;
   const metricElevation = "elevationGain";
-  const amountElevation = userActivity.today.adjusted[metricElevation] || 0;
+  const amountElevation = userActivity.today.adjusted[metricElevation] || 0
   dailystairs.text = amountElevation;
   dailymins.text = amountActive;
   let stepString = util.thsdDot(amountSteps);
@@ -97,6 +97,7 @@ function updateStats() {
   }
   calRing.sweepAngle = calAngle;
 }
+
 
 var hrm = new HeartRateSensor();
 
@@ -149,7 +150,7 @@ function updateClock() {
   myBGTrend.href = "trend-normal.png";
   myBGTrendIcon.groupTransform.rotate.angle = 90;
   //updateStats.groupTransform.rotate.angle = 45;
-updateStats();
+  updateStats();
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
