@@ -9,6 +9,12 @@ import * as fs from "fs";
 
 import * as util from "../common/utils";
 
+//Define screen change stuff
+let MainScreen = document.getElementById("MainScreen");
+let GraphScreen= document.getElementById("GraphScreen");
+let button1 = document.getElementById("button1");
+let button2 = document.getElementById("button2");
+
 // Update the clock every minute
 clock.granularity = "seconds";
 const clockPref = preferences.clockDisplay;
@@ -68,6 +74,28 @@ function applyTheme(background, foreground) {
   bottomLine.style.fill = foreground;
 }
 
+//functions for screen switching
+function showMainScreen() {
+  console.log("Show main screen");
+  MainScreen.style.display = "inline";
+  GraphScreen.style.display = "none";
+}
+
+function showGraphScreen() {
+  console.log("Show graph screen");
+  MainScreen.style.display = "none";
+  GraphScreen.style.display = "inline"; 
+}
+
+button1.onclick = function() {
+  showGraphScreen();
+}
+
+button2.onclick = function () {
+  showMainScreen();
+}
+
+//
 
 function updateStats() {
   const metricSteps = "steps";  // distance, calories, elevationGain, activeMinutes

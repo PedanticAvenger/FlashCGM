@@ -20,3 +20,9 @@ settingsStorage.onchange = function(evt) {
     me.wakeInterval = undefined;
   }
 }
+
+/* 
+Ok, connect to the appropriate data source (likely http://127.0.0.1:17850/sgv.json) and grab the data set.
+Format it to match the set units and send it out to the watch for display.
+Perhaps we should consider a message type to flag out to the watch if we miss X or more regular polling intervals or Xdrip+ indicates that they have been missed.
+*/

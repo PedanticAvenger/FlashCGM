@@ -51,6 +51,8 @@ function mySettings(props) {
                }]
             }
           />
+      /* How about another theme setting for the BG data on the main viewscreen, alternatively we could define that color set for each of the above themes.
+      Good point for discussion about which would be best.*/
         </Section>
         <Section
         title={<Text bold align="center">Data Source Settings</Text>}>
