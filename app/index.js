@@ -84,7 +84,7 @@ function showMainScreen() {
 function showGraphScreen() {
   console.log("Show graph screen");
   MainScreen.style.display = "none";
-  GraphScreen.style.display = "inline"; 
+  GraphScreen.style.display = "inline";
 }
 
 button1.onclick = function() {
@@ -110,14 +110,14 @@ function updateStats() {
   dailymins.text = amountActive;
   let stepString = util.thsdDot(amountSteps);
   let calString = util.thsdDot(amountCals);
-  dailysteps.text = stepString; 
+  dailysteps.text = stepString;
   let stepAngle = Math.floor(360*(amountSteps/stepsGoal));
   if ( stepAngle > 360 ) {
     stepAngle = 360;
     stepRing.fill="#58e078";
   }
   stepRing.sweepAngle = stepAngle;
-  dailycals.text = calString; 
+  dailycals.text = calString;
   let calAngle = Math.floor(360*(amountCals/caloriesGoal));
   if ( calAngle > 360 ) {
     calAngle = 360;
@@ -168,21 +168,25 @@ function updateClock() {
   } else if ( prefix == "zh" || prefix == "ja" || prefix == "ko") {
     datestring = year + divide + month + divide + day;
   }
-  myClock.text = `${hours}:${mins}`; 
+  myClock.text = `${hours}:${mins}`;
   myDate.text = `${util.weekday[prefix][wday]}, ${datestring}`;
- /* Stuff my BG info update stuff here, I know it has to move but good for layout*/
-  myCurrentBG.text = "10.4";
-  myBGUnits.text = "mmol/L";
-  myBGUpdateTime.text = "2h43m";
- /* Thinking more about a primal like an arc to display trend rather han these graphics, easier calculation and display, could do same for time since update using bar and colors..... */
-  myBGTrend.href = "trend-normal.png";
-  myBGTrendIcon.groupTransform.rotate.angle = 90;
-  //updateStats.groupTransform.rotate.angle = 45;
+
   updateStats();
+  updateBGStats();
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
   }
+}
+
+function updateBGStats() {
+  /* Stuff my BG info update stuff here, I know it has to move but good for layout*/
+   myCurrentBG.text = "10.4";
+   myBGUnits.text = "mmol/L";
+   myBGUpdateTime.text = "2h43m";
+  /* Thinking more about a primal like an arc to display trend rather han these graphics, easier calculation and display, could do same for time since update using bar and colors..... */
+   myBGTrend.href = "trend-normal.png";
+   myBGTrendIcon.groupTransform.rotate.angle = 90;
 }
 
 // Update the clock every tick event
@@ -191,7 +195,6 @@ clock.ontick = () => updateClock();
 // Don't start with a blank screen
 applyTheme(backgdcol, foregdcol);
 updateClock();
-
 messaging.peerSocket.onopen = () => {
   console.log("App Socket Open");
 }
@@ -201,6 +204,10 @@ messaging.peerSocket.close = () => {
 }
 
 // Listen for the onmessage event
+/*
+Alright, need to update message handling to look for incoming BG info from the companion as well as send back current steps and heartrate.
+Wondering if HR and Steps should be triggered by updateClock() or by activity in updateBGStats().
+*/
 messaging.peerSocket.onmessage = function(evt) {
   console.log("device got: " + evt.data);
   applyTheme(evt.data.background, evt.data.foreground);

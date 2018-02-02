@@ -22,15 +22,17 @@ settingsStorage.onchange = function(evt) {
 }
 
 /*
-Ok, connect to the appropriate data source (likely http://127.0.0.1:17850/sgv.json) and grab the data set.
-Format it to match the set units and send it out to the watch for display.  Look for the units first in the response from sgv.json and if units_hint not present in first record look for local setting.
-If it is present, should we record it and store value and blank out settings?  Or simply have an "unset" value in settings available and look for hint if that is chosen?
-Use the units to perform the unit conversions here and pass array of 24 values to watch, use most recent record on main screen and full array for graph construction.
-Remember a timestamp for the last collected value so we can send that to watch for display of this data.  At this point I'm leaning toward a simple ring that uses color to count out 5 minutes then
-print a number in center of ring for number of missed polls.  Simpler for display/understanding than "XXmYYs since last poll" kind of display.
-Perhaps we should consider a message type to flag out to the watch if we miss X or more regular polling intervals or Xdrip+ indicates that they have been missed for this display.
-
-Also, integration of steps and heartrate communicated back to XDrip+ needs to be incorporated here, see https://github.com/NightscoutFoundation/xDrip/blob/master/Documentation/technical/Local_Web_Services.md
-So for the Web API call we first get the current steps and heartrate values, verify them against previous values to ensure they are changed, then build our URL for the query to xDrip
-
+  Workflow:
+  -Grab JSON response from defined data source URL saved in settings (likely http://127.0.0.1:17850/sgv.json).
+  -Look for units_hint in the first record and use that to determine required calculations and set units on locally stored settings just because.
+    -If no units_hint returned look for the internally stored value
+  -Build array of data (Units, appropriate timestamp of last query, 24 BG values in appropriate units) and send as message to watch.
+    -At this point I'm leaning toward a simple ring that uses color to count out 5 minutes then print a number in center of ring for number of missed polls.
+    Simpler for display/user understanding than "XXmYYs since last poll" kind of display.
+  -Watch updates main watchface and potentially graph if that can be pre-built, otherwise hold onto the values.
+  -Grab the Heartrate (easiest to grab it from what is currently displayed on the watchface)  and steps (today.local.steps) and send them back to companion as a message.
+  -Companion makes a second WebAPI call with sgv.json?steps=StepsValue&heart=HeartRateValue
+    -Look for the JSON resonse for steps_result and heart_result to be 200 indicating success, everything else for a value is some form of error.
+      Possible mis-alignment of data points with the timing here but in all honesty we are talking about an interval so small it really doesn't matter I think.
+      Of course I say all the above now based on my trying to incorporate user-activity into the companion app and it doesn't seem to work that way so rather than a single web transaction to update Xdrip and get BG values we instead do it in two steps.
 */
