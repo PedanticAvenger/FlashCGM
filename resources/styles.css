@@ -36,12 +36,12 @@
 
 
 #myBGUnits {
-  font-size: 25;
+  font-size: 24;
   font-family: Seville-Regular;
   text-length: 20;
   text-anchor: start;
-  x: 63%;
-  y: 20%+40;
+  x: 83%;
+  y: 20%+35;
   fill: orangered;
 }
 

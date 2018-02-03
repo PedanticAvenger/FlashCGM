@@ -47,7 +47,8 @@ let myCurrentBG = document.getElementById("myCurrentBG");
 let myBGUnits = document.getElementById("myBGUnits");
 let myBGUpdateTime = document.getElementById("myBGUpdateTime");
 let myBGTrendIcon = document.getElementById("myBGTrendIcon");
-let myBGTrend = document.getElementById("myBGTrend");
+let myBGTrendBackground = document.getElementById("myBGTrendBackground");
+let myBGTrendPointer = document.getElementById("myBGTrendPointer");
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -180,13 +181,12 @@ function updateClock() {
 }
 
 function updateBGStats() {
-  /* Stuff my BG info update stuff here, I know it has to move but good for layout*/
+  /* Stuff my BG info update stuff here, I know it may have to move but good for layout*/
    myCurrentBG.text = "10.4";
-   myBGUnits.text = "mmol/L";
+   myBGUnits.text = "mmol";
    myBGUpdateTime.text = "2h43m";
-  /* Thinking more about a primal like an arc to display trend rather han these graphics, easier calculation and display, could do same for time since update using bar and colors..... */
-   myBGTrend.href = "trend-normal.png";
-   myBGTrendIcon.groupTransform.rotate.angle = 90;
+   myBGTrendBackground.fill="#333344";
+   myBGTrendPointer.startAngle = "86";
 }
 
 // Update the clock every tick event

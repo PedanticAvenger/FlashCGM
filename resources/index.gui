@@ -9,8 +9,8 @@
   <text id="myBGUnits" />
   /* Ok, changing this to an arc of 180 degrees with a white indicator arc on top and ability to change color.
   Thinking green for flat and slight rise/drop, yellow for up and down, red for double up and down */
-  <arc id="myBGTrendBackground" x="313" y="115" width="25" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="180" />
-  <arc id="myBGTrendPointer" x="313" y="115" width="25" height="50" fill="#F8F8FF" arc-width="2" start-angle=88 sweep-angle=92 />
+  <arc id="myBGTrendBackground" x="300" y="96" width="40" height="40" fill="#333344" arc-width="2" start-angle="0" sweep-angle="180" />
+  <arc id="myBGTrendPointer" x="300" y="96" width="40" height="40" fill="#F8F8FF" arc-width="2" start-angle="86" sweep-angle="8" />
   <text id="myBGUpdateTime" />
   <rect id="button1" pointer-events="all" x="209" y="0" width="139" height="140" opacity="0" />
 /* Modify the width of the upperLine and bottomLine to fit with BG display.  I don't remember what it was but am sure this could be further improved */
