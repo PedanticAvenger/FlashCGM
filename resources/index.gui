@@ -7,10 +7,10 @@
   <line id="upperVert" x1="60%" y1="10" x2="60%" y2="141" fill="#333333" stroke-width="2" />
   <text id="myCurrentBG" />
   <text id="myBGUnits" />
-  /* This might be better done with a simple rectangle drawn element.  simpler and lower overhed and can dynamically change the color */
-  <g id="myBGTrendIcon" transform="rotate(90)">
-    <image id="myBGTrend" x="308" y="60" width="40" height="40" href="trend-normal.png" />
-  </g>
+  /* Ok, changing this to an arc of 180 degrees with a white indicator arc on top and ability to change color.
+  Thinking green for flat and slight rise/drop, yellow for up and down, red for double up and down */
+  <arc id="myBGTrendBackground" x="313" y="115" width="25" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="180" />
+  <arc id="myBGTrendPointer" x="313" y="115" width="25" height="50" fill="#F8F8FF" arc-width="2" start-angle=88 sweep-angle=92 />
   <text id="myBGUpdateTime" />
   <rect id="button1" pointer-events="all" x="209" y="0" width="139" height="140" opacity="0" />
 /* Modify the width of the upperLine and bottomLine to fit with BG display.  I don't remember what it was but am sure this could be further improved */
@@ -28,13 +28,13 @@
   <image x="299" y="167" width="30" height="30" href="Twemoji.png" />
   <text id="myHR" />
 /*  Changed width here to get rid of the gradient on the BG stuff, was 348 px. */
-  <gradientRect id="clockShade" width="208" height="90" 
-                gradient-type="linear" 
-                gradient-x1="0" 
-                gradient-y1="50" 
-                gradient-x2="0" 
-                gradient-y2="100%" 
-                gradient-color1="#000000" 
+  <gradientRect id="clockShade" width="208" height="90"
+                gradient-type="linear"
+                gradient-x1="0"
+                gradient-y1="50"
+                gradient-x2="0"
+                gradient-y2="100%"
+                gradient-color1="#000000"
                 gradient-color2="#000000"
                 gradient-opacity1="0"
                 gradient-opacity2="0.8"
@@ -52,4 +52,4 @@
   <svg id="GraphScreen" display="none">
     <rect id="button2" pointer-events="all" width="100%" height="100%" opacity="0" />
   </svg>
-</svg>  
+</svg>

@@ -29,6 +29,7 @@ settingsStorage.onchange = function(evt) {
   -Build array of data (Units, appropriate timestamp of last query, 24 BG values in appropriate units) and send as message to watch.
     -At this point I'm leaning toward a simple ring that uses color to count out 5 minutes then print a number in center of ring for number of missed polls.
     Simpler for display/user understanding than "XXmYYs since last poll" kind of display.
+    -Trend data could be displayed as a 180 degree arc with a calculated arc segment on top for display.  fill of arc can change for extremes, etc.
   -Watch updates main watchface and potentially graph if that can be pre-built, otherwise hold onto the values.
   -Grab the Heartrate (easiest to grab it from what is currently displayed on the watchface)  and steps (today.local.steps) and send them back to companion as a message.
   -Companion makes a second WebAPI call with sgv.json?steps=StepsValue&heart=HeartRateValue

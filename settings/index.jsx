@@ -51,23 +51,31 @@ function mySettings(props) {
                }]
             }
           />
-      /* How about another theme setting for the BG data on the main viewscreen, alternatively we could define that color set for each of the above themes.
-      Good point for discussion about which would be best.*/
+          <ColorSelect
+            settingsKey="bgDisplayColor"
+            colors={[
+              {color: 'orangered'},
+              {color: 'red'},
+              {color: 'yellow'},
+              {color: 'lime'},
+              {color: 'fuchsia'},
+              {color: 'cornflowerblue'}
+            ]}
+          />
         </Section>
         <Section
         title={<Text bold align="center">Data Source Settings</Text>}>
-        
+
         <Toggle
-          settingsKey="dataType"
+          settingsKey="unitsType"
           label="[ mmol/l ] Or [ mg/dl ]"
         />
         <TextInput
-          settingsKey="url"
+          settingsKey="dataSourceURL"
           label="REST api url"
           placeholder="http://127.0.0.1:17580/sgv.json"
-          settingsKey="restURL"
         />
- 
+
       </Section>
 
     </Page>
