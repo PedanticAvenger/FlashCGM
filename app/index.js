@@ -180,15 +180,47 @@ function updateClock() {
   }
 }
 
+
 function updateBGStats() {
-  /* Stuff my BG info update stuff here, I know it may have to move but good for layout*/
+  /* Stuff my BG info update stuff here, I know it may have to move but good for layout know
+  Also, my JS sucks, ;)  people welcome to refactor.*/
    myCurrentBG.text = "10.4";
    myBGUnits.text = "mmol";
    myBGUpdateTime.text = "2h43m";
-   myBGTrendBackground.fill="#333344";
-   myBGTrendPointer.startAngle = "86";
+   updateBGTrend(myCurrentBGTrend);
 }
 
+function updateBGTrend(Trend) {
+  if (Trend = "DoubleUp") {
+    myBGTrendBackground.fill="#FF0000";
+    myBGTrendPointer.startAngle = "0";
+  }
+  if (Trend = "SingleUp") {
+    myBGTrendBackground.fill="#FFFF00";
+    myBGTrendPointer.startAngle = "0";
+  }
+  if (Trend = "FortyFiveUp") {
+    myBGTrendBackground.fill="#008000";
+    myBGTrendPointer.startAngle = "41";
+  }
+  if (Trend = "Flat") {
+    myBGTrendBackground.fill="#008000";
+    myBGTrendPointer.startAngle = "86";
+  }
+  if (Trend = "FourtyFiveDown") {
+    myBGTrendBackground.fill="#008000";
+    myBGTrendPointer.startAngle = "131";
+  }
+  if (Trend = "SingleDown") {
+    myBGTrendBackground.fill="#FFFF00";
+    myBGTrendPointer.startAngle = "172";
+  }
+  if (Trend = "DoubleDown") {
+    myBGTrendBackground.fill="#FF0000";
+    myBGTrendPointer.startAngle = "172";
+  }
+
+}
 // Update the clock every tick event
 clock.ontick = () => updateClock();
 
