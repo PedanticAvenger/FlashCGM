@@ -45,8 +45,9 @@ let myDate = document.getElementById("myDate");
 //Inserted for main screen CGM Data
 let myCurrentBG = document.getElementById("myCurrentBG");
 let myBGUnits = document.getElementById("myBGUnits");
-let myBGUpdateTime = document.getElementById("myBGUpdateTime");
-let myBGTrendIcon = document.getElementById("myBGTrendIcon");
+let myBGUpdateArc = document.getElementById("myBGUpdateArc");
+let myBGUpdateArcBackground = document.getElementById("myBGUpdateArcBackground");
+let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrendBackground = document.getElementById("myBGTrendBackground");
 let myBGTrendPointer = document.getElementById("myBGTrendPointer");
 //Normal Flashring handles below.
@@ -183,43 +184,57 @@ function updateClock() {
 
 function updateBGStats() {
   /* Stuff my BG info update stuff here, I know it may have to move but good for layout know
-  Also, my JS sucks, ;)  people welcome to refactor.*/
-   myCurrentBG.text = "10.4";
+  Also, my JS sucks, ;)  people welcome to refactor.
+  BG Text comes from API call, as does BGUnits.  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
+  Not sure if myCurrentBGTrend - currently static "FortyFiceUp" and lastGoodPollTimestamp should be passed into this function or not.. */
+   myCurrentBG.text = "7.3";
    myBGUnits.text = "mmol";
-   myBGUpdateTime.text = "2h43m";
-   updateBGTrend(myCurrentBGTrend);
+   myMissedBGPollCounter.text = "-";
+   updateBGTrend("FortyFiveUp");
+   updateBGPollingStatus(lastGoodPollTimestamp);
 }
 
+//Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.
 function updateBGTrend(Trend) {
-  if (Trend = "DoubleUp") {
+  if (Trend == "DoubleUp") {
     myBGTrendBackground.fill="#FF0000";
     myBGTrendPointer.startAngle = "0";
   }
-  if (Trend = "SingleUp") {
+  if (Trend == "SingleUp") {
     myBGTrendBackground.fill="#FFFF00";
     myBGTrendPointer.startAngle = "0";
   }
-  if (Trend = "FortyFiveUp") {
+  if (Trend == "FortyFiveUp") {
     myBGTrendBackground.fill="#008000";
     myBGTrendPointer.startAngle = "41";
   }
-  if (Trend = "Flat") {
+  if (Trend == "Flat") {
     myBGTrendBackground.fill="#008000";
     myBGTrendPointer.startAngle = "86";
   }
-  if (Trend = "FourtyFiveDown") {
+  if (Trend == "FourtyFiveDown") {
     myBGTrendBackground.fill="#008000";
     myBGTrendPointer.startAngle = "131";
   }
-  if (Trend = "SingleDown") {
+  if (Trend == "SingleDown") {
     myBGTrendBackground.fill="#FFFF00";
     myBGTrendPointer.startAngle = "172";
   }
-  if (Trend = "DoubleDown") {
+  if (Trend == "DoubleDown") {
     myBGTrendBackground.fill="#FF0000";
     myBGTrendPointer.startAngle = "172";
   }
 
+}
+
+function updateBGPollingStatus(lastGoodPollTimestamp) {
+  //This angle updates in 72 degree increments per minute to fill ring in 5 min.
+  myBGUpdateArc.sweepAngle = "72";
+  //This should be green for the first minute, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring.)
+  myBGUpdateArc.fill = "	#7CFC00";
+  //This should be grey for the first minute, green for the second, yellow for the third then just red or set sweep angle to 0
+  myBGUpdateArcBackground.fill = "#333344";
+  myMissedBGPollCounter = "0"; 
 }
 // Update the clock every tick event
 clock.ontick = () => updateClock();
