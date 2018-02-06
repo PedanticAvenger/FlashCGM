@@ -10,4 +10,4 @@ Display elements in main screen in place but currently static, button overlays b
 
 Current: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/XDrip%2BFlashring-merge-screenshot%202.png">
 Previous: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/XDrip%2BFlashring-merge-screenshot.png">
-Original: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/XDrip%2BFlashring-merge-screenshot%20(1).png">
+
