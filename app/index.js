@@ -190,8 +190,8 @@ function updateBGStats() {
    myCurrentBG.text = "7.3";
    myBGUnits.text = "mmol";
    myMissedBGPollCounter.text = "-";
-   updateBGTrend("FortyFiveUp");
-   updateBGPollingStatus(lastGoodPollTimestamp);
+   //updateBGTrend("FortyFiveUp");
+   //updateBGPollingStatus(lastGoodPollTimestamp);
 }
 
 //Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.

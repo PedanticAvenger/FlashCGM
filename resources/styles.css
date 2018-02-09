@@ -118,3 +118,17 @@
   y: 235;
   fill: #f8fcf8;
 }
+
+#sensor-data {
+  font-family: System-Light;
+  fill: white;
+  text-anchor: middle;
+  text-length: 65;
+}
+
+#graph-data-range {
+  font-family: System-Light;
+  fill: gainsboro;
+  text-length: 15;
+  font-size:18;
+}
