@@ -1,0 +1,52 @@
+<svg id="MainScreen" class="background">
+  <text id="myLabel" />
+/*
+  Add the BG stuff to the display
+ */
+  <line id="upperVert" x1="60%" y1="10" x2="60%" y2="141" fill="#333333" stroke-width="2" />
+  <text id="myCurrentBG" />
+  <text id="myBGUnits" />
+  /* Ok, changing this to an arc of 180 degrees with a white indicator arc on top and ability to change color.
+  Thinking green for flat and slight rise/drop, yellow for up and down, red for double up and down */
+  <arc id="myBGTrendBackground" x="290" y="96" width="40" height="40" fill="#333344" arc-width="2" start-angle="0" sweep-angle="180" />
+  <arc id="myBGTrendPointer" x="290" y="96" width="40" height="40" fill="#F8F8FF" arc-width="2" start-angle="86" sweep-angle="8" />
+  <arc id="myBGUpdateArcBackground" x="230" y="96" width="40" height="40" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc id="myBGUpdateArc" x="230" y="96" width="40" height="40" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <text id="myMissedBGPollCounter" />
+  <rect id="button1" pointer-events="all" x="209" y="0" width="139" height="140" opacity="0" />
+/* Modify the width of the upperLine and bottomLine to fit with BG display.  I don't remember what it was but am sure this could be further improved */
+  <line id="upperLine" x1="15" y1="100" x2="60%-15" y2="100" fill="#333333" stroke-width="1" />
+  <text id="myDate" />
+  <line id="bottomLine" x1="15" y1="142" x2="333" y2="142" fill="#333333" stroke-width="1" />
+  <image x="20" y="167" width="30" height="30" href="footsteps-silhouette.png" />
+  <text id="mySteps" />
+  <image x="95" y="215" width="25" height="25" href="stairs.png" />
+  <text id="myStairs" />
+  <image x="164" y="165" width="20" height="30" href="purepulse-calorie.png" />
+  <text id="myCals" />
+  <image x="235" y="215" width="20" height="25" href="flash.png" />
+  <text id="myMins" />
+  <image x="299" y="167" width="30" height="30" href="Twemoji.png" />
+  <text id="myHR" />
+/*  Changed width here to get rid of the gradient on the BG stuff, was 348 px. */
+  <gradientRect id="clockShade" width="208" height="90"
+                gradient-type="linear"
+                gradient-x1="0"
+                gradient-y1="50"
+                gradient-x2="0"
+                gradient-y2="100%"
+                gradient-color1="#000000"
+                gradient-color2="#000000"
+                gradient-opacity1="0"
+                gradient-opacity2="0.8"
+  />
+  <arc x="10" y="155" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc x="149" y="155" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc x="288" y="155" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+
+  <arc id="stepsArc" x="10" y="155" width="50" height="50" fill="#4edcfb" arc-width="2" start-angle="0" sweep-angle="0" />
+  <arc id="calsArc" x="50%-25" y="155" width="50" height="50" fill="#ff882c" arc-width="2" start-angle="0" sweep-angle="0" />
+  <arc id="hrtArc" x="288" y="155" width="50" height="50" fill="#c00000" arc-width="2" start-angle="0" sweep-angle="0" />
+  <image x="0" y="155" width="208" height="52" href="transparent.png" />
+  <image x="0" y="205" width="208" height="45" href="transparent.png" />
+</svg>
