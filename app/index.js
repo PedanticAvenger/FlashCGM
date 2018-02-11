@@ -6,7 +6,6 @@ import { locale } from "user-settings";
 import { preferences } from "user-settings";
 import * as messaging from "messaging";
 import * as fs from "fs";
-
 import * as util from "../common/utils";
 
 //Define screen change stuff
@@ -65,6 +64,7 @@ let upperLine = document.getElementById("upperLine");
 let bottomLine = document.getElementById("bottomLine");
 
 function applyTheme(background, foreground) {
+  //Add Theme settings for Main screen BG color, and anything else we add as customizable.
   myClock.style.fill = background;
   dailysteps.style.fill = background;
   dailystairs.style.fill = background;
@@ -96,8 +96,6 @@ button1.onclick = function() {
 button2.onclick = function () {
   showMainScreen();
 }
-
-//
 
 function updateStats() {
   const metricSteps = "steps";  // distance, calories, elevationGain, activeMinutes
@@ -227,14 +225,20 @@ function updateBGTrend(Trend) {
 
 }
 
-function updateBGPollingStatus(lastGoodPollTimestamp) {
+function updateBGPollingStatus() {
+  /* Ok, we should be passed the timestamp of the last polled datapoint.
+  There may be issues if we are grabbing data from nightscout rather than the paired phone but
+  it should really be at most a minute out in a scenario like parent has watch and following child
+  with their phone updating nightscout.
+  */
   //This angle updates in 72 degree increments per minute to fill ring in 5 min.
   myBGUpdateArc.sweepAngle = "72";
-  //This should be green for the first minute, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring.)
-  myBGUpdateArc.fill = "	#7CFC00";
-  //This should be grey for the first minute, green for the second, yellow for the third then just red or set sweep angle to 0
+  //myBGUpdateArc.fill should be green for the first minute, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
+  myBGUpdateArc.fill = "#7CFC00";
+  //myBGUpdateArcBackground.fill should be grey for the first minute, green for the second, yellow for the third then just red or set sweep angle to 0
   myBGUpdateArcBackground.fill = "#333344";
-  myMissedBGPollCounter = "0"; 
+  //I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
+  myMissedBGPollCounter = "0";
 }
 // Update the clock every tick event
 clock.ontick = () => updateClock();
