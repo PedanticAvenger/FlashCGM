@@ -1,41 +1,41 @@
-  <svg id="GraphScreen" display="none">
-    <rect id="button2" pointer-events="all" width="100%" height="100%" opacity="0" />
+<svg id="GraphScreen" display="none">
+  <rect id="button2" pointer-events="all" width="100%" height="100%" opacity="0" />
 
-    <g id="graph" fill="white" >
-      <circle class="graph-point" cx="93%" cy="10" r="2"/>
-      <circle class="graph-point" cx="89%" cy="10" r="2"/>
-      <circle class="graph-point" cx="85%" cy="10" r="2"/>
-      <circle class="graph-point" cx="81%" cy="10" r="2"/>
-      <circle class="graph-point" cx="77%" cy="10" r="2"/>
-      <circle class="graph-point" cx="73%" cy="10" r="2"/>
-      <circle class="graph-point" cx="69%" cy="10" r="2"/>
-      <circle class="graph-point" cx="65%" cy="10" r="2"/>
-      <circle class="graph-point" cx="61%" cy="10" r="2"/>
-      <circle class="graph-point" cx="57%" cy="10" r="2"/>
-      <circle class="graph-point" cx="53%" cy="10" r="2"/>
-      <circle class="graph-point" cx="49%" cy="10" r="2"/>
-      <circle class="graph-point" cx="45%" cy="10" r="2"/>
-      <circle class="graph-point" cx="41%" cy="10" r="2"/>
-      <circle class="graph-point" cx="37%" cy="10" r="2"/>
-      <circle class="graph-point" cx="33%" cy="10" r="2"/>
-      <circle class="graph-point" cx="29%" cy="10" r="2"/>
-      <circle class="graph-point" cx="25%" cy="10" r="2"/>
-      <circle class="graph-point" cx="21%" cy="10" r="2"/>
-      <circle class="graph-point" cx="17%" cy="10" r="2"/>
-      <circle class="graph-point" cx="13%" cy="10" r="2"/>
-      <circle class="graph-point" cx="9%" cy="10" r="2"/>
-      <circle class="graph-point" cx="5%" cy="10" r="2"/>
-      <circle class="graph-point" cx="1%" cy="10" r="2"/>
-   </g>
+<g id="graph" fill="white" >
+  <circle class="graph-point" cx="309" cy="10" r="2"/>
+  <circle class="graph-point" cx="296" cy="10" r="2"/>
+  <circle class="graph-point" cx="283" cy="10" r="2"/>
+  <circle class="graph-point" cx="270" cy="10" r="2"/>
+  <circle class="graph-point" cx="257" cy="10" r="2"/>
+  <circle class="graph-point" cx="244" cy="10" r="2"/>
+  <circle class="graph-point" cx="231" cy="10" r="2"/>
+  <circle class="graph-point" cx="218" cy="10" r="2"/>
+  <circle class="graph-point" cx="205" cy="10" r="2"/>
+  <circle class="graph-point" cx="192" cy="10" r="2"/>
+  <circle class="graph-point" cx="179" cy="10" r="2"/>
+  <circle class="graph-point" cx="166" cy="10" r="2"/>
+  <circle class="graph-point" cx="153" cy="10" r="2"/>
+  <circle class="graph-point" cx="140" cy="10" r="2"/>
+  <circle class="graph-point" cx="127" cy="10" r="2"/>
+  <circle class="graph-point" cx="114" cy="10" r="2"/>
+  <circle class="graph-point" cx="101" cy="10" r="2"/>
+  <circle class="graph-point" cx="88" cy="10" r="2"/>
+  <circle class="graph-point" cx="75" cy="10" r="2"/>
+  <circle class="graph-point" cx="62" cy="10" r="2"/>
+  <circle class="graph-point" cx="49" cy="10" r="2"/>
+  <circle class="graph-point" cx="36" cy="10" r="2"/>
+  <circle class="graph-point" cx="23" cy="10" r="2"/>
+  <circle class="graph-point" cx="10" cy="10" r="2"/>
+</g>
 
-   <text class="graph-data-range" font-family="System-Light" x="99%" y="14.2%" text-anchor="end" fill="white">200</text>
-   <text class="graph-data-range" font-family="System-Light" x="99%" y="28.5%" text-anchor="end" fill="white">175</text>
-   <text class="graph-data-range" font-family="System-Light" x="99%" y="42.7%" text-anchor="end" >150</text>
-   <text class="graph-data-range" font-family="System-Light" x="99%" y="57%" text-anchor="end" >125</text>
-   <text class="graph-data-range" font-family="System-Light" x="99%" y="71.2%" text-anchor="end" >100</text>
-   <text class="graph-data-range" font-family="System-Light" x="99%" y="85.5%" text-anchor="end" >75</text>
-   <text class="graph-data-range" font-family="System-Light" x="99%" y="100%" text-anchor="end" >50</text>
-   <line y1="0" x1="95%" y2="100%" x2="95%" fill="white" stroke-width="1"/>
-   <line y1="25%" x1="0" y2="25%" x2="95%" fill="#a27b27" stroke-width="1"/>
-   <line y1="75%" x1="0" y2="75%" x2="95%" fill="#a27b27" stroke-width="1"/>
-  </svg>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="14.2%" text-anchor="end" fill="white">200</text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="28.5%" text-anchor="end" fill="white">175</text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="42.7%" text-anchor="end" fill="white">150</text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="57%" text-anchor="end" fill="white">125</text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="71.2%" text-anchor="end" fill="white">100</text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="85.5%" text-anchor="end" fill="white">75</text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="100%" text-anchor="end" fill="white">50</text>
+   <line y1="0" x1="91%" y2="100%" x2="91%" fill="white" stroke-width="1"/>
+   <line y1="25%" x1="0" y2="25%" x2="91%" fill="#a27b27" stroke-width="1"/>
+   <line y1="75%" x1="0" y2="75%" x2="91%" fill="#a27b27" stroke-width="1"/>
+</svg>
