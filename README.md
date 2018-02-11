@@ -8,6 +8,5 @@ Design Goals:
 Current Watch Face Status:
 Display elements in main screen in place but currently static, button overlays between display screens functional but no content in second screen yet.  Main screen looks as follows.
 
-Current: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/XDrip%2BFlashring-merge-screenshot%202.png">
-Previous: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/XDrip%2BFlashring-merge-screenshot.png">
-
+Current: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Screen-Main-Feb10.png">
+Previous: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Screen-Graph-Feb10.png">
