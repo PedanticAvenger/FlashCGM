@@ -9,4 +9,4 @@ Current Watch Face Status:
 Display elements in main screen in place but currently static, button overlays between display screens functional but no content in second screen yet.  Screens currently look as follows. Tap the upper right box of main display to get to graph, anywhere on graph to get back to main.
 
 Main: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Screen-Main-Feb10.png">
-Graph: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Screen-Graph-Feb10.png">
+Graph: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Screen-Graph-Feb11.png">
