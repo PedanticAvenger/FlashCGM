@@ -23,6 +23,7 @@ settingsStorage.onchange = function(evt) {
 
 /*
   Workflow:
+  -Grab configured high and low from new endpoints in XDrip to be used to set the graph lines as well as for triggering vibe alerts. 
   -Grab JSON response from defined data source URL saved in settings (likely http://127.0.0.1:17850/sgv.json).
   -Look for units_hint in the first record and use that to determine required calculations and set units on locally stored settings just because.
     -If no units_hint returned look for the internally stored value
