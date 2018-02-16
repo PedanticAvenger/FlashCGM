@@ -185,40 +185,34 @@ function updateBGStats() {
   Also, my JS sucks, ;)  people welcome to refactor.
   BG Text comes from API call, as does BGUnits.  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
   Not sure if myCurrentBGTrend - currently static "FortyFiceUp" and lastGoodPollTimestamp should be passed into this function or not.. */
-   myCurrentBG.text = "7.3";
+   myCurrentBG.text = 7.3;
    myBGUnits.text = "mmol";
    myMissedBGPollCounter.text = "-";
-   //updateBGTrend("FortyFiveUp");
+   updateBGTrend("FortyFiveUp");
    //updateBGPollingStatus(lastGoodPollTimestamp);
 }
 
 //Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.
 function updateBGTrend(Trend) {
-  if (Trend == "DoubleUp") {
+  if (Trend === "DoubleUp") {
     myBGTrendBackground.fill="#FF0000";
     myBGTrendPointer.startAngle = "0";
-  }
-  if (Trend == "SingleUp") {
+  } else if (Trend === "SingleUp") {
     myBGTrendBackground.fill="#FFFF00";
     myBGTrendPointer.startAngle = "0";
-  }
-  if (Trend == "FortyFiveUp") {
+  } else if (Trend === "FortyFiveUp") {
     myBGTrendBackground.fill="#008000";
     myBGTrendPointer.startAngle = "41";
-  }
-  if (Trend == "Flat") {
+  } else if (Trend === "Flat") {
     myBGTrendBackground.fill="#008000";
     myBGTrendPointer.startAngle = "86";
-  }
-  if (Trend == "FourtyFiveDown") {
+  } else if (Trend === "FourtyFiveDown") {
     myBGTrendBackground.fill="#008000";
     myBGTrendPointer.startAngle = "131";
-  }
-  if (Trend == "SingleDown") {
+  } else if (Trend === "SingleDown") {
     myBGTrendBackground.fill="#FFFF00";
     myBGTrendPointer.startAngle = "172";
-  }
-  if (Trend == "DoubleDown") {
+  } else if (Trend === "DoubleDown") {
     myBGTrendBackground.fill="#FF0000";
     myBGTrendPointer.startAngle = "172";
   }
@@ -232,13 +226,14 @@ function updateBGPollingStatus() {
   with their phone updating nightscout.
   */
   //This angle updates in 72 degree increments per minute to fill ring in 5 min.
-  myBGUpdateArc.sweepAngle = "72";
+  myBGUpdateArc.sweepAngle = 72;
+
   //myBGUpdateArc.fill should be green for the first minute, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
   myBGUpdateArc.fill = "#7CFC00";
   //myBGUpdateArcBackground.fill should be grey for the first minute, green for the second, yellow for the third then just red or set sweep angle to 0
   myBGUpdateArcBackground.fill = "#333344";
   //I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
-  myMissedBGPollCounter = "0";
+  myMissedBGPollCounter = 0;
 }
 // Update the clock every tick event
 clock.ontick = () => updateClock();
