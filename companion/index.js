@@ -1,6 +1,9 @@
 import { settingsStorage } from "settings";
 import * as messaging from "messaging";
 
+let url = null;
+let BgDataUnits = false;
+
 messaging.peerSocket.onopen = () => {
   console.log("Companion Socket Open");
 }
@@ -8,6 +11,73 @@ messaging.peerSocket.onopen = () => {
 messaging.peerSocket.close = () => {
   console.log("Companion Socket Closed");
 }
+
+const dataPoll = () => {
+  console.log('Open Data API CONNECTION')
+  url = JSON.parse(settingsStorage.getItem("restURL")).name;
+  console.log(url)
+  if(url) {
+    //url = url + "?count=14";
+    fetch(url,{
+      method: 'GET',
+      mode: 'cors',
+      headers: new Headers({
+        "Content-Type": 'application/json; charset=utf-8'
+      })
+    })
+      .then(response => {
+        console.log('Get Data On Phone');
+        response.text().then(data => {
+          console.log('fetched Data from API');
+          sendVal(data);
+        })
+        .catch(responseParsingError => {
+          console.log('fetchError');
+          console.log(responseParsingError.name);
+          console.log(responseParsingError.message);
+          console.log(responseParsingError.toString());
+          console.log(responseParsingError.stack);
+        });
+      }).catch(fetchError => {
+        console.log('fetchError');
+        console.log(fetchError.name);
+        console.log(fetchError.message);
+        console.log(fetchError.toString());
+        console.log(fetchError.stack);
+      })
+  } else {
+    console.log('no url stored in settings to use to get data.')
+  }
+};
+
+function sendVal(data) {
+  console.log('in sendVal')
+
+    // send BG Data type first
+    messaging.peerSocket.send( '{"type":'+BgDataType+'}');
+
+    //Can't we just send the full data point array to the watch in a single message?
+    //And set the numbers to the correct units first?
+  if(renderAllPoints) {
+    for(let index = 23; index >= 0; index--) {
+
+      console.log( JSON.parse(data)[index])
+      if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+          console.log('Sending Values')
+          messaging.peerSocket.send(JSON.parse(data)[index]);
+      }
+
+    }
+      renderAllPoints = false;
+
+  } else {
+        if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+            messaging.peerSocket.send(JSON.parse(data)[0]);
+        }
+  }
+
+}
+
 
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
