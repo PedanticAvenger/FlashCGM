@@ -196,25 +196,25 @@ function updateBGStats() {
 function updateBGTrend(Trend) {
   if (Trend === "DoubleUp") {
     myBGTrendBackground.fill="#FF0000";
-    myBGTrendPointer.startAngle = "0";
+    myBGTrendPointer.startAngle = 0;
   } else if (Trend === "SingleUp") {
     myBGTrendBackground.fill="#FFFF00";
-    myBGTrendPointer.startAngle = "0";
+    myBGTrendPointer.startAngle = 0;
   } else if (Trend === "FortyFiveUp") {
     myBGTrendBackground.fill="#008000";
-    myBGTrendPointer.startAngle = "41";
+    myBGTrendPointer.startAngle = 41;
   } else if (Trend === "Flat") {
     myBGTrendBackground.fill="#008000";
-    myBGTrendPointer.startAngle = "86";
+    myBGTrendPointer.startAngle = 86;
   } else if (Trend === "FourtyFiveDown") {
     myBGTrendBackground.fill="#008000";
-    myBGTrendPointer.startAngle = "131";
+    myBGTrendPointer.startAngle = 131;
   } else if (Trend === "SingleDown") {
     myBGTrendBackground.fill="#FFFF00";
-    myBGTrendPointer.startAngle = "172";
+    myBGTrendPointer.startAngle = 172;
   } else if (Trend === "DoubleDown") {
     myBGTrendBackground.fill="#FF0000";
-    myBGTrendPointer.startAngle = "172";
+    myBGTrendPointer.startAngle = 172;
   }
 
 }
