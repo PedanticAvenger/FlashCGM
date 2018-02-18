@@ -51,7 +51,7 @@ let myBGTrendBackground = document.getElementById("myBGTrendBackground");
 let myBGTrendPointer = document.getElementById("myBGTrendPointer");
 var bgCount = 24;
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
-let bgType=True;
+let bgType=true;
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -175,7 +175,7 @@ function updateClock() {
   myDate.text = `${util.weekday[prefix][wday]}, ${datestring}`;
 
   updateStats();
-  updateBGStats();
+  //updateBGStats();
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
@@ -263,10 +263,8 @@ function updategraph(graphPoint){
   console.log(JSON.stringify(graphPoint))
   if(bgType) {
     graphData.text = graphPoint;
-    updateBGStats(points[24], "mg", pollcounter, trend)
   } else {
     graphData.text = mmol(graphPoint);
-    updateBGStats(points[24], "mmol", pollcounter, trend)
   }
   points.push(graphPoint)
 
@@ -315,17 +313,12 @@ messaging.peerSocket.onmessage = function(evt) {
   applyTheme(evt.data.background, evt.data.foreground);
   let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
   fs.writeFileSync("theme.txt", json_theme, "json");
-  try{
-      bgType = JSON.parse(evt.data).type
-    }catch(e){}
-      if(evt.data[evt.data.type]) {
-        updategraph(evt.data[evt.data.type])
-      if(bgType) {
-        updateBGStats(points[24], "mg", pollcounter, trend)
-      } else {
-        updateBGStats(mmol(points[24]), "mmol", pollcounter, trend)
-      }
-      }
-  };
+  try { bgType = JSON.parse(evt.data).type; } catch(error) { console.log(error); }
+  updategraph(evt.data[evt.data.type]);
+  if(bgType) {
+    updateBGStats(points[24], "mg", 0, evt.data[evt.data.direction])
+  } else {
+    updateBGStats(mmol(points[24]), "mmol", 0, evt.data[evt.data.direction])
+  }
 
 }

@@ -77,7 +77,7 @@ function sendVal(data) {
 
 }
 
-  
+
 function restoreSettings() {
   for (let index = 0; index < settingsStorage.length; index++) {
 
@@ -102,6 +102,7 @@ function restoreSettings() {
 
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
+// Also, currently this is inherited from flashring and only sends theme info so it needs to be updated.
 settingsStorage.onchange = function(evt) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     let data = JSON.parse(evt.newValue);
