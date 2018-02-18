@@ -49,6 +49,9 @@ let myBGUpdateArcBackground = document.getElementById("myBGUpdateArcBackground")
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrendBackground = document.getElementById("myBGTrendBackground");
 let myBGTrendPointer = document.getElementById("myBGTrendPointer");
+var bgCount = 24;
+var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
+let bgType=True;
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -180,15 +183,15 @@ function updateClock() {
 }
 
 
-function updateBGStats() {
+function updateBGStats(bgValue, units, pollcounter, trend) {
   /* Stuff my BG info update stuff here, I know it may have to move but good for layout know
   Also, my JS sucks, ;)  people welcome to refactor.
   BG Text comes from API call, as does BGUnits.  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
   Not sure if myCurrentBGTrend - currently static "FortyFiceUp" and lastGoodPollTimestamp should be passed into this function or not.. */
-   myCurrentBG.text = 7.3;
-   myBGUnits.text = "mmol";
-   myMissedBGPollCounter.text = "-";
-   updateBGTrend("FortyFiveUp");
+   myCurrentBG.text = bgValue;
+   myBGUnits.text = units;
+   myMissedBGPollCounter.text = pollcounter;
+   updateBGTrend(trend);
    //updateBGPollingStatus(lastGoodPollTimestamp);
 }
 
@@ -249,6 +252,59 @@ messaging.peerSocket.close = () => {
   console.log("App Socket Closed");
 }
 
+function mmol( bg ) {
+    let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
+  return mmolBG;
+}
+
+function updategraph(graphPoint){
+  let graphPoints = document.getElementsByClassName('graph-point');
+  console.log('updategraph')
+  console.log(JSON.stringify(graphPoint))
+  if(bgType) {
+    graphData.text = graphPoint;
+    updateBGStats(points[24], "mg", pollcounter, trend)
+  } else {
+    graphData.text = mmol(graphPoint);
+    updateBGStats(points[24], "mmol", pollcounter, trend)
+  }
+  points.push(graphPoint)
+
+  graphPoints[0].cy = (200 - points[24]) - 5;
+  graphPoints[1].cy = (200 - points[23]) - 5;
+  graphPoints[2].cy = (200 - points[22]) - 5;
+  graphPoints[3].cy = (200 - points[21]) - 5;
+  graphPoints[4].cy = (200 - points[20]) - 5;
+  graphPoints[5].cy = (200 - points[19]) - 5;
+  graphPoints[6].cy = (200 - points[18]) - 5;
+  graphPoints[7].cy = (200 - points[17]) - 5;
+  graphPoints[8].cy = (200 - points[16]) - 5;
+  graphPoints[9].cy = (200 - points[15]) - 5;
+  graphPoints[10].cy = (200 - points[14]) - 5;
+  graphPoints[11].cy = (200 - points[13]) - 5;
+  graphPoints[12].cy = (200 - points[12]) - 5;
+  graphPoints[13].cy = (200 - points[11]) - 5;
+  graphPoints[14].cy = (200 - points[10]) - 5;
+  graphPoints[15].cy = (200 - points[9]) - 5;
+  graphPoints[16].cy = (200 - points[8]) - 5;
+  graphPoints[17].cy = (200 - points[7]) - 5;
+  graphPoints[18].cy = (200 - points[6]) - 5;
+  graphPoints[19].cy = (200 - points[5]) - 5;
+  graphPoints[20].cy = (200 - points[4]) - 5;
+  graphPoints[21].cy = (200 - points[3]) - 5;
+  graphPoints[22].cy = (200 - points[2]) - 5;
+  graphPoints[23].cy = (200 - points[1]) - 5;
+  graphPoints[24].cy = (200 - points[0]) - 5;
+
+
+  console.log(JSON.stringify(points))
+  points.shift()
+  totalSeconds = 0;
+  //removed Rytiggy polling timer function, something needs to go back in.
+
+}
+
+
 // Listen for the onmessage event
 /*
 Alright, need to update message handling to look for incoming BG info from the companion as well as send back current steps and heartrate.
@@ -259,4 +315,17 @@ messaging.peerSocket.onmessage = function(evt) {
   applyTheme(evt.data.background, evt.data.foreground);
   let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
   fs.writeFileSync("theme.txt", json_theme, "json");
+  try{
+      bgType = JSON.parse(evt.data).type
+    }catch(e){}
+      if(evt.data[evt.data.type]) {
+        updategraph(evt.data[evt.data.type])
+      if(bgType) {
+        updateBGStats(points[24], "mg", pollcounter, trend)
+      } else {
+        updateBGStats(mmol(points[24]), "mmol", pollcounter, trend)
+      }
+      }
+  };
+
 }

@@ -14,7 +14,6 @@ messaging.peerSocket.close = () => {
 
 const dataPoll = () => {
   console.log('Open Data API CONNECTION')
-  url = JSON.parse(settingsStorage.getItem("restURL")).name;
   console.log(url)
   if(url) {
     //url = url + "?count=14";
@@ -78,6 +77,28 @@ function sendVal(data) {
 
 }
 
+  
+function restoreSettings() {
+  for (let index = 0; index < settingsStorage.length; index++) {
+
+    let key = settingsStorage.key(index);
+      let data = {
+        key: key,
+        newValue: settingsStorage.getItem(key),
+        dataType: true
+      };
+
+      if(key === "restURL") {
+        console.log('restURL')
+        console.log(JSON.parse(settingsStorage.getItem(key)).name)
+        url = JSON.parse(settingsStorage.getItem(key)).name;
+      }else if(key === "dataType") {
+        console.log('dataType')
+        console.log(JSON.parse(settingsStorage.getItem(key)))
+        BgDataType = JSON.parse(settingsStorage.getItem(key))
+      }
+  }
+}
 
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
@@ -110,3 +131,4 @@ settingsStorage.onchange = function(evt) {
       Possible mis-alignment of data points with the timing here but in all honesty we are talking about an interval so small it really doesn't matter I think.
       Of course I say all the above now based on my trying to incorporate user-activity into the companion app and it doesn't seem to work that way so rather than a single web transaction to update Xdrip and get BG values we instead do it in two steps.
 */
+setInterval(dataPoll, 300000); //Run every 5 min.
