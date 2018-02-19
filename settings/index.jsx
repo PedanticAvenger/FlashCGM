@@ -51,6 +51,7 @@ function mySettings(props) {
                }]
             }
           />
+      <Text>BG Display Color</Text>
           <ColorSelect
             settingsKey="bgDisplayColor"
             colors={[
@@ -69,7 +70,7 @@ function mySettings(props) {
         <Toggle
           settingsKey="unitsType"
           label="[ mmol/l ] Or [ mg/dl ]"
-        />  
+        />
         <TextInput
           settingsKey="dataSourceURL"
           label="REST api url"

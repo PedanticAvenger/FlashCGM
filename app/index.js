@@ -52,6 +52,7 @@ let myBGTrendPointer = document.getElementById("myBGTrendPointer");
 var bgCount = 24;
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 let bgType=true;
+let graphData = document.getElementById("graph-data");
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -310,9 +311,11 @@ Wondering if HR and Steps should be triggered by updateClock() or by activity in
 */
 messaging.peerSocket.onmessage = function(evt) {
   console.log("device got: " + evt.data);
-  applyTheme(evt.data.background, evt.data.foreground);
-  let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
-  fs.writeFileSync("theme.txt", json_theme, "json");
+  //Ok, below has to come back.  We need to examine incoming messages and branch off actions appropriately.
+  //We could be setting watch theme, BG display color, sending BG data, setting units, etc.
+  //applyTheme(evt.data.background, evt.data.foreground);
+  //let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
+  //fs.writeFileSync("theme.txt", json_theme, "json");
   try { bgType = JSON.parse(evt.data).type; } catch(error) { console.log(error); }
   updategraph(evt.data[evt.data.type]);
   if(bgType) {

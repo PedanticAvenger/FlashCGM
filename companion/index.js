@@ -1,7 +1,10 @@
 import { settingsStorage } from "settings";
 import * as messaging from "messaging";
 
-let url = null;
+let url = JSON.parse(settingsStorage.getItem("restURL")).name;
+let BgDataType = JSON.parse(settingsStorage.getItem("dataType"));
+let renderAllPoints = true;
+
 let BgDataUnits = false;
 
 messaging.peerSocket.onopen = () => {
@@ -25,20 +28,20 @@ const dataPoll = () => {
       })
     })
       .then(response => {
-        console.log('Get Data On Phone');
+        console.log('Get Data From Phone');
         response.text().then(data => {
           console.log('fetched Data from API');
           sendVal(data);
         })
         .catch(responseParsingError => {
-          console.log('fetchError');
+          console.log('fetchError1');
           console.log(responseParsingError.name);
           console.log(responseParsingError.message);
           console.log(responseParsingError.toString());
           console.log(responseParsingError.stack);
         });
       }).catch(fetchError => {
-        console.log('fetchError');
+        console.log('fetchError2');
         console.log(fetchError.name);
         console.log(fetchError.message);
         console.log(fetchError.toString());
@@ -53,7 +56,7 @@ function sendVal(data) {
   console.log('in sendVal')
 
     // send BG Data type first
-    messaging.peerSocket.send( '{"type":'+BgDataType+'}');
+    messaging.peerSocket.send('{"type":'+BgDataType+'}');
 
     //Can't we just send the full data point array to the watch in a single message?
     //And set the numbers to the correct units first?
