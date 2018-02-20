@@ -52,7 +52,7 @@ let myBGTrendPointer = document.getElementById("myBGTrendPointer");
 var bgCount = 24;
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 let bgType=true;
-let graphData = document.getElementById("graph-data");
+let graphData = document.getElementById("myCurrentBG");
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -189,6 +189,7 @@ function updateBGStats(bgValue, units, pollcounter, trend) {
   Also, my JS sucks, ;)  people welcome to refactor.
   BG Text comes from API call, as does BGUnits.  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
   Not sure if myCurrentBGTrend - currently static "FortyFiceUp" and lastGoodPollTimestamp should be passed into this function or not.. */
+   console.log("Stats Update Call: " + bgValue + " " + units + " " + pollcounter + " " + trend);
    myCurrentBG.text = bgValue;
    myBGUnits.text = units;
    myMissedBGPollCounter.text = pollcounter;
@@ -258,7 +259,7 @@ function mmol( bg ) {
   return mmolBG;
 }
 
-function updategraph(graphPoint){
+function updategraph(graphPoint, trend){
   let graphPoints = document.getElementsByClassName('graph-point');
   console.log('updategraph')
   console.log(JSON.stringify(graphPoint))
@@ -269,36 +270,41 @@ function updategraph(graphPoint){
   }
   points.push(graphPoint)
 
-  graphPoints[0].cy = (200 - points[24]) - 5;
-  graphPoints[1].cy = (200 - points[23]) - 5;
-  graphPoints[2].cy = (200 - points[22]) - 5;
-  graphPoints[3].cy = (200 - points[21]) - 5;
-  graphPoints[4].cy = (200 - points[20]) - 5;
-  graphPoints[5].cy = (200 - points[19]) - 5;
-  graphPoints[6].cy = (200 - points[18]) - 5;
-  graphPoints[7].cy = (200 - points[17]) - 5;
-  graphPoints[8].cy = (200 - points[16]) - 5;
-  graphPoints[9].cy = (200 - points[15]) - 5;
-  graphPoints[10].cy = (200 - points[14]) - 5;
-  graphPoints[11].cy = (200 - points[13]) - 5;
-  graphPoints[12].cy = (200 - points[12]) - 5;
-  graphPoints[13].cy = (200 - points[11]) - 5;
-  graphPoints[14].cy = (200 - points[10]) - 5;
-  graphPoints[15].cy = (200 - points[9]) - 5;
-  graphPoints[16].cy = (200 - points[8]) - 5;
-  graphPoints[17].cy = (200 - points[7]) - 5;
-  graphPoints[18].cy = (200 - points[6]) - 5;
-  graphPoints[19].cy = (200 - points[5]) - 5;
-  graphPoints[20].cy = (200 - points[4]) - 5;
-  graphPoints[21].cy = (200 - points[3]) - 5;
-  graphPoints[22].cy = (200 - points[2]) - 5;
-  graphPoints[23].cy = (200 - points[1]) - 5;
-  graphPoints[24].cy = (200 - points[0]) - 5;
+  graphPoints[0].cy = (250 - points[24]) - 5;
+  graphPoints[1].cy = (250 - points[23]) - 5;
+  graphPoints[2].cy = (250 - points[22]) - 5;
+  graphPoints[3].cy = (250 - points[21]) - 5;
+  graphPoints[4].cy = (250 - points[20]) - 5;
+  graphPoints[5].cy = (250 - points[19]) - 5;
+  graphPoints[6].cy = (250 - points[18]) - 5;
+  graphPoints[7].cy = (250 - points[17]) - 5;
+  graphPoints[8].cy = (250 - points[16]) - 5;
+  graphPoints[9].cy = (250 - points[15]) - 5;
+  graphPoints[10].cy = (250 - points[14]) - 5;
+  graphPoints[11].cy = (250 - points[13]) - 5;
+  graphPoints[12].cy = (250 - points[12]) - 5;
+  graphPoints[13].cy = (250 - points[11]) - 5;
+  graphPoints[14].cy = (250 - points[10]) - 5;
+  graphPoints[15].cy = (250 - points[9]) - 5;
+  graphPoints[16].cy = (250 - points[8]) - 5;
+  graphPoints[17].cy = (250 - points[7]) - 5;
+  graphPoints[18].cy = (250 - points[6]) - 5;
+  graphPoints[19].cy = (250 - points[5]) - 5;
+  graphPoints[20].cy = (250 - points[4]) - 5;
+  graphPoints[21].cy = (250 - points[3]) - 5;
+  graphPoints[22].cy = (250 - points[2]) - 5;
+  graphPoints[23].cy = (250 - points[1]) - 5;
+  graphPoints[24].cy = (250 - points[0]) - 5;
 
 
   console.log(JSON.stringify(points))
   points.shift()
   totalSeconds = 0;
+  if(bgType) {
+    updateBGStats(points[0], "mg", 0, trend)
+  } else {
+    updateBGStats(mmol(points[0]), "mmol", 0, trend)
+  }
   //removed Rytiggy polling timer function, something needs to go back in.
 
 }
@@ -317,11 +323,6 @@ messaging.peerSocket.onmessage = function(evt) {
   //let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
   //fs.writeFileSync("theme.txt", json_theme, "json");
   try { bgType = JSON.parse(evt.data).type; } catch(error) { console.log(error); }
-  updategraph(evt.data[evt.data.type]);
-  if(bgType) {
-    updateBGStats(points[24], "mg", 0, evt.data[evt.data.direction])
-  } else {
-    updateBGStats(mmol(points[24]), "mmol", 0, evt.data[evt.data.direction])
-  }
+  updategraph(evt.data[evt.data.type], evt.data[evt.data.direction]);
 
 }
