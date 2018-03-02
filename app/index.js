@@ -309,31 +309,31 @@ function updategraph(graphPointData, trend){
     points.push(graphPointData);
   }
  console.log(typeof graphPoints[0]);
-  graphPoints[0].cy = (250 - points[23]);
-  graphPoints[1].cy = (250 - points[22]);
-  graphPoints[2].cy = (250 - points[21]);
-  graphPoints[3].cy = (250 - points[20]);
-  graphPoints[4].cy = (250 - points[19]);
-  graphPoints[5].cy = (250 - points[18]);
-  graphPoints[6].cy = (250 - points[17]);
-  graphPoints[7].cy = (250 - points[16]);
-  graphPoints[8].cy = (250 - points[15]);
-  graphPoints[9].cy = (250 - points[14]);
-  graphPoints[10].cy = (250 - points[13]);
-  graphPoints[11].cy = (250 - points[12]);
-  graphPoints[12].cy = (250 - points[11]);
-  graphPoints[13].cy = (250 - points[10]);
-  graphPoints[14].cy = (250 - points[9]);
-  graphPoints[15].cy = (250 - points[8]);
-  graphPoints[16].cy = (250 - points[7]);
-  graphPoints[17].cy = (250 - points[6]);
-  graphPoints[18].cy = (250 - points[5]);
-  graphPoints[19].cy = (250 - points[4]);
-  graphPoints[20].cy = (250 - points[3]);
-  graphPoints[21].cy = (250 - points[2]);
-  graphPoints[22].cy = (250 - points[1]);
-  graphPoints[23].cy = (250 - points[0]);
- 
+  graphPoints[0].cy = (250 - points[23])+10;
+  graphPoints[1].cy = (250 - points[22])+10;
+  graphPoints[2].cy = (250 - points[21])+10;
+  graphPoints[3].cy = (250 - points[20])+10;
+  graphPoints[4].cy = (250 - points[19])+10;
+  graphPoints[5].cy = (250 - points[18])+10;
+  graphPoints[6].cy = (250 - points[17])+10;
+  graphPoints[7].cy = (250 - points[16])+10;
+  graphPoints[8].cy = (250 - points[15])+10;
+  graphPoints[9].cy = (250 - points[14])+10;
+  graphPoints[10].cy = (250 - points[13])+10;
+  graphPoints[11].cy = (250 - points[12])+10;
+  graphPoints[12].cy = (250 - points[11])+10;
+  graphPoints[13].cy = (250 - points[10])+10;
+  graphPoints[14].cy = (250 - points[9])+10;
+  graphPoints[15].cy = (250 - points[8])+10;
+  graphPoints[16].cy = (250 - points[7])+10;
+  graphPoints[17].cy = (250 - points[6])+10;
+  graphPoints[18].cy = (250 - points[5])+10;
+  graphPoints[19].cy = (250 - points[4])+10;
+  graphPoints[20].cy = (250 - points[3])+10;
+  graphPoints[21].cy = (250 - points[2])+10;
+  graphPoints[22].cy = (250 - points[1])+10;
+  graphPoints[23].cy = (250 - points[0])+10;
+
   if (graphPointData) {
     points.shift();
     console.log(JSON.stringify(points));

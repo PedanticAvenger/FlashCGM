@@ -28,9 +28,9 @@ const dataPoll = () => {
       })
     })
       .then(response => {
-        console.log('Get Data From Phone');
+        //debug logging console.log('Get Data From Phone');
         response.text().then(data => {
-          console.log('fetched Data from API');
+          //debug logging console.log('fetched Data from API');
           sendVal(data);
         })
         .catch(responseParsingError => {
@@ -53,7 +53,7 @@ const dataPoll = () => {
 };
 
 function sendVal(data) {
-  console.log('in sendVal');
+  //debug logging console.log('in sendVal');
 
     // send BG Data type first
     messaging.peerSocket.send('{"units":'+BgDataType+'}');
@@ -64,7 +64,7 @@ function sendVal(data) {
     for(let index = 23; index >= 0; index--) {
 
       if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-          console.log('Sending Values - '+JSON.parse(data)[index]);
+          //debug logging console.log('Sending Values - '+JSON.parse(data)[index]);
           messaging.peerSocket.send(JSON.parse(data)[index]);
       }
 
@@ -104,7 +104,8 @@ function restoreSettings() {
 
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
-// Also, currently this is inherited from flashring and only sends theme info so it needs to be updated.
+// Also, currently this is inherited from flashring which only sends theme info so it needs to be updated.
+
 settingsStorage.onchange = function(evt) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     let data = JSON.parse(evt.newValue);
@@ -118,7 +119,7 @@ settingsStorage.onchange = function(evt) {
 }
 
 /*
-  Workflow:
+  Workflow thoughts:
   -Grab configured high and low from new endpoints in XDrip to be used to set the graph lines as well as for triggering vibe alerts.
   -Grab JSON response from defined data source URL saved in settings (likely http://127.0.0.1:17850/sgv.json).
   -Look for units_hint in the first record and use that to determine required calculations and set units on locally stored settings just because.
@@ -133,6 +134,10 @@ settingsStorage.onchange = function(evt) {
     -Look for the JSON resonse for steps_result and heart_result to be 200 indicating success, everything else for a value is some form of error.
       Possible mis-alignment of data points with the timing here but in all honesty we are talking about an interval so small it really doesn't matter I think.
       Of course I say all the above now based on my trying to incorporate user-activity into the companion app and it doesn't seem to work that way so rather than a single web transaction to update Xdrip and get BG values we instead do it in two steps.
+
+
+   The more I look at this the more I'm certain that all the data processing from the JSON datasource needs to be done in the companion and simple messages of an array of glucose values, current trend, timestamp should be all that is sent.  Theme settings could be used to alter units display, etc.  Should in general be much more stable and battery friendly on the watch.
+   Once this is in place, the watch could use a time trigger to request updates maybe with a full graph refresh hourly or on request.  This would address the challenge of, for example, going into the settings on the watch and going back to the watchface which resets everything and you want 5 to 10 min to get it updated again.  Time based messages, triggered from the watch, and all the data held in the companion should make it much more responsive. 
 */
 
 setInterval(dataPoll, 300000); //Run every 5 min.
