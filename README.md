@@ -1,5 +1,5 @@
 # XDrip-Flashring
-Repository of work to alter Fitbit Ionic Flashring Watch Face to support Blood Glucose data display
+Repository of work to alter Fitbit Ionic Flashring Watch Face to support Blood Glucose data display from XDrip+ and hopefully directly from nightscout sites (secondary focus but waiting until all the functionality is verified, it might just work)
 
 Design Goals:
    1) Perform as much processing on phone companion app as possible to maintain watch battery life.
