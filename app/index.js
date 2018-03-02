@@ -53,6 +53,8 @@ var bgCount = 24;
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 let bgType=true;
 let graphData = document.getElementById("myCurrentBG");
+let graph = document.getElementById("graph");
+let axis = document.getElementById("axis");
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -176,7 +178,6 @@ function updateClock() {
   myDate.text = `${util.weekday[prefix][wday]}, ${datestring}`;
 
   updateStats();
-  //updateBGStats();
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
@@ -199,26 +200,34 @@ function updateBGStats(bgValue, units, pollcounter, trend) {
 
 //Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.
 function updateBGTrend(Trend) {
+  console.log('In Trend update - ' + Trend);
   if (Trend === "DoubleUp") {
-    myBGTrendBackground.fill="#FF0000";
+    console.log('Matched 1');
+    myBGTrendBackground.style.fill = "#FF0000";
     myBGTrendPointer.startAngle = 0;
   } else if (Trend === "SingleUp") {
-    myBGTrendBackground.fill="#FFFF00";
+    console.log('Matched 2');
+    myBGTrendBackground.style.fill = "#FFFF00";
     myBGTrendPointer.startAngle = 0;
   } else if (Trend === "FortyFiveUp") {
-    myBGTrendBackground.fill="#008000";
+    console.log('Matched 3');
+    myBGTrendBackground.style.fill = "#008000";
     myBGTrendPointer.startAngle = 41;
   } else if (Trend === "Flat") {
-    myBGTrendBackground.fill="#008000";
+    console.log('Matched 4');
+    myBGTrendBackground.style.fill = "#008600";
     myBGTrendPointer.startAngle = 86;
-  } else if (Trend === "FourtyFiveDown") {
-    myBGTrendBackground.fill="#008000";
+  } else if (Trend === "FortyFiveDown") {
+    console.log('Matched 5');
+    myBGTrendBackground.style.fill = "#008000";
     myBGTrendPointer.startAngle = 131;
   } else if (Trend === "SingleDown") {
-    myBGTrendBackground.fill="#FFFF00";
+    console.log('Matched 6');
+    myBGTrendBackground.style.fill = "#FFFF00";
     myBGTrendPointer.startAngle = 172;
   } else if (Trend === "DoubleDown") {
-    myBGTrendBackground.fill="#FF0000";
+    console.log('Matched 7');
+    myBGTrendBackground.style.fill = "#FF0000";
     myBGTrendPointer.startAngle = 172;
   }
 
@@ -259,53 +268,78 @@ function mmol( bg ) {
   return mmolBG;
 }
 
-function updategraph(graphPoint, trend){
-  let graphPoints = document.getElementsByClassName('graph-point');
+function updateAxisUnits(units) {
+  let labels = axis.getElementsByClassName('graph-data-range');
+  if (units === "mg") {
+    labels[0].text = "200";
+    labels[1].text = "175";
+    labels[2].text = "150";
+    labels[3].text = "125";
+    labels[4].text = "100";
+    labels[5].text = "75";
+    labels[6].text = "50";
+  } else if (units === "mmol") {
+    labels[0].text = "11.1";
+    labels[1].text = "9.7";
+    labels[2].text = "8.3";
+    labels[3].text = "6.9";
+    labels[4].text = "5.6";
+    labels[5].text = "4.2";
+    labels[6].text = "2.7";
+  }
+}
+
+function updategraph(graphPointData, trend){
+  let graphPoints = graph.getElementsByClassName('graph-point');
   console.log('updategraph')
-  console.log(JSON.stringify(graphPoint))
+  console.log('graphPoint - ' + JSON.stringify(graphPointData))
+  console.log('Trend - ' + JSON.stringify(trend))
+
   if(bgType) {
-    graphData.text = graphPoint;
+    graphData.text = graphPointData;
+    updateBGStats(graphPointData, "mg", 0, trend);
+    updateAxisUnits("mg");
   } else {
-    graphData.text = mmol(graphPoint);
+    graphData.text = mmol(graphPointData);
+    updateBGStats(mmol(graphPointData), "mmol", 0, trend)
+    updateAxisUnits("mmol")
   }
-  points.push(graphPoint)
 
-  graphPoints[0].cy = (250 - points[24]) - 5;
-  graphPoints[1].cy = (250 - points[23]) - 5;
-  graphPoints[2].cy = (250 - points[22]) - 5;
-  graphPoints[3].cy = (250 - points[21]) - 5;
-  graphPoints[4].cy = (250 - points[20]) - 5;
-  graphPoints[5].cy = (250 - points[19]) - 5;
-  graphPoints[6].cy = (250 - points[18]) - 5;
-  graphPoints[7].cy = (250 - points[17]) - 5;
-  graphPoints[8].cy = (250 - points[16]) - 5;
-  graphPoints[9].cy = (250 - points[15]) - 5;
-  graphPoints[10].cy = (250 - points[14]) - 5;
-  graphPoints[11].cy = (250 - points[13]) - 5;
-  graphPoints[12].cy = (250 - points[12]) - 5;
-  graphPoints[13].cy = (250 - points[11]) - 5;
-  graphPoints[14].cy = (250 - points[10]) - 5;
-  graphPoints[15].cy = (250 - points[9]) - 5;
-  graphPoints[16].cy = (250 - points[8]) - 5;
-  graphPoints[17].cy = (250 - points[7]) - 5;
-  graphPoints[18].cy = (250 - points[6]) - 5;
-  graphPoints[19].cy = (250 - points[5]) - 5;
-  graphPoints[20].cy = (250 - points[4]) - 5;
-  graphPoints[21].cy = (250 - points[3]) - 5;
-  graphPoints[22].cy = (250 - points[2]) - 5;
-  graphPoints[23].cy = (250 - points[1]) - 5;
-  graphPoints[24].cy = (250 - points[0]) - 5;
-
-
-  console.log(JSON.stringify(points))
-  points.shift()
-  totalSeconds = 0;
-  if(bgType) {
-    updateBGStats(points[0], "mg", 0, trend)
-  } else {
-    updateBGStats(mmol(points[0]), "mmol", 0, trend)
+  if (graphPointData) {
+    points.push(graphPointData);
   }
-  //removed Rytiggy polling timer function, something needs to go back in.
+ console.log(typeof graphPoints[0]);
+  graphPoints[0].cy = (250 - points[23]);
+  graphPoints[1].cy = (250 - points[22]);
+  graphPoints[2].cy = (250 - points[21]);
+  graphPoints[3].cy = (250 - points[20]);
+  graphPoints[4].cy = (250 - points[19]);
+  graphPoints[5].cy = (250 - points[18]);
+  graphPoints[6].cy = (250 - points[17]);
+  graphPoints[7].cy = (250 - points[16]);
+  graphPoints[8].cy = (250 - points[15]);
+  graphPoints[9].cy = (250 - points[14]);
+  graphPoints[10].cy = (250 - points[13]);
+  graphPoints[11].cy = (250 - points[12]);
+  graphPoints[12].cy = (250 - points[11]);
+  graphPoints[13].cy = (250 - points[10]);
+  graphPoints[14].cy = (250 - points[9]);
+  graphPoints[15].cy = (250 - points[8]);
+  graphPoints[16].cy = (250 - points[7]);
+  graphPoints[17].cy = (250 - points[6]);
+  graphPoints[18].cy = (250 - points[5]);
+  graphPoints[19].cy = (250 - points[4]);
+  graphPoints[20].cy = (250 - points[3]);
+  graphPoints[21].cy = (250 - points[2]);
+  graphPoints[22].cy = (250 - points[1]);
+  graphPoints[23].cy = (250 - points[0]);
+ 
+  if (graphPointData) {
+    points.shift();
+    console.log(JSON.stringify(points));
+  }
+  //totalSeconds = 0;
+  //removed Rytiggy polling timer function, something needs to go back in here.
 
 }
 
@@ -322,7 +356,9 @@ messaging.peerSocket.onmessage = function(evt) {
   //applyTheme(evt.data.background, evt.data.foreground);
   //let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
   //fs.writeFileSync("theme.txt", json_theme, "json");
-  try { bgType = JSON.parse(evt.data).type; } catch(error) { console.log(error); }
-  updategraph(evt.data[evt.data.type], evt.data[evt.data.direction]);
+   try { bgType = JSON.parse(evt.data).units; } catch(error) { console.log(error); }
+  console.log("BGVal-" + evt.data.sgv);
+  console.log("Trend-" + evt.data.direction);
+  updategraph(evt.data.sgv, evt.data.direction, evt.data.date);
 
 }

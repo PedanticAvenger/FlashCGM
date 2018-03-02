@@ -53,19 +53,18 @@ const dataPoll = () => {
 };
 
 function sendVal(data) {
-  console.log('in sendVal')
+  console.log('in sendVal');
 
     // send BG Data type first
-    messaging.peerSocket.send('{"type":'+BgDataType+'}');
+    messaging.peerSocket.send('{"units":'+BgDataType+'}');
 
     //Can't we just send the full data point array to the watch in a single message?
     //And set the numbers to the correct units first?
   if(renderAllPoints) {
     for(let index = 23; index >= 0; index--) {
 
-      console.log( JSON.parse(data)[index])
       if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-          console.log('Sending Values')
+          console.log('Sending Values - '+JSON.parse(data)[index]);
           messaging.peerSocket.send(JSON.parse(data)[index]);
       }
 
@@ -135,4 +134,5 @@ settingsStorage.onchange = function(evt) {
       Possible mis-alignment of data points with the timing here but in all honesty we are talking about an interval so small it really doesn't matter I think.
       Of course I say all the above now based on my trying to incorporate user-activity into the companion app and it doesn't seem to work that way so rather than a single web transaction to update Xdrip and get BG values we instead do it in two steps.
 */
+
 setInterval(dataPoll, 300000); //Run every 5 min.

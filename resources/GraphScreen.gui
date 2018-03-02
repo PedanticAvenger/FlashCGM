@@ -2,32 +2,33 @@
   <rect id="button2" pointer-events="all" width="100%" height="100%" opacity="0" />
 
 <g id="graph" fill="white" >
-  <circle class="graph-point" cx="309" cy="-10" r="2"/>
-  <circle class="graph-point" cx="296" cy="-10" r="2"/>
-  <circle class="graph-point" cx="283" cy="-10" r="2"/>
-  <circle class="graph-point" cx="270" cy="-10" r="2"/>
-  <circle class="graph-point" cx="257" cy="-10" r="2"/>
-  <circle class="graph-point" cx="244" cy="-10" r="2"/>
-  <circle class="graph-point" cx="231" cy="-10" r="2"/>
-  <circle class="graph-point" cx="218" cy="-10" r="2"/>
-  <circle class="graph-point" cx="205" cy="-10" r="2"/>
-  <circle class="graph-point" cx="192" cy="-10" r="2"/>
-  <circle class="graph-point" cx="179" cy="-10" r="2"/>
-  <circle class="graph-point" cx="166" cy="-10" r="2"/>
-  <circle class="graph-point" cx="153" cy="-10" r="2"/>
-  <circle class="graph-point" cx="140" cy="-10" r="2"/>
-  <circle class="graph-point" cx="127" cy="-10" r="2"/>
-  <circle class="graph-point" cx="114" cy="-10" r="2"/>
-  <circle class="graph-point" cx="101" cy="-10" r="2"/>
-  <circle class="graph-point" cx="88" cy="-10" r="2"/>
-  <circle class="graph-point" cx="75" cy="-10" r="2"/>
-  <circle class="graph-point" cx="62" cy="-10" r="2"/>
-  <circle class="graph-point" cx="49" cy="-10" r="2"/>
-  <circle class="graph-point" cx="36" cy="-10" r="2"/>
-  <circle class="graph-point" cx="23" cy="-10" r="2"/>
-  <circle class="graph-point" cx="10" cy="-10" r="2"/>
+ 
+  <circle class="graph-point" cx="309" cy="0" r="2"/>
+  <circle class="graph-point" cx="296" cy="0" r="2"/>
+  <circle class="graph-point" cx="283" cy="0" r="2"/>
+  <circle class="graph-point" cx="270" cy="0" r="2"/>
+  <circle class="graph-point" cx="257" cy="0" r="2"/>
+  <circle class="graph-point" cx="244" cy="0" r="2"/>
+  <circle class="graph-point" cx="231" cy="0" r="2"/>
+  <circle class="graph-point" cx="218" cy="0" r="2"/>
+  <circle class="graph-point" cx="205" cy="0" r="2"/>
+  <circle class="graph-point" cx="192" cy="0" r="2"/>
+  <circle class="graph-point" cx="179" cy="0" r="2"/>
+  <circle class="graph-point" cx="166" cy="0" r="2"/>
+  <circle class="graph-point" cx="153" cy="0" r="2"/>
+  <circle class="graph-point" cx="140" cy="0" r="2"/>
+  <circle class="graph-point" cx="127" cy="0" r="2"/>
+  <circle class="graph-point" cx="114" cy="0" r="2"/>
+  <circle class="graph-point" cx="101" cy="0" r="2"/>
+  <circle class="graph-point" cx="88" cy="0" r="2"/>
+  <circle class="graph-point" cx="75" cy="0" r="2"/>
+  <circle class="graph-point" cx="62" cy="0" r="2"/>
+  <circle class="graph-point" cx="49" cy="0" r="2"/>
+  <circle class="graph-point" cx="36" cy="0" r="2"/>
+  <circle class="graph-point" cx="23" cy="0" r="2"/>
+  <circle class="graph-point" cx="10" cy="0" r="2"/>
 </g>
-
+<g id="axis">
    <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="17%" text-anchor="end" fill="white">200</text>
    <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="30%" text-anchor="end" fill="white">175</text>
    <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="43%" text-anchor="end" fill="white">150</text>
@@ -38,4 +39,5 @@
    <line y1="0" x1="316" y2="100%" x2="316" fill="white" stroke-width="1"/>
    <line y1="25%" x1="0" y2="25%" x2="316" fill="#DAA520" stroke-width="1"/>
    <line y1="75%" x1="0" y2="75%" x2="316" fill="#DAA520" stroke-width="1"/>
+</g>
 </svg>
