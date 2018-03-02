@@ -8,8 +8,8 @@
   <text id="myBGUnits" />
   /* Ok, changing this to an arc of 180 degrees with a white indicator arc on top and ability to change color.
   Thinking green for flat and slight rise/drop, yellow for up and down, red for double up and down */
-  <arc id="myBGTrendBackground" x="290" y="96" width="40" height="40" fill="#333344" arc-width="3" start-angle="0" sweep-angle="180" />
-  <arc id="myBGTrendPointer" x="290" y="96" width="40" height="40" fill="#F8F8FF" arc-width="3" start-angle="86" sweep-angle="8" />
+  <arc id="myBGTrendBackground" x="290" y="96" width="40" height="40" fill="#333344" arc-width="4" start-angle="0" sweep-angle="180" />
+  <arc id="myBGTrendPointer" x="290" y="96" width="40" height="40" fill="#F8F8FF" arc-width="4" start-angle="0" sweep-angle="8" />
   <arc id="myBGUpdateArcBackground" x="230" y="96" width="40" height="40" fill="#333344" arc-width="3" start-angle="0" sweep-angle="360" />
   <arc id="myBGUpdateArc" x="230" y="96" width="40" height="40" fill="#333344" arc-width="3" start-angle="0" sweep-angle="360" />
   <text id="myMissedBGPollCounter" />

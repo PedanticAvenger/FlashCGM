@@ -4,12 +4,13 @@
     "appType": "clockface",
     "appDisplayName": "XDripFlashRing",
     "iconFile": "resources/icon.png",
-    "wipeColor": "",
+    "wipeColor": "#f44336",
     "requestedPermissions": [
       "access_activity",
       "access_user_profile",
       "access_heart_rate",
-      "access_internet"
+      "access_internet",
+      "run_background"
     ],
     "i18n": {
       "en": {

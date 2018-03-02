@@ -49,6 +49,12 @@ let myBGUpdateArcBackground = document.getElementById("myBGUpdateArcBackground")
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrendBackground = document.getElementById("myBGTrendBackground");
 let myBGTrendPointer = document.getElementById("myBGTrendPointer");
+var bgCount = 24;
+var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
+let bgType=true;
+let graphData = document.getElementById("myCurrentBG");
+let graph = document.getElementById("graph");
+let axis = document.getElementById("axis");
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -172,7 +178,6 @@ function updateClock() {
   myDate.text = `${util.weekday[prefix][wday]}, ${datestring}`;
 
   updateStats();
-  updateBGStats();
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
@@ -180,40 +185,49 @@ function updateClock() {
 }
 
 
-function updateBGStats() {
+function updateBGStats(bgValue, units, pollcounter, trend) {
   /* Stuff my BG info update stuff here, I know it may have to move but good for layout know
   Also, my JS sucks, ;)  people welcome to refactor.
   BG Text comes from API call, as does BGUnits.  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
   Not sure if myCurrentBGTrend - currently static "FortyFiceUp" and lastGoodPollTimestamp should be passed into this function or not.. */
-   myCurrentBG.text = 7.3;
-   myBGUnits.text = "mmol";
-   myMissedBGPollCounter.text = "-";
-   updateBGTrend("FortyFiveUp");
+   console.log("Stats Update Call: " + bgValue + " " + units + " " + pollcounter + " " + trend);
+   myCurrentBG.text = bgValue;
+   myBGUnits.text = units;
+   myMissedBGPollCounter.text = pollcounter;
+   updateBGTrend(trend);
    //updateBGPollingStatus(lastGoodPollTimestamp);
 }
 
 //Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.
 function updateBGTrend(Trend) {
+  console.log('In Trend update - ' + Trend);
   if (Trend === "DoubleUp") {
-    myBGTrendBackground.fill="#FF0000";
+    console.log('Matched 1');
+    myBGTrendBackground.style.fill = "#FF0000";
     myBGTrendPointer.startAngle = 0;
   } else if (Trend === "SingleUp") {
-    myBGTrendBackground.fill="#FFFF00";
+    console.log('Matched 2');
+    myBGTrendBackground.style.fill = "#FFFF00";
     myBGTrendPointer.startAngle = 0;
   } else if (Trend === "FortyFiveUp") {
-    myBGTrendBackground.fill="#008000";
+    console.log('Matched 3');
+    myBGTrendBackground.style.fill = "#008000";
     myBGTrendPointer.startAngle = 41;
   } else if (Trend === "Flat") {
-    myBGTrendBackground.fill="#008000";
+    console.log('Matched 4');
+    myBGTrendBackground.style.fill = "#008600";
     myBGTrendPointer.startAngle = 86;
-  } else if (Trend === "FourtyFiveDown") {
-    myBGTrendBackground.fill="#008000";
+  } else if (Trend === "FortyFiveDown") {
+    console.log('Matched 5');
+    myBGTrendBackground.style.fill = "#008000";
     myBGTrendPointer.startAngle = 131;
   } else if (Trend === "SingleDown") {
-    myBGTrendBackground.fill="#FFFF00";
+    console.log('Matched 6');
+    myBGTrendBackground.style.fill = "#FFFF00";
     myBGTrendPointer.startAngle = 172;
   } else if (Trend === "DoubleDown") {
-    myBGTrendBackground.fill="#FF0000";
+    console.log('Matched 7');
+    myBGTrendBackground.style.fill = "#FF0000";
     myBGTrendPointer.startAngle = 172;
   }
 
@@ -249,6 +263,87 @@ messaging.peerSocket.close = () => {
   console.log("App Socket Closed");
 }
 
+function mmol( bg ) {
+    let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
+  return mmolBG;
+}
+
+function updateAxisUnits(units) {
+  let labels = axis.getElementsByClassName('graph-data-range');
+  if (units === "mg") {
+    labels[0].text = "200";
+    labels[1].text = "175";
+    labels[2].text = "150";
+    labels[3].text = "125";
+    labels[4].text = "100";
+    labels[5].text = "75";
+    labels[6].text = "50";
+  } else if (units === "mmol") {
+    labels[0].text = "11.1";
+    labels[1].text = "9.7";
+    labels[2].text = "8.3";
+    labels[3].text = "6.9";
+    labels[4].text = "5.6";
+    labels[5].text = "4.2";
+    labels[6].text = "2.7";
+  }
+}
+
+function updategraph(graphPointData, trend){
+  let graphPoints = graph.getElementsByClassName('graph-point');
+  console.log('updategraph')
+  console.log('graphPoint - ' + JSON.stringify(graphPointData))
+  console.log('Trend - ' + JSON.stringify(trend))
+
+  if(bgType) {
+    graphData.text = graphPointData;
+    updateBGStats(graphPointData, "mg", 0, trend);
+    updateAxisUnits("mg");
+  } else {
+    graphData.text = mmol(graphPointData);
+    updateBGStats(mmol(graphPointData), "mmol", 0, trend)
+    updateAxisUnits("mmol")
+  }
+
+  if (graphPointData) {
+    points.push(graphPointData);
+  }
+ console.log(typeof graphPoints[0]);
+  graphPoints[0].cy = (250 - points[23]);
+  graphPoints[1].cy = (250 - points[22]);
+  graphPoints[2].cy = (250 - points[21]);
+  graphPoints[3].cy = (250 - points[20]);
+  graphPoints[4].cy = (250 - points[19]);
+  graphPoints[5].cy = (250 - points[18]);
+  graphPoints[6].cy = (250 - points[17]);
+  graphPoints[7].cy = (250 - points[16]);
+  graphPoints[8].cy = (250 - points[15]);
+  graphPoints[9].cy = (250 - points[14]);
+  graphPoints[10].cy = (250 - points[13]);
+  graphPoints[11].cy = (250 - points[12]);
+  graphPoints[12].cy = (250 - points[11]);
+  graphPoints[13].cy = (250 - points[10]);
+  graphPoints[14].cy = (250 - points[9]);
+  graphPoints[15].cy = (250 - points[8]);
+  graphPoints[16].cy = (250 - points[7]);
+  graphPoints[17].cy = (250 - points[6]);
+  graphPoints[18].cy = (250 - points[5]);
+  graphPoints[19].cy = (250 - points[4]);
+  graphPoints[20].cy = (250 - points[3]);
+  graphPoints[21].cy = (250 - points[2]);
+  graphPoints[22].cy = (250 - points[1]);
+  graphPoints[23].cy = (250 - points[0]);
+ 
+  if (graphPointData) {
+    points.shift();
+    console.log(JSON.stringify(points));
+  }
+  //totalSeconds = 0;
+  //removed Rytiggy polling timer function, something needs to go back in here.
+
+}
+
+
 // Listen for the onmessage event
 /*
 Alright, need to update message handling to look for incoming BG info from the companion as well as send back current steps and heartrate.
@@ -256,7 +351,14 @@ Wondering if HR and Steps should be triggered by updateClock() or by activity in
 */
 messaging.peerSocket.onmessage = function(evt) {
   console.log("device got: " + evt.data);
-  applyTheme(evt.data.background, evt.data.foreground);
-  let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
-  fs.writeFileSync("theme.txt", json_theme, "json");
+  //Ok, below has to come back.  We need to examine incoming messages and branch off actions appropriately.
+  //We could be setting watch theme, BG display color, sending BG data, setting units, etc.
+  //applyTheme(evt.data.background, evt.data.foreground);
+  //let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
+  //fs.writeFileSync("theme.txt", json_theme, "json");
+   try { bgType = JSON.parse(evt.data).units; } catch(error) { console.log(error); }
+  console.log("BGVal-" + evt.data.sgv);
+  console.log("Trend-" + evt.data.direction);
+  updategraph(evt.data.sgv, evt.data.direction, evt.data.date);
+
 }

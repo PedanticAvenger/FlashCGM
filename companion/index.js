@@ -1,6 +1,12 @@
 import { settingsStorage } from "settings";
 import * as messaging from "messaging";
 
+let url = JSON.parse(settingsStorage.getItem("restURL")).name;
+let BgDataType = JSON.parse(settingsStorage.getItem("dataType"));
+let renderAllPoints = true;
+
+let BgDataUnits = false;
+
 messaging.peerSocket.onopen = () => {
   console.log("Companion Socket Open");
 }
@@ -9,8 +15,96 @@ messaging.peerSocket.close = () => {
   console.log("Companion Socket Closed");
 }
 
+const dataPoll = () => {
+  console.log('Open Data API CONNECTION')
+  console.log(url)
+  if(url) {
+    //url = url + "?count=14";
+    fetch(url,{
+      method: 'GET',
+      mode: 'cors',
+      headers: new Headers({
+        "Content-Type": 'application/json; charset=utf-8'
+      })
+    })
+      .then(response => {
+        console.log('Get Data From Phone');
+        response.text().then(data => {
+          console.log('fetched Data from API');
+          sendVal(data);
+        })
+        .catch(responseParsingError => {
+          console.log('fetchError1');
+          console.log(responseParsingError.name);
+          console.log(responseParsingError.message);
+          console.log(responseParsingError.toString());
+          console.log(responseParsingError.stack);
+        });
+      }).catch(fetchError => {
+        console.log('fetchError2');
+        console.log(fetchError.name);
+        console.log(fetchError.message);
+        console.log(fetchError.toString());
+        console.log(fetchError.stack);
+      })
+  } else {
+    console.log('no url stored in settings to use to get data.')
+  }
+};
+
+function sendVal(data) {
+  console.log('in sendVal');
+
+    // send BG Data type first
+    messaging.peerSocket.send('{"units":'+BgDataType+'}');
+
+    //Can't we just send the full data point array to the watch in a single message?
+    //And set the numbers to the correct units first?
+  if(renderAllPoints) {
+    for(let index = 23; index >= 0; index--) {
+
+      if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+          console.log('Sending Values - '+JSON.parse(data)[index]);
+          messaging.peerSocket.send(JSON.parse(data)[index]);
+      }
+
+    }
+      renderAllPoints = false;
+
+  } else {
+        if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+            messaging.peerSocket.send(JSON.parse(data)[0]);
+        }
+  }
+
+}
+
+
+function restoreSettings() {
+  for (let index = 0; index < settingsStorage.length; index++) {
+
+    let key = settingsStorage.key(index);
+      let data = {
+        key: key,
+        newValue: settingsStorage.getItem(key),
+        dataType: true
+      };
+
+      if(key === "restURL") {
+        console.log('restURL')
+        console.log(JSON.parse(settingsStorage.getItem(key)).name)
+        url = JSON.parse(settingsStorage.getItem(key)).name;
+      }else if(key === "dataType") {
+        console.log('dataType')
+        console.log(JSON.parse(settingsStorage.getItem(key)))
+        BgDataType = JSON.parse(settingsStorage.getItem(key))
+      }
+  }
+}
+
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
+// Also, currently this is inherited from flashring and only sends theme info so it needs to be updated.
 settingsStorage.onchange = function(evt) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     let data = JSON.parse(evt.newValue);
@@ -40,3 +134,5 @@ settingsStorage.onchange = function(evt) {
       Possible mis-alignment of data points with the timing here but in all honesty we are talking about an interval so small it really doesn't matter I think.
       Of course I say all the above now based on my trying to incorporate user-activity into the companion app and it doesn't seem to work that way so rather than a single web transaction to update Xdrip and get BG values we instead do it in two steps.
 */
+
+setInterval(dataPoll, 300000); //Run every 5 min.
