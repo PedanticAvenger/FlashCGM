@@ -50,8 +50,7 @@ let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrendBackground = document.getElementById("myBGTrendBackground");
 let myBGTrendPointer = document.getElementById("myBGTrendPointer");
 var bgCount = 24;
-var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
-let bgType=true;
+
 let graphData = document.getElementById("myCurrentBG");
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
@@ -263,10 +262,6 @@ messaging.peerSocket.close = () => {
   console.log("App Socket Closed");
 }
 
-function mmol( bg ) {
-    let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
-  return mmolBG;
-}
 
 function updateAxisUnits(units) {
   let labels = axis.getElementsByClassName('graph-data-range');
@@ -291,9 +286,9 @@ function updateAxisUnits(units) {
 
 function updategraph(graphPointData, trend){
   let graphPoints = graph.getElementsByClassName('graph-point');
-  console.log('updategraph')
-  console.log('graphPoint - ' + JSON.stringify(graphPointData))
-  console.log('Trend - ' + JSON.stringify(trend))
+  //debug logging console.log('updategraph')
+  //debug logging console.log('graphPoint - ' + JSON.stringify(graphPointData))
+  //debug logging console.log('Trend - ' + JSON.stringify(trend))
 
   if(bgType) {
     graphData.text = graphPointData;
@@ -308,7 +303,7 @@ function updategraph(graphPointData, trend){
   if (graphPointData) {
     points.push(graphPointData);
   }
- console.log(typeof graphPoints[0]);
+  
   graphPoints[0].cy = (250 - points[23])+10;
   graphPoints[1].cy = (250 - points[22])+10;
   graphPoints[2].cy = (250 - points[21])+10;
@@ -333,13 +328,13 @@ function updategraph(graphPointData, trend){
   graphPoints[21].cy = (250 - points[2])+10;
   graphPoints[22].cy = (250 - points[1])+10;
   graphPoints[23].cy = (250 - points[0])+10;
-
+ 
   if (graphPointData) {
     points.shift();
-    console.log(JSON.stringify(points));
+    //debug logging console.log(JSON.stringify(points));
   }
   //totalSeconds = 0;
-  //removed Rytiggy polling timer function, something needs to go back in here.
+  //removed @Rytiggy polling timer function, something needs to go back in here.
 
 }
 
@@ -357,8 +352,8 @@ messaging.peerSocket.onmessage = function(evt) {
   //let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
   //fs.writeFileSync("theme.txt", json_theme, "json");
    try { bgType = JSON.parse(evt.data).units; } catch(error) { console.log(error); }
-  console.log("BGVal-" + evt.data.sgv);
-  console.log("Trend-" + evt.data.direction);
+  //debug logging console.log("BGVal-" + evt.data.sgv);
+  //debug logging console.log("Trend-" + evt.data.direction);
   updategraph(evt.data.sgv, evt.data.direction, evt.data.date);
 
 }

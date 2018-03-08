@@ -5,7 +5,11 @@ let url = JSON.parse(settingsStorage.getItem("restURL")).name;
 let BgDataType = JSON.parse(settingsStorage.getItem("dataType"));
 let renderAllPoints = true;
 
-let BgDataUnits = false;
+let BgDataUnits = "mg";
+var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
+var currentTimestamp = Math.round(new Date().getTime()/1000);
+var lastTimestamp = 0;
+
 
 messaging.peerSocket.onopen = () => {
   console.log("Companion Socket Open");
@@ -31,7 +35,8 @@ const dataPoll = () => {
         //debug logging console.log('Get Data From Phone');
         response.text().then(data => {
           //debug logging console.log('fetched Data from API');
-          sendVal(data);
+          //sendVal(data);
+          buildGraphData(data);
         })
         .catch(responseParsingError => {
           console.log('fetchError1');
@@ -52,6 +57,34 @@ const dataPoll = () => {
   }
 };
 
+function mmol( bg ) {
+    let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
+  return mmolBG;
+}
+
+function buildGraphData(data) {
+  // Take the data in, move a step at a time from most recent back.
+  // look at timestamps to determine if a missed poll happened and make that graph point disappear.
+  let graphpointindex = 23;
+  lastTimestamp = 0;
+  for (let index = 0; index <= 23; index++) {
+    if (index===0) {
+      BgDataUnits = JSON.parse(data[0].units_hint);
+    }
+    if (graphpointindex >= 0) {
+      while ((currentTimestamp - JSON.parse(data[index].date)) >= 300) {
+        points[graphpointindex] = -10;
+        currentTimestamp = currentTimestamp - 300;
+        graphpointindex--;
+      }
+      points[graphpointindex] = JSON.parse(data[index].sgv);
+      graphpointindex--;
+      if (JSON.parse(data[index].date) > lastTimestamp) {
+        lastTimestamp = JSON.parse(data[index].date);
+      }
+    }
+  }
+}
 function sendVal(data) {
   //debug logging console.log('in sendVal');
 
@@ -105,6 +138,14 @@ function restoreSettings() {
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
 // Also, currently this is inherited from flashring which only sends theme info so it needs to be updated.
+// After using until March 6, decided to move all processing here and make watch display/trigger.
+// the only math I want the watch to do is calculate time since last reading so it is "independant" from watch and app message interactions.
+// Will create:
+// an array with 24 data points for graphing (leave in mg/dl format)
+// units variable for display
+// variable for current value in appropriate display units
+// variable for last successful poll (as determined from timestamp of last value we get from xdrip/nightscout)
+
 
 settingsStorage.onchange = function(evt) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
@@ -124,11 +165,16 @@ settingsStorage.onchange = function(evt) {
   -Grab JSON response from defined data source URL saved in settings (likely http://127.0.0.1:17850/sgv.json).
   -Look for units_hint in the first record and use that to determine required calculations and set units on locally stored settings just because.
     -If no units_hint returned look for the internally stored value
-  -Build array of data (Units, trend at most current reading, appropriate timestamp of last query, 24 BG values in appropriate units) and send as message to watch.
+  Messages:
+  1)array of data points for graph, 24 BG values in appropriate units
+  2)Current reading, trend at most current reading, appropriate timestamp of most recent result,
+  3) Units, configured high and configured low
+  4) Theme messages from flashring with incorporated theme settings for display data.
+
     -At this point I'm leaning toward a simple ring that uses color to count out 5 minutes then print a number in center of ring for number of missed polls.
-    Simpler for display/user understanding than "XXmYYs since last poll" kind of display.
+    Simpler for display/user understanding than "XXmYYs since last poll" kind of display but that could just be me
+    and should be verified by some users with different perspectives.
     -Trend data could be displayed as a 180 degree arc with a calculated arc segment on top for display.  fill of arc can change for extremes, etc.
-  -Watch updates main watchface and potentially graph if that can be pre-built, otherwise hold onto the values.
   -Grab the Heartrate (easiest to grab it from what is currently displayed on the watchface)  and steps (today.local.steps) and send them back to companion as a message.
   -Companion makes a second WebAPI call with sgv.json?steps=StepsValue&heart=HeartRateValue
     -Look for the JSON resonse for steps_result and heart_result to be 200 indicating success, everything else for a value is some form of error.
@@ -137,7 +183,6 @@ settingsStorage.onchange = function(evt) {
 
 
    The more I look at this the more I'm certain that all the data processing from the JSON datasource needs to be done in the companion and simple messages of an array of glucose values, current trend, timestamp should be all that is sent.  Theme settings could be used to alter units display, etc.  Should in general be much more stable and battery friendly on the watch.
-   Once this is in place, the watch could use a time trigger to request updates maybe with a full graph refresh hourly or on request.  This would address the challenge of, for example, going into the settings on the watch and going back to the watchface which resets everything and you want 5 to 10 min to get it updated again.  Time based messages, triggered from the watch, and all the data held in the companion should make it much more responsive. 
 */
 
 setInterval(dataPoll, 300000); //Run every 5 min.
