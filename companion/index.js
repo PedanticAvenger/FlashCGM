@@ -2,10 +2,17 @@ import { settingsStorage } from "settings";
 import * as messaging from "messaging";
 
 let url = JSON.parse(settingsStorage.getItem("restURL")).name;
-let BgDataType = JSON.parse(settingsStorage.getItem("dataType"));
+let settingsUrl = JSON.parse(settingsStorage.getItem("restURL")).name;
+
+let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
 let renderAllPoints = true;
 
-let BgDataUnits = "mg";
+var bgDataUnits = "mg";
+var bgHighLevel = 0;
+var bgLowLevel = 0;
+var bgTargetTop = 0;
+var bgTargetBottom = 0;
+
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 var currentTimestamp = Math.round(new Date().getTime()/1000);
 var lastTimestamp = 0;
@@ -20,6 +27,11 @@ messaging.peerSocket.close = () => {
 }
 
 const dataPoll = () => {
+  if(renderAllPoints) {
+      console.log('Grabbing Settings.')
+      settingsPoll();
+      renderAllPoints = false;
+    }
   console.log('Open Data API CONNECTION')
   console.log(url)
   if(url) {
@@ -55,11 +67,58 @@ const dataPoll = () => {
   } else {
     console.log('no url stored in settings to use to get data.')
   }
+
+const settingsPoll = () => {
+  console.log('Open Settings API CONNECTION')
+  console.log(settingsUrl)
+  if(settingsUrl) {
+    //url = url + "?count=14";
+    fetch(settingsUrl,{
+      method: 'GET',
+      mode: 'cors',
+      headers: new Headers({
+        "Content-Type": 'application/json; charset=utf-8'
+      })
+    })
+      .then(response => {
+        //debug logging console.log('Get Data From Phone');
+        response.text().then(settings => {
+          //debug logging console.log('fetched Data from API');
+          buildSettings(settings);
+        })
+        .catch(responseParsingError => {
+          console.log('fetchError1');
+          console.log(responseParsingError.name);
+          console.log(responseParsingError.message);
+          console.log(responseParsingError.toString());
+          console.log(responseParsingError.stack);
+        });
+      }).catch(fetchError => {
+        console.log('fetchError2');
+        console.log(fetchError.name);
+        console.log(fetchError.message);
+        console.log(fetchError.toString());
+        console.log(fetchError.stack);
+      })
+  } else {
+    console.log('no url stored in app settings to use to get settings.')
+  }
 };
 
-function mmol( bg ) {
-    let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
-  return mmolBG;
+function buildSettings(settings) {
+  //Need to setup High line, Low Line, Units.
+  bgHighLevel = JSON.parse(settings[thresholds.bgHigh]);
+  bgLowLevel =  JSON.parse(settings[thresholds.bgLow]);
+  bgTargetTop =  JSON.parse(settings[thresholds.bgTargetTop]);
+  bgTargetBottom =  JSON.parse(settings[thresholds.bgTargetBottom]);
+  bgDataUnits =  JSON.parse(settings[thresholds.bgHigh]);
+  var messageContent = {"settings": [
+    {"bgDataUnits" : bgDataUnits, "bgTargetTop" : bgTargetTop, "bgTargetBottom" : bgTargetBottom, "bgHighLevel" : bgHighLevel, "bgLowLevel" : bgLowLevel}
+    ]; //end of settings array
+  } //end of messageContent
+  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    messaging.peerSocket.send(messageContent);
+  }
 }
 
 function buildGraphData(data) {
@@ -69,7 +128,7 @@ function buildGraphData(data) {
   lastTimestamp = 0;
   for (let index = 0; index <= 23; index++) {
     if (index===0) {
-      BgDataUnits = JSON.parse(data[0].units_hint);
+      bgDataUnits = JSON.parse(data[0].units_hint);
     }
     if (graphpointindex >= 0) {
       while ((currentTimestamp - JSON.parse(data[index].date)) >= 300) {
@@ -84,12 +143,18 @@ function buildGraphData(data) {
       }
     }
   }
+  console.log("GraphData:"+points);
+  var messageContent = {"bgdata" : points};
+  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    messaging.peerSocket.send(messageContent);
+  }
 }
+
 function sendVal(data) {
-  //debug logging console.log('in sendVal');
+  //Looking to deprecate this function completely in favor of buildSettings/BuildGraphData/buildTheme.....;
 
     // send BG Data type first
-    messaging.peerSocket.send('{"units":'+BgDataType+'}');
+    messaging.peerSocket.send('{"units":'+bgDataType+'}');
 
     //Can't we just send the full data point array to the watch in a single message?
     //And set the numbers to the correct units first?
@@ -123,14 +188,18 @@ function restoreSettings() {
         dataType: true
       };
 
-      if(key === "restURL") {
-        console.log('restURL')
-        console.log(JSON.parse(settingsStorage.getItem(key)).name)
+      if(key === "dataSourceURL") {
+        console.log('dataSourceURL');
+        console.log(JSON.parse(settingsStorage.getItem(key)).name);
         url = JSON.parse(settingsStorage.getItem(key)).name;
-      }else if(key === "dataType") {
-        console.log('dataType')
-        console.log(JSON.parse(settingsStorage.getItem(key)))
-        BgDataType = JSON.parse(settingsStorage.getItem(key))
+      }else if(key === "settingsSourceURL") {
+        console.log('settingsUrl');
+        console.log(JSON.parse(settingsStorage.getItem(key)).name);
+        settingsUrl = JSON.parse(settingsStorage.getItem(key)).name;
+      }else if(key === "unitsType") {
+        console.log('unitsType');
+        console.log(JSON.parse(settingsStorage.getItem(key)));
+        bgDataType = JSON.parse(settingsStorage.getItem(key));
       }
   }
 }
@@ -146,6 +215,7 @@ function restoreSettings() {
 // variable for current value in appropriate display units
 // variable for last successful poll (as determined from timestamp of last value we get from xdrip/nightscout)
 
+/*  Re-enable this after re-write to integrate into newer messaging format
 
 settingsStorage.onchange = function(evt) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
@@ -159,9 +229,11 @@ settingsStorage.onchange = function(evt) {
   }
 }
 
+*/
+
 /*
   Workflow thoughts:
-  -Grab configured high and low from new endpoints in XDrip to be used to set the graph lines as well as for triggering vibe alerts.
+  -Grab configured high and low and units from endpoints in XDrip/Nightscout to be used to set the graph lines as well as for triggering vibe alerts.
   -Grab JSON response from defined data source URL saved in settings (likely http://127.0.0.1:17850/sgv.json).
   -Look for units_hint in the first record and use that to determine required calculations and set units on locally stored settings just because.
     -If no units_hint returned look for the internally stored value

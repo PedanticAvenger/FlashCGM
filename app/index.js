@@ -81,6 +81,11 @@ function applyTheme(background, foreground) {
   bottomLine.style.fill = foreground;
 }
 
+function mmol( bg ) {
+  let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
+  return mmolBG;
+}
+
 //functions for screen switching
 function showMainScreen() {
   console.log("Show main screen");
@@ -303,7 +308,7 @@ function updategraph(graphPointData, trend){
   if (graphPointData) {
     points.push(graphPointData);
   }
-  
+
   graphPoints[0].cy = (250 - points[23])+10;
   graphPoints[1].cy = (250 - points[22])+10;
   graphPoints[2].cy = (250 - points[21])+10;
@@ -328,7 +333,7 @@ function updategraph(graphPointData, trend){
   graphPoints[21].cy = (250 - points[2])+10;
   graphPoints[22].cy = (250 - points[1])+10;
   graphPoints[23].cy = (250 - points[0])+10;
- 
+
   if (graphPointData) {
     points.shift();
     //debug logging console.log(JSON.stringify(points));
