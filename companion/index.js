@@ -5,7 +5,7 @@ let url = JSON.parse(settingsStorage.getItem("restURL")).name;
 let settingsUrl = JSON.parse(settingsStorage.getItem("restURL")).name;
 
 let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
-let renderAllPoints = true;
+let sendAllData = true;
 
 var bgDataUnits = "mg";
 var bgHighLevel = 0;
@@ -27,10 +27,10 @@ messaging.peerSocket.close = () => {
 }
 
 const dataPoll = () => {
-  if(renderAllPoints) {
+  if(sendAllData) {
       console.log('Grabbing Settings.')
       settingsPoll();
-      renderAllPoints = false;
+      sendAllData = false;
     }
   console.log('Open Data API CONNECTION')
   console.log(url)
@@ -158,7 +158,7 @@ function sendVal(data) {
 
     //Can't we just send the full data point array to the watch in a single message?
     //And set the numbers to the correct units first?
-  if(renderAllPoints) {
+  if(sendAllData) {
     for(let index = 23; index >= 0; index--) {
 
       if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
@@ -167,7 +167,7 @@ function sendVal(data) {
       }
 
     }
-      renderAllPoints = false;
+      sendAllData = false;
 
   } else {
         if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
