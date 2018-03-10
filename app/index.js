@@ -51,7 +51,6 @@ let myBGTrendBackground = document.getElementById("myBGTrendBackground");
 let myBGTrendPointer = document.getElementById("myBGTrendPointer");
 var bgCount = 24;
 
-let graphData = document.getElementById("myCurrentBG");
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
 //Normal Flashring handles below.
@@ -187,16 +186,6 @@ function updateClock() {
   }
 }
 
-function updateBGStats(bgValue, pollcounter, trend) {
-  /* Stuff my BG info update stuff here, I know it may have to move but good for layout know
-  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
-  Not sure if myCurrentBGTrend - currently static "FortyFiceUp" and lastGoodPollTimestamp should be passed into this function or not.. */
-   console.log("Stats Update Call: " + bgValue + " " + units + " " + pollcounter + " " + trend);
-   myCurrentBG.text = bgValue;
-   myMissedBGPollCounter.text = pollcounter;
-   updateBGTrend(trend);
-   //updateBGPollingStatus(lastGoodPollTimestamp);
-}
 
 //Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.
 function updateBGTrend(Trend) {
@@ -255,6 +244,7 @@ clock.ontick = () => updateClock();
 // Don't start with a blank screen
 applyTheme(backgdcol, foregdcol);
 updateClock();
+
 messaging.peerSocket.onopen = () => {
   console.log("App Socket Open");
 }
@@ -265,6 +255,7 @@ messaging.peerSocket.close = () => {
 
 
 function updateAxisUnits(units) {
+  // This needs to be integrated into an autoscaling graph function(s)  static is no good
   let labels = axis.getElementsByClassName('graph-data-range');
   if (units === "mg") {
     labels[0].text = "200";
@@ -285,66 +276,44 @@ function updateAxisUnits(units) {
   }
 }
 
-function updategraph(graphPointData, trend){
-  let graphPoints = graph.getElementsByClassName('graph-point');
+function updategraph(displayData){
+  /*
+    Before recode this only built the graph points.
+    Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
+
+  */
   //debug logging console.log('updategraph')
-  //debug logging console.log('graphPoint - ' + JSON.stringify(graphPointData))
-  //debug logging console.log('Trend - ' + JSON.stringify(trend))
+  //debug logging console.log('graphPoint - ' + JSON.stringify(displayData.graphdata))
+  //debug logging console.log('Trend - ' + JSON.stringify(displayData.trend))
+
+  let graphPoints = graph.getElementsByClassName('graph-point');
+
+  let points = JSON.parse(displayData.bgdata.graphData);
+  let trend = JSON.parse(displayData.bgdata.currentTrend);
+  let lastPollTime = JSON.parse(displayData.bgdata.lastPollTime);
 
   if(bgUnits === "mg") {
-    graphData.text = graphPointData;
-    updateBGStats(graphPointData, bgUnits, 0, trend); // we have data points, trend, and most recent timestamp.
-    updateAxisUnits("mg"); //this should go away and be replaced by the settings update or have values stored for dynamic graph.
+    myCurrentBG.text = displayData[23];
+    updateAxisUnits("mg");
   } else if (bgUnits === "mmol") {
-    graphData.text = mmol(graphPointData);
-    updateBGStats(mmol(graphPointData), 0, trend)
+    myCurrentBG.text = mmol(displayData[23]);
     updateAxisUnits("mmol")
   }
+  updateBGTrend(trend);
 
-  if (graphPointData) {
-    points.push(graphPointData);
+  for (let index = 0; index <= 23; index++) {
+    let pointsIndex = 23 - index;
+    graphPoints[index].cy = (250- points[pointsIndex]) + 10;
   }
-
-  graphPoints[0].cy = (250 - points[23])+10;
-  graphPoints[1].cy = (250 - points[22])+10;
-  graphPoints[2].cy = (250 - points[21])+10;
-  graphPoints[3].cy = (250 - points[20])+10;
-  graphPoints[4].cy = (250 - points[19])+10;
-  graphPoints[5].cy = (250 - points[18])+10;
-  graphPoints[6].cy = (250 - points[17])+10;
-  graphPoints[7].cy = (250 - points[16])+10;
-  graphPoints[8].cy = (250 - points[15])+10;
-  graphPoints[9].cy = (250 - points[14])+10;
-  graphPoints[10].cy = (250 - points[13])+10;
-  graphPoints[11].cy = (250 - points[12])+10;
-  graphPoints[12].cy = (250 - points[11])+10;
-  graphPoints[13].cy = (250 - points[10])+10;
-  graphPoints[14].cy = (250 - points[9])+10;
-  graphPoints[15].cy = (250 - points[8])+10;
-  graphPoints[16].cy = (250 - points[7])+10;
-  graphPoints[17].cy = (250 - points[6])+10;
-  graphPoints[18].cy = (250 - points[5])+10;
-  graphPoints[19].cy = (250 - points[4])+10;
-  graphPoints[20].cy = (250 - points[3])+10;
-  graphPoints[21].cy = (250 - points[2])+10;
-  graphPoints[22].cy = (250 - points[1])+10;
-  graphPoints[23].cy = (250 - points[0])+10;
-
-  if (graphPointData) {
-    points.shift();
-    //debug logging console.log(JSON.stringify(points));
-  }
-  //totalSeconds = 0;
-  //removed @Rytiggy polling timer function, something needs to go back in here.
 
 }
 
 function updateSettings(settings) {
-  let bgUnits = JSON.parse(evt.data).bgDataUnits;
-  let highTarget = JSON.parse(evt.data).bgTargetTop;
-  let lowTarget = JSON.parse(evt.data).bgTargetBottom;
-  let highLevel = JSON.parse(evt.data).bgHighLevel;
-  let lowLevel = JSON.parse(evt.data).bgLowLevel;
+  let prefBgUnits = JSON.parse(evt.data).bgDataUnits;
+  let prefHighTarget = JSON.parse(evt.data).bgTargetTop;
+  let prefLowTarget = JSON.parse(evt.data).bgTargetBottom;
+  let prefHighLevel = JSON.parse(evt.data).bgHighLevel;
+  let prefLowLevel = JSON.parse(evt.data).bgLowLevel;
 
   myBGUnits.text = bgUnits;
 }
