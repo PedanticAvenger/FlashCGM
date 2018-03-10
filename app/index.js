@@ -136,7 +136,6 @@ function updateStats() {
   calRing.sweepAngle = calAngle;
 }
 
-
 var hrm = new HeartRateSensor();
 
 hrm.onreading = function () {
@@ -188,15 +187,12 @@ function updateClock() {
   }
 }
 
-
-function updateBGStats(bgValue, units, pollcounter, trend) {
+function updateBGStats(bgValue, pollcounter, trend) {
   /* Stuff my BG info update stuff here, I know it may have to move but good for layout know
-  Also, my JS sucks, ;)  people welcome to refactor.
-  BG Text comes from API call, as does BGUnits.  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
+  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
   Not sure if myCurrentBGTrend - currently static "FortyFiceUp" and lastGoodPollTimestamp should be passed into this function or not.. */
    console.log("Stats Update Call: " + bgValue + " " + units + " " + pollcounter + " " + trend);
    myCurrentBG.text = bgValue;
-   myBGUnits.text = units;
    myMissedBGPollCounter.text = pollcounter;
    updateBGTrend(trend);
    //updateBGPollingStatus(lastGoodPollTimestamp);
@@ -295,13 +291,13 @@ function updategraph(graphPointData, trend){
   //debug logging console.log('graphPoint - ' + JSON.stringify(graphPointData))
   //debug logging console.log('Trend - ' + JSON.stringify(trend))
 
-  if(bgType) {
+  if(bgUnits === "mg") {
     graphData.text = graphPointData;
-    updateBGStats(graphPointData, "mg", 0, trend);
-    updateAxisUnits("mg");
-  } else {
+    updateBGStats(graphPointData, bgUnits, 0, trend); // we have data points, trend, and most recent timestamp.
+    updateAxisUnits("mg"); //this should go away and be replaced by the settings update or have values stored for dynamic graph.
+  } else if (bgUnits === "mmol") {
     graphData.text = mmol(graphPointData);
-    updateBGStats(mmol(graphPointData), "mmol", 0, trend)
+    updateBGStats(mmol(graphPointData), 0, trend)
     updateAxisUnits("mmol")
   }
 
@@ -343,22 +339,31 @@ function updategraph(graphPointData, trend){
 
 }
 
+function updateSettings(settings) {
+  let bgUnits = JSON.parse(evt.data).bgDataUnits;
+  let highTarget = JSON.parse(evt.data).bgTargetTop;
+  let lowTarget = JSON.parse(evt.data).bgTargetBottom;
+  let highLevel = JSON.parse(evt.data).bgHighLevel;
+  let lowLevel = JSON.parse(evt.data).bgLowLevel;
 
+  myBGUnits.text = bgUnits;
+}
 // Listen for the onmessage event
 /*
-Alright, need to update message handling to look for incoming BG info from the companion as well as send back current steps and heartrate.
+Alright, need to update message handling to send back current steps and heartrate.
 Wondering if HR and Steps should be triggered by updateClock() or by activity in updateBGStats().
 */
 messaging.peerSocket.onmessage = function(evt) {
   console.log("device got: " + evt.data);
-  //Ok, below has to come back.  We need to examine incoming messages and branch off actions appropriately.
-  //We could be setting watch theme, BG display color, sending BG data, setting units, etc.
-  //applyTheme(evt.data.background, evt.data.foreground);
-  //let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
-  //fs.writeFileSync("theme.txt", json_theme, "json");
-   try { bgType = JSON.parse(evt.data).units; } catch(error) { console.log(error); }
-  //debug logging console.log("BGVal-" + evt.data.sgv);
-  //debug logging console.log("Trend-" + evt.data.direction);
-  updategraph(evt.data.sgv, evt.data.direction, evt.data.date);
 
+  if (evt.hasOwnProperty('setings')) {
+    updateSettings(evt.data)
+  } else if (evt.hasOwnProperty('bgdata')) {
+    updategraph(evt.data);
+  } else if (evt.hasOwnProperty('theme')) {
+//This theme stuff needs a re-do, don't forget!
+    applyTheme(evt.data.background, evt.data.foreground);
+    let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
+    fs.writeFileSync("theme.txt", json_theme, "json");
+  }
 }
