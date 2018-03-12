@@ -140,11 +140,14 @@ function buildGraphData(data) {
       graphpointindex--;
       if (JSON.parse(data[index].date) > lastTimestamp) {
         lastTimestamp = JSON.parse(data[index].date);
+        bgTrend = JSON.parse(data[index].direction);
       }
     }
   }
   console.log("GraphData:"+points);
-  var messageContent = {"bgdata" : points};
+  var messageContent = {"bgdata" : [
+    {"graphdata" : points, "lastPollTime" : lastTimestamp, "currentTrend" : bgTrend}
+  ];
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
