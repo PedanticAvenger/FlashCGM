@@ -1,10 +1,19 @@
+//Working on all code using VS Code, @ts-X codes below are for that.
+//@ts-ignore
 import clock from "clock";
+//@ts-ignore
 import document from "document";
+//@ts-ignore
 import userActivity from "user-activity";
+//@ts-ignore
 import { HeartRateSensor } from "heart-rate";
+//@ts-ignore
 import { locale } from "user-settings";
+//@ts-ignore
 import { preferences } from "user-settings";
+//@ts-ignore
 import * as messaging from "messaging";
+//@ts-ignore
 import * as fs from "fs";
 import * as util from "../common/utils";
 
@@ -49,10 +58,10 @@ let myBGUpdateArcBackground = document.getElementById("myBGUpdateArcBackground")
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrendBackground = document.getElementById("myBGTrendBackground");
 let myBGTrendPointer = document.getElementById("myBGTrendPointer");
-var bgCount = 24;
-
+let bgCount = 24;
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
+let prefBgUnits = "mg";
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -292,10 +301,10 @@ function updategraph(displayData){
   let trend = JSON.parse(displayData.bgdata.currentTrend);
   let lastPollTime = JSON.parse(displayData.bgdata.lastPollTime);
 
-  if(bgUnits === "mg") {
+  if(prefBgUnits === "mg") {
     myCurrentBG.text = displayData[23];
     updateAxisUnits("mg");
-  } else if (bgUnits === "mmol") {
+  } else if (prefBgUnits === "mmol") {
     myCurrentBG.text = mmol(displayData[23]);
     updateAxisUnits("mmol")
   }
@@ -309,13 +318,13 @@ function updategraph(displayData){
 }
 
 function updateSettings(settings) {
-  let prefBgUnits = JSON.parse(evt.data).bgDataUnits;
-  let prefHighTarget = JSON.parse(evt.data).bgTargetTop;
-  let prefLowTarget = JSON.parse(evt.data).bgTargetBottom;
-  let prefHighLevel = JSON.parse(evt.data).bgHighLevel;
-  let prefLowLevel = JSON.parse(evt.data).bgLowLevel;
+  let prefBgUnits = JSON.parse(settings).bgDataUnits;
+//  let prefHighTarget = JSON.parse(settings).bgTargetTop;
+//  let prefLowTarget = JSON.parse(settings).bgTargetBottom;
+  let prefHighLevel = JSON.parse(settings).bgHighLevel;
+  let prefLowLevel = JSON.parse(settings).bgLowLevel;
 
-  myBGUnits.text = bgUnits;
+  myBGUnits.text = prefBgUnits;
 }
 // Listen for the onmessage event
 /*

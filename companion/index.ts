@@ -113,14 +113,17 @@ function buildSettings(settings) {
   bgHighLevel = JSON.parse(settings[thresholds.bgHigh]);
   // @ts-ignore
   bgLowLevel =  JSON.parse(settings[thresholds.bgLow]);
-  // @ts-ignore
-  bgTargetTop =  JSON.parse(settings[thresholds.bgTargetTop]);
-  // @ts-ignore
-  bgTargetBottom =  JSON.parse(settings[thresholds.bgTargetBottom]);
+//  bgTargetTop =  JSON.parse(settings[thresholds.bgTargetTop]);
+//  bgTargetBottom =  JSON.parse(settings[thresholds.bgTargetBottom]);
   // @ts-ignore
   bgDataUnits =  JSON.parse(settings[thresholds.bgHigh]);
   var messageContent = {"settings": [
-    {"bgDataUnits" : bgDataUnits, "bgTargetTop" : bgTargetTop, "bgTargetBottom" : bgTargetBottom, "bgHighLevel" : bgHighLevel, "bgLowLevel" : bgLowLevel}
+    {
+      "bgDataUnits" : bgDataUnits, 
+//      "bgTargetTop" : bgTargetTop, 
+//      "bgTargetBottom" : bgTargetBottom, 
+      "bgHighLevel" : bgHighLevel, 
+      "bgLowLevel" : bgLowLevel}
     ] //end of settings array
   } //end of messageContent
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
@@ -158,7 +161,7 @@ function buildGraphData(data) {
 }
 
 function sendVal(data) {
-  //Looking to deprecate this function completely in favor of buildSettings/BuildGraphData/buildTheme.....;
+  //Looking to deprecate this function completely in favor of buildSettings/buildGraphData/buildTheme.....;
 
     // send BG Data type first
     messaging.peerSocket.send('{"units":'+bgDataType+'}');
