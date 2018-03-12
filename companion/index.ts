@@ -1,3 +1,4 @@
+// Using Visual Studio Code w/ tslint  @ts comments for that.
 // @ts-check
 // @ts-ignore
 import { settingsStorage } from "settings";
