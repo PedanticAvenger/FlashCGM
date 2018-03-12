@@ -1,5 +1,9 @@
+// @ts-check
+// @ts-ignore
 import { settingsStorage } from "settings";
+// @ts-ignore
 import * as messaging from "messaging";
+
 
 let url = JSON.parse(settingsStorage.getItem("restURL")).name;
 let settingsUrl = JSON.parse(settingsStorage.getItem("restURL")).name;
@@ -31,26 +35,23 @@ const dataPoll = () => {
       console.log('Grabbing Settings.')
       settingsPoll();
       sendAllData = false;
-    }
+  }
   console.log('Open Data API CONNECTION')
   console.log(url)
   if(url) {
-    //url = url + "?count=14";
     fetch(url,{
       method: 'GET',
       mode: 'cors',
       headers: new Headers({
         "Content-Type": 'application/json; charset=utf-8'
       })
-    })
-      .then(response => {
+    }).then(response => {
         //debug logging console.log('Get Data From Phone');
         response.text().then(data => {
           //debug logging console.log('fetched Data from API');
           //sendVal(data);
           buildGraphData(data);
-        })
-        .catch(responseParsingError => {
+        }).catch(responseParsingError => {
           console.log('fetchError1');
           console.log(responseParsingError.name);
           console.log(responseParsingError.message);
@@ -68,6 +69,7 @@ const dataPoll = () => {
     console.log('no url stored in settings to use to get data.')
   }
 }
+
 const settingsPoll = () => {
   console.log('Open Settings API CONNECTION')
   console.log(settingsUrl)
@@ -107,10 +109,15 @@ const settingsPoll = () => {
 
 function buildSettings(settings) {
   //Need to setup High line, Low Line, Units.
+  // @ts-ignore
   bgHighLevel = JSON.parse(settings[thresholds.bgHigh]);
+  // @ts-ignore
   bgLowLevel =  JSON.parse(settings[thresholds.bgLow]);
+  // @ts-ignore
   bgTargetTop =  JSON.parse(settings[thresholds.bgTargetTop]);
+  // @ts-ignore
   bgTargetBottom =  JSON.parse(settings[thresholds.bgTargetBottom]);
+  // @ts-ignore
   bgDataUnits =  JSON.parse(settings[thresholds.bgHigh]);
   var messageContent = {"settings": [
     {"bgDataUnits" : bgDataUnits, "bgTargetTop" : bgTargetTop, "bgTargetBottom" : bgTargetBottom, "bgHighLevel" : bgHighLevel, "bgLowLevel" : bgLowLevel}
@@ -140,14 +147,11 @@ function buildGraphData(data) {
       graphpointindex--;
       if (JSON.parse(data[index].date) > lastTimestamp) {
         lastTimestamp = JSON.parse(data[index].date);
-        bgTrend = JSON.parse(data[index].direction);
       }
     }
   }
   console.log("GraphData:"+points);
-  var messageContent = {"bgdata" : [
-    {"graphdata" : points, "lastPollTime" : lastTimestamp, "currentTrend" : bgTrend}
-  ];
+  var messageContent = {"bgdata" : points};
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
