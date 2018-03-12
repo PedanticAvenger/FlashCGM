@@ -67,7 +67,7 @@ const dataPoll = () => {
   } else {
     console.log('no url stored in settings to use to get data.')
   }
-
+}
 const settingsPoll = () => {
   console.log('Open Settings API CONNECTION')
   console.log(settingsUrl)
@@ -114,7 +114,7 @@ function buildSettings(settings) {
   bgDataUnits =  JSON.parse(settings[thresholds.bgHigh]);
   var messageContent = {"settings": [
     {"bgDataUnits" : bgDataUnits, "bgTargetTop" : bgTargetTop, "bgTargetBottom" : bgTargetBottom, "bgHighLevel" : bgHighLevel, "bgLowLevel" : bgLowLevel}
-    ]; //end of settings array
+    ] //end of settings array
   } //end of messageContent
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
