@@ -72,19 +72,19 @@ function mySettings(props) {
           label="Settings API URL"
           placeholder="http://127.0.0.1:17580/status.json"
         />
-        <TEXT>
-          This is the URL the app will use to fetch settings like units, high and low thresholds from.<BR>
-          If you are using xdrip it is likely http://127.0.0.1:17580/status.json and if you are using Nightscout it is likely https://<nightscout site FQDN>/api/v1/status.json
-          </TEXT>
+        <Text>
+          This is the URL the app will use to fetch settings like units, high and low thresholds from.
+          If you are using xdrip it is likely http://127.0.0.1:17580/status.json and if you are using Nightscout it is likely https://(nightscout site FQDN)>/api/v1/status.json
+          </Text>
         <TextInput
           settingsKey="dataSourceURL"
           label="Data API URL"
           placeholder="http://127.0.0.1:17580/sgv.json"
         />
-        <TEXT>
-          This is the URL the app will use to fetch data points for graph and BG value display.<BR>
-          If you are using xdrip it is likely http://127.0.0.1:17580/status.json and if you are using Nightscout it is likely https://<nightscout site FQDN>/api/v1/status.json
-          </TEXT>
+        <Text>
+          This is the URL the app will use to fetch data points for graph and BG value display.
+          If you are using xdrip it is likely http://127.0.0.1:17580/sgv.json and if you are using Nightscout it is likely https://(nightscout site FQDN)/api/v1/entries/sgv.json?count=24
+          </Text>
       </Section>
 
     </Page>

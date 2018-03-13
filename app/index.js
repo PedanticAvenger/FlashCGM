@@ -167,7 +167,8 @@ function updateClock() {
   let wday = today.getDay();
   let month = util.zeroPad(today.getMonth()+1);
   let year = today.getFullYear();
-  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
+//  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
+  let hours = util.formatHour(today.getHours(), clockPref);
   let mins = util.zeroPad(today.getMinutes());
   let prefix = lang.substring(0,2);
   if ( typeof util.weekday[prefix] === 'undefined' ) {
@@ -289,41 +290,41 @@ function updategraph(displayData){
   /*
     Before recode this only built the graph points.
     Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
-
   */
-  //debug logging console.log('updategraph')
-  //debug logging console.log('graphPoint - ' + JSON.stringify(displayData.graphdata))
-  //debug logging console.log('Trend - ' + JSON.stringify(displayData.trend))
-
   let graphPoints = graph.getElementsByClassName('graph-point');
-
-  let points = JSON.parse(displayData.bgdata.graphData);
-  let trend = JSON.parse(displayData.bgdata.currentTrend);
-  let lastPollTime = JSON.parse(displayData.bgdata.lastPollTime);
+  console.log("In updategraph: " + JSON.stringify(displayData));
+//  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
+ 
+  var points = displayData.graphData;
+  var trend = displayData.currentTrend;
+  var lastPollTime = displayData.lastPollTime;
+  console.log("Points Array: " + JSON.stringify(points));
+  console.log("Trend: " + trend);
+  console.log("Last Poll Time: " + lastPollTime);
 
   if(prefBgUnits === "mg") {
-    myCurrentBG.text = displayData[23];
+    myCurrentBG.text = points[23];
     updateAxisUnits("mg");
   } else if (prefBgUnits === "mmol") {
-    myCurrentBG.text = mmol(displayData[23]);
+    myCurrentBG.text = mmol(points[23]);
     updateAxisUnits("mmol")
   }
   updateBGTrend(trend);
 
   for (let index = 0; index <= 23; index++) {
     let pointsIndex = 23 - index;
-    graphPoints[index].cy = (250- points[pointsIndex]) + 10;
+    graphPoints[index].cy = (250 - points[pointsIndex]) + 10;
   }
 
 }
 
 function updateSettings(settings) {
-  let obj = JSON.parse(settings);
-  let prefBgUnits = obj.settings.bgDataUnits;
+//  console.log("Whatsettings:" + JSON.stringify(settings));
+  let prefBgUnits = settings.settings.bgDataUnits;
 //  let prefHighTarget = obj.settings.bgTargetTop;
 //  let prefLowTarget = obj.settings.bgTargetBottom;
-  let prefHighLevel = obj.settings.bgHighLevel;
-  let prefLowLevel = obj.settings.bgLowLevel;
+  let prefHighLevel = settings.settings.bgHighLevel;
+  let prefLowLevel = settings.settings.bgLowLevel;
 
   myBGUnits.text = prefBgUnits;
 }
@@ -333,13 +334,14 @@ Alright, need to update message handling to send back current steps and heartrat
 Wondering if HR and Steps should be triggered by updateClock() or by activity in updateBGStats().
 */
 messaging.peerSocket.onmessage = function(evt) {
-  console.log("device got: " + evt.data);
-
-  if (evt.hasOwnProperty('settings')) {
+  if (evt.data.hasOwnProperty("settings")) {
+    console.log("Triggered a settings update.");
     updateSettings(evt.data)
-  } else if (evt.hasOwnProperty('bgdata')) {
-    updategraph(evt.data);
-  } else if (evt.hasOwnProperty('theme')) {
+  } else if (evt.data.hasOwnProperty("bgdata")) {
+    console.log("Triggered a data update. " + JSON.stringify(evt.data));
+    updategraph(evt.data.bgdata);
+  } else if (evt.hasOwnProperty("theme")) {
+    console.log("Triggered a theme update.");
 //This theme stuff needs a re-do, don't forget!
     applyTheme(evt.data.background, evt.data.foreground);
     let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};

@@ -1,13 +1,8 @@
-// Using Visual Studio Code w/ tslint  @ts comments for that.
-// @ts-check
-// @ts-ignore
 import { settingsStorage } from "settings";
-// @ts-ignore
 import * as messaging from "messaging";
 
-
-let dataUrl = JSON.parse(settingsStorage.getItem("restURL")).name;
-let settingsUrl = JSON.parse(settingsStorage.getItem("restURL")).name;
+let dataUrl = JSON.parse(settingsStorage.getItem("dataSourceURL")).name;
+let settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
 
 let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
 let sendAllData = true;
@@ -90,8 +85,6 @@ const settingsPoll = () => {
         response.text().then(statusreply => {
           console.log("fetched settings from API");
           let obj = JSON.parse(statusreply);
-          console.log("1:" + JSON.stringify(obj.settings.units));
-          console.log("2:" + JSON.stringify(obj.settings.thresholds));
           buildSettings(statusreply);
         })
           .catch(responseParsingError => {
@@ -123,7 +116,7 @@ function buildSettings(settings) {
   bgDataUnits =  obj.settings.units;
   const messageContent = {"settings": [
     {
-//      "bgDataUnits" : bgDataUnits,
+      "bgDataUnits" : bgDataUnits,
 //      "bgTargetTop" : bgTargetTop,
 //      "bgTargetBottom" : bgTargetBottom,
       "bgHighLevel" : bgHighLevel,
@@ -166,7 +159,7 @@ function buildGraphData(data) {
       }
       points[graphpointindex] = obj[indexarray[index]['key']].sgv;
       graphpointindex++;
-      if (obj[indexarray[index]['key']]['_id'].date > lastTimestamp) {
+      if (obj[indexarray[index]['key']].date > lastTimestamp) {
         lastTimestamp = obj[indexarray[index]['key']].date;
         bgTrend = obj[indexarray[index]['key']].direction;
       }
@@ -174,7 +167,7 @@ function buildGraphData(data) {
   }
   console.log("GraphData:" + points);
   const messageContent = {"bgdata" : [
-    {"graphdata" : points, "lastPollTime" : lastTimestamp, "currentTrend" : bgTrend}
+    {"graphData" : points, "lastPollTime" : lastTimestamp, "currentTrend" : bgTrend}
   ]};
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
@@ -264,7 +257,7 @@ settingsStorage.onchange = function(evt) {
 /*
   Workflow thoughts:
   -Done: Grab configured high and low and units from endpoints in XDrip/Nightscout to be used to set the graph lines as well as for triggering vibe alerts.
-  - Currently debugging: Grab JSON response from defined data source URL saved in settings (likely http://127.0.0.1:17850/sgv.json).
+  - Currently debugging: Grab JSON response from defined data source URL saved in settings (likely http://127.0.0.1:7850/sgv.json).
   
   Messages:
   1)array of data points for graph (24 BG values in mg units), along with trend at most recent value along with its timestamp
@@ -285,4 +278,4 @@ settingsStorage.onchange = function(evt) {
   Of course I say all the above now based on my trying to incorporate user-activity into the companion app and it doesn't seem to work that way so rather than a single web transaction to update Xdrip and get BG values we instead do it in two steps.
 */
 
-setInterval(dataPoll, 150000); // Run every 2.5 min.
+setInterval(dataPoll, 75000); // Run every 2.5 min.
