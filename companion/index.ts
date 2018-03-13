@@ -6,7 +6,7 @@ import { settingsStorage } from "settings";
 import * as messaging from "messaging";
 
 
-let url = JSON.parse(settingsStorage.getItem("restURL")).name;
+let dataUrl = JSON.parse(settingsStorage.getItem("restURL")).name;
 let settingsUrl = JSON.parse(settingsStorage.getItem("restURL")).name;
 
 let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
@@ -17,6 +17,7 @@ var bgHighLevel = 0;
 var bgLowLevel = 0;
 var bgTargetTop = 0;
 var bgTargetBottom = 0;
+let bgTrend = "Flat";
 
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 var currentTimestamp = Math.round(new Date().getTime()/1000);
@@ -32,50 +33,15 @@ messaging.peerSocket.close = () => {
 }
 
 const dataPoll = () => {
-  if(sendAllData) {
-      console.log("Grabbing Settings.")
-      settingsPoll();
-      sendAllData = false;
-  }
-  console.log("Open Data API CONNECTION")
-  console.log(url)
-  if(url) {
-    fetch(url,{
-      method: 'GET',
-      mode: 'cors',
-      headers: new Headers({
-        "Content-Type": 'application/json; charset=utf-8'
-      })
-    }).then(response => {
-        //debug logging console.log('Get Data From Phone');
-        response.text().then(data => {
-          //debug logging console.log('fetched Data from API');
-          //sendVal(data);
-          buildGraphData(data);
-        }).catch(responseParsingError => {
-          console.log("Response parsing error in data!");
-          console.log(responseParsingError.name);
-          console.log(responseParsingError.message);
-          console.log(responseParsingError.toString());
-          console.log(responseParsingError.stack);
-        });
-      }).catch(fetchError => {
-        console.log("Fetch error in data!");
-        console.log(fetchError.name);
-        console.log(fetchError.message);
-        console.log(fetchError.toString());
-        console.log(fetchError.stack);
-      })
-  } else {
-    console.log("no url stored in settings to use to get data.")
-  }
-}
-
-const settingsPoll = () => {
-  console.log("Open Settings API CONNECTION")
-  console.log(settingsUrl)
-  if(settingsUrl) {
-    fetch(settingsUrl,{
+  if (sendAllData) {
+    console.log("Grabbing Settings.");
+    settingsPoll();
+//    sendAllData = false;
+  } 
+ console.log('Open Data API CONNECTION');
+  console.log(dataUrl);
+  if(dataUrl) {
+    fetch(dataUrl,{
       method: 'GET',
       mode: 'cors',
       headers: new Headers({
@@ -83,49 +49,88 @@ const settingsPoll = () => {
       })
     })
       .then(response => {
-        //debug logging console.log('Get Settings From Phone');
-        response.text().then(settings => {
-          //debug logging console.log('fetched settings from API');
-          buildSettings(settings);
+        console.log('Get Data From Phone');
+        response.text().then(data => {
+          console.log('fetched Data from API');
+          let obj = JSON.parse(data);
+          buildGraphData(data);
         })
         .catch(responseParsingError => {
-          console.log("Response parsing error in settings!");
+          console.log("Response parsing error in data!");
           console.log(responseParsingError.name);
           console.log(responseParsingError.message);
           console.log(responseParsingError.toString());
           console.log(responseParsingError.stack);
         });
       }).catch(fetchError => {
-        console.log("Fetch error in settings!");
+        console.log("Fetch Error in data!");
         console.log(fetchError.name);
         console.log(fetchError.message);
         console.log(fetchError.toString());
         console.log(fetchError.stack);
       })
   } else {
-    console.log("no url stored in app settings to use to get settings.")
+    console.log('no url stored in settings to use to get data.');
+  }
+};
+
+const settingsPoll = () => {
+  console.log('Open Settings API CONNECTION');
+  console.log(settingsUrl);
+  if (settingsUrl) {
+    fetch(settingsUrl, {
+      method: 'GET',
+      mode: 'cors',
+      headers: new Headers({
+        "Content-Type": 'application/json; charset=utf-8',
+      }),
+    })
+      .then(response => {
+        console.log('Get Settings From Phone');
+        response.text().then(statusreply => {
+          console.log("fetched settings from API");
+          let obj = JSON.parse(statusreply);
+          console.log("1:" + JSON.stringify(obj.settings.units));
+          console.log("2:" + JSON.stringify(obj.settings.thresholds));
+          buildSettings(statusreply);
+        })
+          .catch(responseParsingError => {
+            console.log('Response parsing error in settings!');
+            console.log(responseParsingError.name);
+            console.log(responseParsingError.message);
+            console.log(responseParsingError.toString());
+            console.log(responseParsingError.stack);
+          });
+      }).catch(fetchError => {
+        console.log('Fetch error in settings!');
+        console.log(fetchError.name);
+        console.log(fetchError.message);
+        console.log(fetchError.toString());
+        console.log(fetchError.stack);
+      });
+  } else {
+    console.log("no url stored in app settings to use to get settings.");
   }
 };
 
 function buildSettings(settings) {
-  //Need to setup High line, Low Line, Units.
-  // @ts-ignore
-  bgHighLevel = JSON.parse(settings[thresholds.bgHigh]);
-  // @ts-ignore
-  bgLowLevel =  JSON.parse(settings[thresholds.bgLow]);
-//  bgTargetTop =  JSON.parse(settings[thresholds.bgTargetTop]);
-//  bgTargetBottom =  JSON.parse(settings[thresholds.bgTargetBottom]);
-  // @ts-ignore
-  bgDataUnits =  JSON.parse(settings[thresholds.bgHigh]);
-  var messageContent = {"settings": [
+  // Need to setup High line, Low Line, Units.
+  const obj = JSON.parse(settings);
+  bgHighLevel = obj.settings.thresholds.bgHigh;
+  bgLowLevel =  obj.settings.thresholds.bgLow;
+//  bgTargetTop =  obj.thresholds.bgTargetTop;
+//  bgTargetBottom =  obj.thresholds.bgTargetBottom;
+  bgDataUnits =  obj.settings.units;
+  const messageContent = {"settings": [
     {
-      "bgDataUnits" : bgDataUnits, 
-//      "bgTargetTop" : bgTargetTop, 
-//      "bgTargetBottom" : bgTargetBottom, 
-      "bgHighLevel" : bgHighLevel, 
-      "bgLowLevel" : bgLowLevel}
-    ] //end of settings array
-  } //end of messageContent
+//      "bgDataUnits" : bgDataUnits,
+//      "bgTargetTop" : bgTargetTop,
+//      "bgTargetBottom" : bgTargetBottom,
+      "bgHighLevel" : bgHighLevel,
+      "bgLowLevel" : bgLowLevel
+    },
+  ], // end of settings array
+}; // end of messageContent
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
@@ -134,27 +139,43 @@ function buildSettings(settings) {
 function buildGraphData(data) {
   // Take the data in, move a step at a time from most recent back.
   // look at timestamps to determine if a missed poll happened and make that graph point disappear.
-  let graphpointindex = 23;
+  let obj = JSON.parse(data);
+  let graphpointindex = 0;
   lastTimestamp = 0;
-  for (let index = 0; index <= 23; index++) {
-    if (index===0) {
-      bgDataUnits = JSON.parse(data[0].units_hint);
-    }
-    if (graphpointindex >= 0) {
-      while ((currentTimestamp - JSON.parse(data[index].date)) >= 300) {
+  var indexarray = [];
+
+  // build the index
+  for (var x in obj) {
+     indexarray.push({ 'key': x, '_id': obj[x]['_id'] });
+  }
+
+  // sort the index
+  indexarray.sort(function (a, b) { 
+     var as = a['_id'], 
+         bs = b['_id']; 
+
+     return as == bs ? 0 : (as > bs ? 1 : -1); 
+  }); 
+
+  for (let index = 0; index < indexarray.length; index++) {
+    if (graphpointindex <= 23) {
+      while ((currentTimestamp - obj[indexarray[index]['key']].date) >= 300) {
         points[graphpointindex] = -10;
         currentTimestamp = currentTimestamp - 300;
-        graphpointindex--;
+        graphpointindex++;
       }
-      points[graphpointindex] = JSON.parse(data[index].sgv);
-      graphpointindex--;
-      if (JSON.parse(data[index].date) > lastTimestamp) {
-        lastTimestamp = JSON.parse(data[index].date);
+      points[graphpointindex] = obj[indexarray[index]['key']].sgv;
+      graphpointindex++;
+      if (obj[indexarray[index]['key']]['_id'].date > lastTimestamp) {
+        lastTimestamp = obj[indexarray[index]['key']].date;
+        bgTrend = obj[indexarray[index]['key']].direction;
       }
     }
   }
-  console.log("GraphData:"+points);
-  var messageContent = {"bgdata" : points};
+  console.log("GraphData:" + points);
+  const messageContent = {"bgdata" : [
+    {"graphdata" : points, "lastPollTime" : lastTimestamp, "currentTrend" : bgTrend}
+  ]};
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
@@ -201,7 +222,7 @@ function restoreSettings() {
       if(key === "dataSourceURL") {
         console.log('dataSourceURL');
         console.log(JSON.parse(settingsStorage.getItem(key)).name);
-        url = JSON.parse(settingsStorage.getItem(key)).name;
+        dataUrl = JSON.parse(settingsStorage.getItem(key)).name;
       }else if(key === "settingsSourceURL") {
         console.log('settingsUrl');
         console.log(JSON.parse(settingsStorage.getItem(key)).name);

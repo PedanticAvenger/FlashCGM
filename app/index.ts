@@ -318,11 +318,12 @@ function updategraph(displayData){
 }
 
 function updateSettings(settings) {
-  let prefBgUnits = JSON.parse(settings).bgDataUnits;
-//  let prefHighTarget = JSON.parse(settings).bgTargetTop;
-//  let prefLowTarget = JSON.parse(settings).bgTargetBottom;
-  let prefHighLevel = JSON.parse(settings).bgHighLevel;
-  let prefLowLevel = JSON.parse(settings).bgLowLevel;
+  let obj = JSON.parse(settings);
+  let prefBgUnits = obj.settings.bgDataUnits;
+//  let prefHighTarget = obj.settings.bgTargetTop;
+//  let prefLowTarget = obj.settings.bgTargetBottom;
+  let prefHighLevel = obj.settings.bgHighLevel;
+  let prefLowLevel = obj.settings.bgLowLevel;
 
   myBGUnits.text = prefBgUnits;
 }
@@ -334,7 +335,7 @@ Wondering if HR and Steps should be triggered by updateClock() or by activity in
 messaging.peerSocket.onmessage = function(evt) {
   console.log("device got: " + evt.data);
 
-  if (evt.hasOwnProperty('setings')) {
+  if (evt.hasOwnProperty('settings')) {
     updateSettings(evt.data)
   } else if (evt.hasOwnProperty('bgdata')) {
     updategraph(evt.data);
