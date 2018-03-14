@@ -286,19 +286,20 @@ function updateAxisUnits(units) {
   }
 }
 
-function updategraph(displayData){
+function updategraph(points, trend, lastPollTime) {
+//  console.log("Variable Type: " + typeof messageData);
   /*
     Before recode this only built the graph points.
     Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
   */
   let graphPoints = graph.getElementsByClassName('graph-point');
-  console.log("In updategraph: " + JSON.stringify(displayData));
+//  console.log("In updategraph: " + JSON.stringify(displayData));
 //  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
- 
-  var points = displayData.graphData;
-  var trend = displayData.currentTrend;
-  var lastPollTime = displayData.lastPollTime;
-  console.log("Points Array: " + JSON.stringify(points));
+//  var points = messageData.bgdata.graphData;
+//  var trend = messageData.bgdata.currentTrend;
+//  var lastPollTime = messageData.bgdata.lastPollTime;
+//  console.log(typeof messageData.bgdata.graphData);
+  console.log("Points Array: " + points);
   console.log("Trend: " + trend);
   console.log("Last Poll Time: " + lastPollTime);
 
@@ -334,12 +335,16 @@ Alright, need to update message handling to send back current steps and heartrat
 Wondering if HR and Steps should be triggered by updateClock() or by activity in updateBGStats().
 */
 messaging.peerSocket.onmessage = function(evt) {
+
   if (evt.data.hasOwnProperty("settings")) {
     console.log("Triggered a settings update.");
     updateSettings(evt.data)
   } else if (evt.data.hasOwnProperty("bgdata")) {
     console.log("Triggered a data update. " + JSON.stringify(evt.data));
-    updategraph(evt.data.bgdata);
+    const graphData = evt.data.bgdata;
+    console.log("Is it a string?:" + graphData);
+    console.log("Stringify:" + JSON.stringify(graphData));
+    updategraph(evt.data.bgdata.graphData, evt.data.bgdata.currentTrend, evt.data.bgdata.lastPollTime);
   } else if (evt.hasOwnProperty("theme")) {
     console.log("Triggered a theme update.");
 //This theme stuff needs a re-do, don't forget!

@@ -165,10 +165,16 @@ function buildGraphData(data) {
       }
     }
   }
-  console.log("GraphData:" + points);
+//  console.log("GraphData:" + points);
   const messageContent = {"bgdata" : [
-    {"graphData" : points, "lastPollTime" : lastTimestamp, "currentTrend" : bgTrend}
+    {
+      "graphData": points, 
+      "lastPollTime": lastTimestamp, 
+      "currentTrend": bgTrend
+    }
   ]};
+  console.log("CompanionData:" + messageContent);
+  console.log("CompanionString:" + JSON.stringify(messageContent));
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
