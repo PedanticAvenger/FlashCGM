@@ -50,6 +50,7 @@ const activeGoal = userActivity.goals.activeMinutes;
 // Get a handle on the <text> element
 let myClock = document.getElementById("myLabel");
 let myDate = document.getElementById("myDate");
+
 //Inserted for main screen CGM Data
 let myCurrentBG = document.getElementById("myCurrentBG");
 let myBGUnits = document.getElementById("myBGUnits");
@@ -62,6 +63,9 @@ let bgCount = 24;
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
 let prefBgUnits = "mg";
+var d = new Date();
+var currSeconds = Math.round(d.getTime() / 1000);
+
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -93,6 +97,8 @@ function mmol( bg ) {
   let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
   return mmolBG;
 }
+
+
 
 //functions for screen switching
 function showMainScreen() {
@@ -197,7 +203,7 @@ function updateClock() {
 }
 
 
-//Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.
+
 function updateBGTrend(Trend) {
   console.log('In Trend update - ' + Trend);
   if (Trend === "DoubleUp") {
@@ -240,7 +246,20 @@ function updateBGPollingStatus() {
   */
   //This angle updates in 72 degree increments per minute to fill ring in 5 min.
   myBGUpdateArc.sweepAngle = 72;
+  var timeCheck = currSeconds - lastValueTimestamp;
+  if (0 <= timeCheck < 60) {
 
+  }else if (60 <= timeCheck < 120) {
+
+  }else if (120 <= timeCheck < 180) {
+
+  }else if (180 <= timeCheck < 240) {
+
+  }else if (240 <= timeCheck < 300) {
+
+  }else if (300 <= timeCheck) {
+
+  }
   //myBGUpdateArc.fill should be green for the first minute, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
   myBGUpdateArc.fill = "#7CFC00";
   //myBGUpdateArcBackground.fill should be grey for the first minute, green for the second, yellow for the third then just red or set sweep angle to 0
@@ -248,6 +267,7 @@ function updateBGPollingStatus() {
   //I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
   myMissedBGPollCounter = 0;
 }
+
 // Update the clock every tick event
 clock.ontick = () => updateClock();
 

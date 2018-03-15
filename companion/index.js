@@ -213,9 +213,9 @@ function sleep(ms) {
 }
 
 async function initialSetup() {
-  console.log('Taking a break...');
+  console.log("Waiting 5 seconds to send data to watch.");
   await sleep(5000);
-  console.log('5 second later');
+  console.log("Process triggered");
   processDisplayData();
 }
 
