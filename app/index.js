@@ -299,9 +299,6 @@ function updategraph(points, trend, lastPollTime) {
 //  var trend = messageData.bgdata.currentTrend;
 //  var lastPollTime = messageData.bgdata.lastPollTime;
 //  console.log(typeof messageData.bgdata.graphData);
-  console.log("Points Array: " + points);
-  console.log("Trend: " + trend);
-  console.log("Last Poll Time: " + lastPollTime);
 
   if(prefBgUnits === "mg") {
     myCurrentBG.text = points[23];
@@ -321,7 +318,7 @@ function updategraph(points, trend, lastPollTime) {
 
 function updateSettings(settings) {
 //  console.log("Whatsettings:" + JSON.stringify(settings));
-  let prefBgUnits = settings.settings.bgDataUnits;
+  prefBgUnits = settings.settings.bgDataUnits;
 //  let prefHighTarget = obj.settings.bgTargetTop;
 //  let prefLowTarget = obj.settings.bgTargetBottom;
   let prefHighLevel = settings.settings.bgHighLevel;
@@ -341,9 +338,6 @@ messaging.peerSocket.onmessage = function(evt) {
     updateSettings(evt.data)
   } else if (evt.data.hasOwnProperty("bgdata")) {
     console.log("Triggered a data update. " + JSON.stringify(evt.data));
-    const graphData = evt.data.bgdata;
-    console.log("Is it a string?:" + graphData);
-    console.log("Stringify:" + JSON.stringify(graphData));
     updategraph(evt.data.bgdata.graphData, evt.data.bgdata.currentTrend, evt.data.bgdata.lastPollTime);
   } else if (evt.hasOwnProperty("theme")) {
     console.log("Triggered a theme update.");

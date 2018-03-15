@@ -5,7 +5,7 @@ let dataUrl = JSON.parse(settingsStorage.getItem("dataSourceURL")).name;
 let settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
 
 let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
-let sendAllData = true;
+let sendSettings = true;
 
 var bgDataUnits = "mg";
 var bgHighLevel = 0;
@@ -28,11 +28,7 @@ messaging.peerSocket.close = () => {
 }
 
 const dataPoll = () => {
-  if (sendAllData) {
-    console.log("Grabbing Settings.");
-    settingsPoll();
-//    sendAllData = false;
-  } 
+  
  console.log('Open Data API CONNECTION');
   console.log(dataUrl);
   if(dataUrl) {
@@ -114,15 +110,13 @@ function buildSettings(settings) {
 //  bgTargetTop =  obj.thresholds.bgTargetTop;
 //  bgTargetBottom =  obj.thresholds.bgTargetBottom;
   bgDataUnits =  obj.settings.units;
-  const messageContent = {"settings": [
-    {
+  const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
 //      "bgTargetTop" : bgTargetTop,
 //      "bgTargetBottom" : bgTargetBottom,
       "bgHighLevel" : bgHighLevel,
       "bgLowLevel" : bgLowLevel
     },
-  ], // end of settings array
 }; // end of messageContent
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
@@ -166,15 +160,13 @@ function buildGraphData(data) {
     }
   }
 //  console.log("GraphData:" + points);
-  const messageContent = {"bgdata" : [
-    {
+  const messageContent = {"bgdata" : {
       "graphData": points, 
       "lastPollTime": lastTimestamp, 
       "currentTrend": bgTrend
     }
-  ]};
-  console.log("CompanionData:" + messageContent);
-  console.log("CompanionString:" + JSON.stringify(messageContent));
+  };
+//  console.log("CompanionString:" + JSON.stringify(messageContent));
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
@@ -234,6 +226,16 @@ function restoreSettings() {
   }
 }
 
+function processDisplayData () {
+  if (sendSettings) {
+    console.log("Grabbing Settings.");
+    settingsPoll();
+    sendSettings = false;
+  } 
+  dataPoll()
+  
+}
+
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
 // After using until March 6, decided to move all processing here and make watch display/trigger.
@@ -283,5 +285,5 @@ settingsStorage.onchange = function(evt) {
   Possible mis-alignment of data points with the timing here but in all honesty we are talking about an interval so small it really doesn't matter I think.
   Of course I say all the above now based on my trying to incorporate user-activity into the companion app and it doesn't seem to work that way so rather than a single web transaction to update Xdrip and get BG values we instead do it in two steps.
 */
-
-setInterval(dataPoll, 75000); // Run every 2.5 min.
+processDisplayData();
+setInterval(processDisplayData, 150000); // Run every 2.5 min.
