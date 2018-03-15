@@ -80,7 +80,6 @@ const settingsPoll = () => {
         console.log('Get Settings From Phone');
         response.text().then(statusreply => {
           console.log("fetched settings from API");
-          let obj = JSON.parse(statusreply);
           buildSettings(statusreply);
         })
           .catch(responseParsingError => {
@@ -104,9 +103,11 @@ const settingsPoll = () => {
 
 function buildSettings(settings) {
   // Need to setup High line, Low Line, Units.
-  const obj = JSON.parse(settings);
-  bgHighLevel = obj.settings.thresholds.bgHigh;
-  bgLowLevel =  obj.settings.thresholds.bgLow;
+  var obj = JSON.parse(settings);
+  console.log(JSON.stringify(obj));
+  bgHighLevel = obj.thresholds.bgHigh;
+  console.log()
+  bgLowLevel =  obj.thresholds.bgLow;
 //  bgTargetTop =  obj.thresholds.bgTargetTop;
 //  bgTargetBottom =  obj.thresholds.bgTargetBottom;
   bgDataUnits =  obj.settings.units;
@@ -133,13 +134,13 @@ function buildGraphData(data) {
 
   // build the index
   for (var x in obj) {
-     indexarray.push({ 'key': x, '_id': obj[x]['_id'] });
+     indexarray.push({ 'key': x, 'date': obj[x]['date'] });
   }
 
   // sort the index
   indexarray.sort(function (a, b) { 
-     var as = a['_id'], 
-         bs = b['_id']; 
+     var as = a['date'], 
+         bs = b['date']; 
 
      return as == bs ? 0 : (as > bs ? 1 : -1); 
   }); 
@@ -172,34 +173,6 @@ function buildGraphData(data) {
   }
 }
 
-function sendVal(data) {
-  //Looking to deprecate this function completely in favor of buildSettings/buildGraphData/buildTheme.....;
-
-    // send BG Data type first
-    messaging.peerSocket.send('{"units":'+bgDataType+'}');
-
-    //Can't we just send the full data point array to the watch in a single message?
-    //And set the numbers to the correct units first?
-  if(sendAllData) {
-    for(let index = 23; index >= 0; index--) {
-
-      if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-          //debug logging console.log('Sending Values - '+JSON.parse(data)[index]);
-          messaging.peerSocket.send(JSON.parse(data)[index]);
-      }
-
-    }
-      sendAllData = false;
-
-  } else {
-        if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-            messaging.peerSocket.send(JSON.parse(data)[0]);
-        }
-  }
-
-}
-
-
 function restoreSettings() {
   for (let index = 0; index < settingsStorage.length; index++) {
 
@@ -230,11 +203,23 @@ function processDisplayData () {
   if (sendSettings) {
     console.log("Grabbing Settings.");
     settingsPoll();
-    sendSettings = false;
+//    sendSettings = false;
   } 
   dataPoll()
   
 }
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function initialSetup() {
+  console.log('Taking a break...');
+  await sleep(5000);
+  console.log('5 second later');
+  processDisplayData();
+}
+
+
 
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
@@ -285,5 +270,5 @@ settingsStorage.onchange = function(evt) {
   Possible mis-alignment of data points with the timing here but in all honesty we are talking about an interval so small it really doesn't matter I think.
   Of course I say all the above now based on my trying to incorporate user-activity into the companion app and it doesn't seem to work that way so rather than a single web transaction to update Xdrip and get BG values we instead do it in two steps.
 */
-processDisplayData();
+initialSetup();
 setInterval(processDisplayData, 150000); // Run every 2.5 min.
