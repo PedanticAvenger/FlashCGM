@@ -1,10 +1,19 @@
+//Working on all code using VS Code, @ts-X codes below are for that.
+//@ts-ignore
 import clock from "clock";
+//@ts-ignore
 import document from "document";
+//@ts-ignore
 import userActivity from "user-activity";
+//@ts-ignore
 import { HeartRateSensor } from "heart-rate";
+//@ts-ignore
 import { locale } from "user-settings";
+//@ts-ignore
 import { preferences } from "user-settings";
+//@ts-ignore
 import * as messaging from "messaging";
+//@ts-ignore
 import * as fs from "fs";
 import * as util from "../common/utils";
 
@@ -49,12 +58,10 @@ let myBGUpdateArcBackground = document.getElementById("myBGUpdateArcBackground")
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrendBackground = document.getElementById("myBGTrendBackground");
 let myBGTrendPointer = document.getElementById("myBGTrendPointer");
-var bgCount = 24;
-var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
-let bgType=true;
-let graphData = document.getElementById("myCurrentBG");
+let bgCount = 24;
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
+let prefBgUnits = "mg";
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -80,6 +87,11 @@ function applyTheme(background, foreground) {
   myDate.style.fill = foreground;
   upperLine.style.fill = foreground;
   bottomLine.style.fill = foreground;
+}
+
+function mmol( bg ) {
+  let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
+  return mmolBG;
 }
 
 //functions for screen switching
@@ -132,7 +144,6 @@ function updateStats() {
   calRing.sweepAngle = calAngle;
 }
 
-
 var hrm = new HeartRateSensor();
 
 hrm.onreading = function () {
@@ -156,7 +167,8 @@ function updateClock() {
   let wday = today.getDay();
   let month = util.zeroPad(today.getMonth()+1);
   let year = today.getFullYear();
-  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
+//  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
+  let hours = util.formatHour(today.getHours(), clockPref);
   let mins = util.zeroPad(today.getMinutes());
   let prefix = lang.substring(0,2);
   if ( typeof util.weekday[prefix] === 'undefined' ) {
@@ -184,19 +196,6 @@ function updateClock() {
   }
 }
 
-
-function updateBGStats(bgValue, units, pollcounter, trend) {
-  /* Stuff my BG info update stuff here, I know it may have to move but good for layout know
-  Also, my JS sucks, ;)  people welcome to refactor.
-  BG Text comes from API call, as does BGUnits.  MissedBGPollCounter is a calculation based on the timestamp of last-good poll as indicated from the API call.  For ease at this point I suggest assuming the clock on the data source and the watch are in sync.
-  Not sure if myCurrentBGTrend - currently static "FortyFiceUp" and lastGoodPollTimestamp should be passed into this function or not.. */
-   console.log("Stats Update Call: " + bgValue + " " + units + " " + pollcounter + " " + trend);
-   myCurrentBG.text = bgValue;
-   myBGUnits.text = units;
-   myMissedBGPollCounter.text = pollcounter;
-   updateBGTrend(trend);
-   //updateBGPollingStatus(lastGoodPollTimestamp);
-}
 
 //Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.
 function updateBGTrend(Trend) {
@@ -255,6 +254,7 @@ clock.ontick = () => updateClock();
 // Don't start with a blank screen
 applyTheme(backgdcol, foregdcol);
 updateClock();
+
 messaging.peerSocket.onopen = () => {
   console.log("App Socket Open");
 }
@@ -263,12 +263,9 @@ messaging.peerSocket.close = () => {
   console.log("App Socket Closed");
 }
 
-function mmol( bg ) {
-    let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
-  return mmolBG;
-}
 
 function updateAxisUnits(units) {
+  // This needs to be integrated into an autoscaling graph function(s)  static is no good
   let labels = axis.getElementsByClassName('graph-data-range');
   if (units === "mg") {
     labels[0].text = "200";
@@ -289,76 +286,67 @@ function updateAxisUnits(units) {
   }
 }
 
-function updategraph(graphPointData, trend){
+function updategraph(data) {
+//  console.log("Variable Type: " + typeof messageData);
+  /*
+    Before recode this only built the graph points.
+    Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
+  */
   let graphPoints = graph.getElementsByClassName('graph-point');
-  console.log('updategraph')
-  console.log('graphPoint - ' + JSON.stringify(graphPointData))
-  console.log('Trend - ' + JSON.stringify(trend))
+//  console.log("In updategraph: " + JSON.stringify(displayData));
+//  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
+//  var points = messageData.bgdata.graphData;
+//  var trend = messageData.bgdata.currentTrend;
+//  var lastPollTime = messageData.bgdata.lastPollTime;
+//  console.log(typeof messageData.bgdata.graphData);
+  var points = data.bgdata.graphData;
+  var trend = data.bgdata.currentTrend;
+  var lastPollTime = data.bgdata.lastPollTime;
 
-  if(bgType) {
-    graphData.text = graphPointData;
-    updateBGStats(graphPointData, "mg", 0, trend);
+  if(prefBgUnits === "mg") {
+    myCurrentBG.text = points[23];
     updateAxisUnits("mg");
-  } else {
-    graphData.text = mmol(graphPointData);
-    updateBGStats(mmol(graphPointData), "mmol", 0, trend)
+  } else if (prefBgUnits === "mmol") {
+    myCurrentBG.text = mmol(points[23]);
     updateAxisUnits("mmol")
   }
+  updateBGTrend(trend);
 
-  if (graphPointData) {
-    points.push(graphPointData);
+  for (let index = 0; index <= 23; index++) {
+    let pointsIndex = 23 - index;
+    graphPoints[index].cy = (250 - points[pointsIndex]) + 10;
   }
- console.log(typeof graphPoints[0]);
-  graphPoints[0].cy = (250 - points[23]);
-  graphPoints[1].cy = (250 - points[22]);
-  graphPoints[2].cy = (250 - points[21]);
-  graphPoints[3].cy = (250 - points[20]);
-  graphPoints[4].cy = (250 - points[19]);
-  graphPoints[5].cy = (250 - points[18]);
-  graphPoints[6].cy = (250 - points[17]);
-  graphPoints[7].cy = (250 - points[16]);
-  graphPoints[8].cy = (250 - points[15]);
-  graphPoints[9].cy = (250 - points[14]);
-  graphPoints[10].cy = (250 - points[13]);
-  graphPoints[11].cy = (250 - points[12]);
-  graphPoints[12].cy = (250 - points[11]);
-  graphPoints[13].cy = (250 - points[10]);
-  graphPoints[14].cy = (250 - points[9]);
-  graphPoints[15].cy = (250 - points[8]);
-  graphPoints[16].cy = (250 - points[7]);
-  graphPoints[17].cy = (250 - points[6]);
-  graphPoints[18].cy = (250 - points[5]);
-  graphPoints[19].cy = (250 - points[4]);
-  graphPoints[20].cy = (250 - points[3]);
-  graphPoints[21].cy = (250 - points[2]);
-  graphPoints[22].cy = (250 - points[1]);
-  graphPoints[23].cy = (250 - points[0]);
- 
-  if (graphPointData) {
-    points.shift();
-    console.log(JSON.stringify(points));
-  }
-  //totalSeconds = 0;
-  //removed Rytiggy polling timer function, something needs to go back in here.
 
 }
 
+function updateSettings(settings) {
+//  console.log("Whatsettings:" + JSON.stringify(settings));
+  prefBgUnits = settings.settings.bgDataUnits;
+//  let prefHighTarget = obj.settings.bgTargetTop;
+//  let prefLowTarget = obj.settings.bgTargetBottom;
+  let prefHighLevel = settings.settings.bgHighLevel;
+  let prefLowLevel = settings.settings.bgLowLevel;
 
+  myBGUnits.text = prefBgUnits;
+}
 // Listen for the onmessage event
 /*
-Alright, need to update message handling to look for incoming BG info from the companion as well as send back current steps and heartrate.
+Alright, need to update message handling to send back current steps and heartrate.
 Wondering if HR and Steps should be triggered by updateClock() or by activity in updateBGStats().
 */
 messaging.peerSocket.onmessage = function(evt) {
-  console.log("device got: " + evt.data);
-  //Ok, below has to come back.  We need to examine incoming messages and branch off actions appropriately.
-  //We could be setting watch theme, BG display color, sending BG data, setting units, etc.
-  //applyTheme(evt.data.background, evt.data.foreground);
-  //let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
-  //fs.writeFileSync("theme.txt", json_theme, "json");
-   try { bgType = JSON.parse(evt.data).units; } catch(error) { console.log(error); }
-  console.log("BGVal-" + evt.data.sgv);
-  console.log("Trend-" + evt.data.direction);
-  updategraph(evt.data.sgv, evt.data.direction, evt.data.date);
 
+  if (evt.data.hasOwnProperty("settings")) {
+    console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
+    updateSettings(evt.data)
+  } else if (evt.data.hasOwnProperty("bgdata")) {
+    console.log("Triggered watch data update: " + JSON.stringify(evt.data));
+    updategraph(evt.data);
+  } else if (evt.hasOwnProperty("theme")) {
+    console.log("Triggered a theme update.");
+//This theme stuff needs a re-do, don't forget!
+    applyTheme(evt.data.background, evt.data.foreground);
+    let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
+    fs.writeFileSync("theme.txt", json_theme, "json");
+  }
 }
