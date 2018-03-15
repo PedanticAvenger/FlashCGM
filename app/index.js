@@ -286,7 +286,7 @@ function updateAxisUnits(units) {
   }
 }
 
-function updategraph(points, trend, lastPollTime) {
+function updategraph(data) {
 //  console.log("Variable Type: " + typeof messageData);
   /*
     Before recode this only built the graph points.
@@ -299,6 +299,9 @@ function updategraph(points, trend, lastPollTime) {
 //  var trend = messageData.bgdata.currentTrend;
 //  var lastPollTime = messageData.bgdata.lastPollTime;
 //  console.log(typeof messageData.bgdata.graphData);
+  var points = data.bgdata.graphData;
+  var trend = data.bgdata.currentTrend;
+  var lastPollTime = data.bgdata.lastPollTime;
 
   if(prefBgUnits === "mg") {
     myCurrentBG.text = points[23];
@@ -334,11 +337,11 @@ Wondering if HR and Steps should be triggered by updateClock() or by activity in
 messaging.peerSocket.onmessage = function(evt) {
 
   if (evt.data.hasOwnProperty("settings")) {
-    console.log("Triggered a settings update.");
+    console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
     updateSettings(evt.data)
   } else if (evt.data.hasOwnProperty("bgdata")) {
-    console.log("Triggered a data update. " + JSON.stringify(evt.data));
-    updategraph(evt.data.bgdata.graphData, evt.data.bgdata.currentTrend, evt.data.bgdata.lastPollTime);
+    console.log("Triggered watch data update: " + JSON.stringify(evt.data));
+    updategraph(evt.data);
   } else if (evt.hasOwnProperty("theme")) {
     console.log("Triggered a theme update.");
 //This theme stuff needs a re-do, don't forget!
