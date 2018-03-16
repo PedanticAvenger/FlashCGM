@@ -129,7 +129,7 @@ function buildGraphData(data) {
   // look at timestamps to determine if a missed poll happened and make that graph point disappear.
   let obj = JSON.parse(data);
   let graphpointindex = 0;
-  lastTimestamp = 0;
+  lastTimestamp = new Date().getTime();
   var indexarray = [];
 
   // build the index
@@ -142,23 +142,27 @@ function buildGraphData(data) {
      var as = a['date'], 
          bs = b['date']; 
 
-     return as == bs ? 0 : (as > bs ? 1 : -1); 
+     return as == bs ? 0 : (as < bs ? 1 : -1); 
   }); 
-
-  for (let index = 0; index < indexarray.length; index++) {
-    if (graphpointindex <= 23) {
-      while ((currentTimestamp - obj[indexarray[index]['key']].date) >= 300) {
-        points[graphpointindex] = -10;
-        currentTimestamp = currentTimestamp - 300;
+ 
+  let index = 0;
+  for (graphpointindex = 0; graphpointindex <= 23; graphpointindex++) {
+    if (index < indexarray.length) {
+      while (((lastTimestamp - obj[indexarray[index]['key']].date) >= 301000) && (graphpointindex <= 23)) {
+        points[graphpointindex] = undefined;
+        console.log("Added a void to points array at " + graphpointindex);
+        lastTimestamp = lastTimestamp - 300000;
         graphpointindex++;
       }
       points[graphpointindex] = obj[indexarray[index]['key']].sgv;
-      graphpointindex++;
-      if (obj[indexarray[index]['key']].date > lastTimestamp) {
-        lastTimestamp = obj[indexarray[index]['key']].date;
-        bgTrend = obj[indexarray[index]['key']].direction;
-      }
+      lastTimestamp = obj[indexarray[index]['key']].date;
+      console.log("Added a number to points array at " + graphpointindex);
     }
+    if (obj[indexarray[index]['key']].date > lastTimestamp) {
+      lastTimestamp = obj[indexarray[index]['key']].date;
+      bgTrend = obj[indexarray[index]['key']].direction;
+    }
+    index++
   }
 //  console.log("GraphData:" + points);
   const messageContent = {"bgdata" : {

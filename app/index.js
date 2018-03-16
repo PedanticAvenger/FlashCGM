@@ -307,37 +307,40 @@ function updateAxisUnits(units) {
 }
 
 function updategraph(data) {
-//  console.log("Variable Type: " + typeof messageData);
-  /*
-    Before recode this only built the graph points.
-    Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
-  */
-  let graphPoints = graph.getElementsByClassName('graph-point');
-//  console.log("In updategraph: " + JSON.stringify(displayData));
-//  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
-//  var points = messageData.bgdata.graphData;
-//  var trend = messageData.bgdata.currentTrend;
-//  var lastPollTime = messageData.bgdata.lastPollTime;
-//  console.log(typeof messageData.bgdata.graphData);
-  var points = data.bgdata.graphData;
-  var trend = data.bgdata.currentTrend;
-  var lastPollTime = data.bgdata.lastPollTime;
-
-  if(prefBgUnits === "mg") {
-    myCurrentBG.text = points[23];
-    updateAxisUnits("mg");
-  } else if (prefBgUnits === "mmol") {
-    myCurrentBG.text = mmol(points[23]);
-    updateAxisUnits("mmol")
+  //  console.log("Variable Type: " + typeof messageData);
+    /*
+      Before recode this only built the graph points.
+      Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
+    */
+    let graphPoints = graph.getElementsByClassName('graph-point');
+  //  console.log("In updategraph: " + JSON.stringify(displayData));
+  //  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
+  //  var points = messageData.bgdata.graphData;
+  //  var trend = messageData.bgdata.currentTrend;
+  //  var lastPollTime = messageData.bgdata.lastPollTime;
+  //  console.log(typeof messageData.bgdata.graphData);
+    var points = data.bgdata.graphData;
+    var trend = data.bgdata.currentTrend;
+    var lastPollTime = data.bgdata.lastPollTime;
+  
+    if(prefBgUnits === "mg") {
+      myCurrentBG.text = points[23];
+      updateAxisUnits("mg");
+    } else if (prefBgUnits === "mmol") {
+      myCurrentBG.text = mmol(points[23]);
+      updateAxisUnits("mmol")
+    }
+    updateBGTrend(trend);
+  
+    for (let index = 0; index <= 23; index++) {
+      let pointsIndex = 23 - index;
+      if (points[index] != undefined) {
+        graphPoints[index].cy = (250 - points[index]) + 10;
+      } else if (points[index] == undefined) {
+        graphPoints[index].cy = -10;
+      }
+    }
   }
-  updateBGTrend(trend);
-
-  for (let index = 0; index <= 23; index++) {
-    let pointsIndex = 23 - index;
-    graphPoints[index].cy = (250 - points[pointsIndex]) + 10;
-  }
-
-}
 
 function updateSettings(settings) {
 //  console.log("Whatsettings:" + JSON.stringify(settings));
