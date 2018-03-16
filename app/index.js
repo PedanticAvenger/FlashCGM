@@ -63,6 +63,9 @@ let bgCount = 24;
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
 let prefBgUnits = "mg";
+// The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
+let prefHighLevel = 200;
+let prefLowLevel = 70;
 var d = new Date();
 var currSeconds = Math.round(d.getTime() / 1000);
 
@@ -245,24 +248,46 @@ function updateBGPollingStatus() {
   with their phone updating nightscout.
   */
   //This angle updates in 72 degree increments per minute to fill ring in 5 min.
-  myBGUpdateArc.sweepAngle = 72;
+ 
   var timeCheck = currSeconds - lastValueTimestamp;
+  var sweepAngleBase = 72;
+  var newSweepAngle = 72;
+  var newArcFill = "#7CFC00";
+  var newArcBackgroundFill = "#333344";
   if (0 <= timeCheck < 60) {
-
+    newSweepAngle = 0;
   }else if (60 <= timeCheck < 120) {
-
+    myBGUpdateArc.sweepAngle = newSweepAngle*1;
+    newArcFill = "#7CFC00";
   }else if (120 <= timeCheck < 180) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*2;
+    newArcFill = "#7CFC00";
 
   }else if (180 <= timeCheck < 240) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*3;
+    newArcFill = "#7CFC00";
 
   }else if (240 <= timeCheck < 300) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*4;
+    newArcFill = "#7CFC00";
 
-  }else if (300 <= timeCheck) {
-
+  }else if (300 <= timeCheck < 600) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    newArcFill = "#ffd400";
+    newArcBackgroundFill = "#7CFC00";    
+  }else if (600 <= timeCheck < 900) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffd400";
+  }else if (900 <= timeCheck) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#fc0000";
   }
-  //myBGUpdateArc.fill should be green for the first minute, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
-  myBGUpdateArc.fill = "#7CFC00";
-  //myBGUpdateArcBackground.fill should be grey for the first minute, green for the second, yellow for the third then just red or set sweep angle to 0
+  myBGUpdateArc.sweepAngle = newSweepAngle;
+  //myBGUpdateArc.fill should be green for the first poll, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
+  myBGUpdateArc.fill = newArcFill;
+  //myBGUpdateArcBackground.fill should be grey for the first poll, green for the second, yellow for the third then just red or set sweep angle to 0
   myBGUpdateArcBackground.fill = "#333344";
   //I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
   myMissedBGPollCounter = 0;
@@ -344,8 +369,8 @@ function updateSettings(settings) {
   prefBgUnits = settings.settings.bgDataUnits;
 //  let prefHighTarget = obj.settings.bgTargetTop;
 //  let prefLowTarget = obj.settings.bgTargetBottom;
-  let prefHighLevel = settings.settings.bgHighLevel;
-  let prefLowLevel = settings.settings.bgLowLevel;
+  prefHighLevel = settings.settings.bgHighLevel;
+  prefLowLevel = settings.settings.bgLowLevel;
 
   myBGUnits.text = prefBgUnits;
 }
