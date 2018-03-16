@@ -50,6 +50,7 @@ const activeGoal = userActivity.goals.activeMinutes;
 // Get a handle on the <text> element
 let myClock = document.getElementById("myLabel");
 let myDate = document.getElementById("myDate");
+
 //Inserted for main screen CGM Data
 let myCurrentBG = document.getElementById("myCurrentBG");
 let myBGUnits = document.getElementById("myBGUnits");
@@ -62,6 +63,12 @@ let bgCount = 24;
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
 let prefBgUnits = "mg";
+// The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
+let prefHighLevel = 200;
+let prefLowLevel = 70;
+var d = new Date();
+var currSeconds = Math.round(d.getTime() / 1000);
+
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -93,6 +100,8 @@ function mmol( bg ) {
   let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
   return mmolBG;
 }
+
+
 
 //functions for screen switching
 function showMainScreen() {
@@ -197,7 +206,7 @@ function updateClock() {
 }
 
 
-//Define a function to set the right display on the trend arc, this is just brain dump, not clean code yet.
+
 function updateBGTrend(Trend) {
   console.log('In Trend update - ' + Trend);
   if (Trend === "DoubleUp") {
@@ -239,15 +248,51 @@ function updateBGPollingStatus() {
   with their phone updating nightscout.
   */
   //This angle updates in 72 degree increments per minute to fill ring in 5 min.
-  myBGUpdateArc.sweepAngle = 72;
+ 
+  var timeCheck = currSeconds - lastValueTimestamp;
+  var sweepAngleBase = 72;
+  var newSweepAngle = 72;
+  var newArcFill = "#7CFC00";
+  var newArcBackgroundFill = "#333344";
+  if (0 <= timeCheck < 60) {
+    newSweepAngle = 0;
+  }else if (60 <= timeCheck < 120) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*1;
+    newArcFill = "#7CFC00";
+  }else if (120 <= timeCheck < 180) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*2;
+    newArcFill = "#7CFC00";
 
-  //myBGUpdateArc.fill should be green for the first minute, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
-  myBGUpdateArc.fill = "#7CFC00";
-  //myBGUpdateArcBackground.fill should be grey for the first minute, green for the second, yellow for the third then just red or set sweep angle to 0
+  }else if (180 <= timeCheck < 240) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*3;
+    newArcFill = "#7CFC00";
+
+  }else if (240 <= timeCheck < 300) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*4;
+    newArcFill = "#7CFC00";
+
+  }else if (300 <= timeCheck < 600) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    newArcFill = "#ffd400";
+    newArcBackgroundFill = "#7CFC00";    
+  }else if (600 <= timeCheck < 900) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffd400";
+  }else if (900 <= timeCheck) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#fc0000";
+  }
+  myBGUpdateArc.sweepAngle = newSweepAngle;
+  //myBGUpdateArc.fill should be green for the first poll, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
+  myBGUpdateArc.fill = newArcFill;
+  //myBGUpdateArcBackground.fill should be grey for the first poll, green for the second, yellow for the third then just red or set sweep angle to 0
   myBGUpdateArcBackground.fill = "#333344";
   //I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
   myMissedBGPollCounter = 0;
 }
+
 // Update the clock every tick event
 clock.ontick = () => updateClock();
 
@@ -287,45 +332,48 @@ function updateAxisUnits(units) {
 }
 
 function updategraph(data) {
-//  console.log("Variable Type: " + typeof messageData);
-  /*
-    Before recode this only built the graph points.
-    Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
-  */
-  let graphPoints = graph.getElementsByClassName('graph-point');
-//  console.log("In updategraph: " + JSON.stringify(displayData));
-//  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
-//  var points = messageData.bgdata.graphData;
-//  var trend = messageData.bgdata.currentTrend;
-//  var lastPollTime = messageData.bgdata.lastPollTime;
-//  console.log(typeof messageData.bgdata.graphData);
-  var points = data.bgdata.graphData;
-  var trend = data.bgdata.currentTrend;
-  var lastPollTime = data.bgdata.lastPollTime;
-
-  if(prefBgUnits === "mg") {
-    myCurrentBG.text = points[23];
-    updateAxisUnits("mg");
-  } else if (prefBgUnits === "mmol") {
-    myCurrentBG.text = mmol(points[23]);
-    updateAxisUnits("mmol")
+  //  console.log("Variable Type: " + typeof messageData);
+    /*
+      Before recode this only built the graph points.
+      Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
+    */
+    let graphPoints = graph.getElementsByClassName('graph-point');
+  //  console.log("In updategraph: " + JSON.stringify(displayData));
+  //  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
+  //  var points = messageData.bgdata.graphData;
+  //  var trend = messageData.bgdata.currentTrend;
+  //  var lastPollTime = messageData.bgdata.lastPollTime;
+  //  console.log(typeof messageData.bgdata.graphData);
+    var points = data.bgdata.graphData;
+    var trend = data.bgdata.currentTrend;
+    var lastPollTime = data.bgdata.lastPollTime;
+  
+    if(prefBgUnits === "mg") {
+      myCurrentBG.text = points[23];
+      updateAxisUnits("mg");
+    } else if (prefBgUnits === "mmol") {
+      myCurrentBG.text = mmol(points[23]);
+      updateAxisUnits("mmol")
+    }
+    updateBGTrend(trend);
+  
+    for (let index = 0; index <= 23; index++) {
+      let pointsIndex = 23 - index;
+      if (points[index] != undefined) {
+        graphPoints[index].cy = (250 - points[index]) + 10;
+      } else if (points[index] == undefined) {
+        graphPoints[index].cy = -10;
+      }
+    }
   }
-  updateBGTrend(trend);
-
-  for (let index = 0; index <= 23; index++) {
-    let pointsIndex = 23 - index;
-    graphPoints[index].cy = (250 - points[pointsIndex]) + 10;
-  }
-
-}
 
 function updateSettings(settings) {
 //  console.log("Whatsettings:" + JSON.stringify(settings));
   prefBgUnits = settings.settings.bgDataUnits;
 //  let prefHighTarget = obj.settings.bgTargetTop;
 //  let prefLowTarget = obj.settings.bgTargetBottom;
-  let prefHighLevel = settings.settings.bgHighLevel;
-  let prefLowLevel = settings.settings.bgLowLevel;
+  prefHighLevel = settings.settings.bgHighLevel;
+  prefLowLevel = settings.settings.bgLowLevel;
 
   myBGUnits.text = prefBgUnits;
 }
