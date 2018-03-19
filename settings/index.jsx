@@ -70,7 +70,7 @@ function mySettings(props) {
         <TextInput
           settingsKey="settingsSourceURL"
           label="Settings API URL"
-          placeholder="http://127.0.0.1:17580/status.json"
+          placeholder="Please set Settings URL"
         />
         <Text>
           This is the URL the app will use to fetch settings like units, high and low thresholds from.
@@ -79,7 +79,7 @@ function mySettings(props) {
         <TextInput
           settingsKey="dataSourceURL"
           label="Data API URL"
-          placeholder="http://127.0.0.1:17580/sgv.json"
+          placeholder="Please set Data URL"
         />
         <Text>
           This is the URL the app will use to fetch data points for graph and BG value display.

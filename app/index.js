@@ -1,19 +1,10 @@
-//Working on all code using VS Code, @ts-X codes below are for that.
-//@ts-ignore
 import clock from "clock";
-//@ts-ignore
 import document from "document";
-//@ts-ignore
 import userActivity from "user-activity";
-//@ts-ignore
 import { HeartRateSensor } from "heart-rate";
-//@ts-ignore
 import { locale } from "user-settings";
-//@ts-ignore
 import { preferences } from "user-settings";
-//@ts-ignore
 import * as messaging from "messaging";
-//@ts-ignore
 import * as fs from "fs";
 import * as util from "../common/utils";
 
@@ -63,11 +54,13 @@ let bgCount = 24;
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
 let prefBgUnits = "mg";
+
 // The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
 let prefHighLevel = 200;
 let prefLowLevel = 70;
 var d = new Date();
-var currSeconds = Math.round(d.getTime() / 1000);
+var currSeconds = Math.round(d.getTime()/1000);
+var lastReadingTimestamp = currSeconds*1000
 
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
@@ -176,7 +169,7 @@ function updateClock() {
   let wday = today.getDay();
   let month = util.zeroPad(today.getMonth()+1);
   let year = today.getFullYear();
-//  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
+  //  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
   let hours = util.formatHour(today.getHours(), clockPref);
   let mins = util.zeroPad(today.getMinutes());
   let prefix = lang.substring(0,2);
@@ -202,6 +195,10 @@ function updateClock() {
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
+  }
+  if ( (d.seconds - lastReadingTimestamp/1000) > 15 ) {
+    console.log((d.seconds - lastReadingTimestamp));
+    updateBGPollingStatus();
   }
 }
 
@@ -249,48 +246,95 @@ function updateBGPollingStatus() {
   */
   //This angle updates in 72 degree increments per minute to fill ring in 5 min.
  
-  var timeCheck = currSeconds - lastValueTimestamp;
-  var sweepAngleBase = 72;
-  var newSweepAngle = 72;
+  var timeCheck = (currSeconds - lastReadingTimestamp)/1000;
+  var sweepAngleBase = 90;
+  var newSweepAngle = 90;
   var newArcFill = "#7CFC00";
   var newArcBackgroundFill = "#333344";
+  var newMissedCounter = 0;
+  console.log("Called Polling Status Update.");
+  
   if (0 <= timeCheck < 60) {
     newSweepAngle = 0;
   }else if (60 <= timeCheck < 120) {
     myBGUpdateArc.sweepAngle = newSweepAngle*1;
-    newArcFill = "#7CFC00";
   }else if (120 <= timeCheck < 180) {
     myBGUpdateArc.sweepAngle = newSweepAngle*2;
     newArcFill = "#7CFC00";
-
   }else if (180 <= timeCheck < 240) {
     myBGUpdateArc.sweepAngle = newSweepAngle*3;
     newArcFill = "#7CFC00";
-
   }else if (240 <= timeCheck < 300) {
     myBGUpdateArc.sweepAngle = newSweepAngle*4;
     newArcFill = "#7CFC00";
-
-  }else if (300 <= timeCheck < 600) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+  }else if (300 <= timeCheck < 360) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*0;
     newArcFill = "#ffd400";
-    newArcBackgroundFill = "#7CFC00";    
-  }else if (600 <= timeCheck < 900) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;        
+  }else if (360 <= timeCheck < 420) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*1;
+    newArcFill = "#ffd400";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;    
+  }else if (420 <= timeCheck < 480) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*2;
+    newArcFill = "#ffd400";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;    
+  }else if (480 <= timeCheck < 540) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*3;
+    newArcFill = "#ffd400";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;    
+  }else if (540 <= timeCheck < 600) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*4;
+    newArcFill = "#ffd400";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;    
+  }else if (600 <= timeCheck < 660) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*0;
     newArcFill = "#fc0000";
     newArcBackgroundFill = "#ffd400";
+    newMissedCounter = 2;
+  }else if (660 <= timeCheck < 720) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*1;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffd400";
+    newMissedCounter = 2;
+  }else if (720 <= timeCheck < 780) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*2;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffd400";
+    newMissedCounter = 2;    
+  }else if (780 <= timeCheck < 840) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*3;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffd400";
+    newMissedCounter = 2;  
+  }else if (840 <= timeCheck < 900) {
+    myBGUpdateArc.sweepAngle = newSweepAngle*4;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffd400";
+    newMissedCounter = 2;  
   }else if (900 <= timeCheck) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    myBGUpdateArc.sweepAngle = newSweepAngle*0;
     newArcFill = "#fc0000";
     newArcBackgroundFill = "#fc0000";
+    newMissedCounter = Math.abs(timecheck / 300);  
   }
-  myBGUpdateArc.sweepAngle = newSweepAngle;
+
+  console.log("New Sweep Angle: " + newSweepAngle);
+    console.log("New Arc Color: " + newArcFill);
+    console.log("New fill Color: " + newArcBackgroundFill);
+    console.log("New counter: " + newSweepAngle);
+  myBGUpdateArc.sweepAngle = newMissedCounter;
   //myBGUpdateArc.fill should be green for the first poll, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
   myBGUpdateArc.fill = newArcFill;
   //myBGUpdateArcBackground.fill should be grey for the first poll, green for the second, yellow for the third then just red or set sweep angle to 0
-  myBGUpdateArcBackground.fill = "#333344";
+  myBGUpdateArcBackground.fill = newArcBackgroundFill;
   //I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
-  myMissedBGPollCounter = 0;
+  myMissedBGPollCounter.text = newMissedCounter;
 }
 
 // Update the clock every tick event
@@ -338,27 +382,32 @@ function updategraph(data) {
       Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
     */
     let graphPoints = graph.getElementsByClassName('graph-point');
-  //  console.log("In updategraph: " + JSON.stringify(displayData));
-  //  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
-  //  var points = messageData.bgdata.graphData;
-  //  var trend = messageData.bgdata.currentTrend;
-  //  var lastPollTime = messageData.bgdata.lastPollTime;
-  //  console.log(typeof messageData.bgdata.graphData);
+
     var points = data.bgdata.graphData;
     var trend = data.bgdata.currentTrend;
     var lastPollTime = data.bgdata.lastPollTime;
+    lastReadingTimestamp = data.bgdata.lastPollTime;
   
-    if(prefBgUnits === "mg") {
-      myCurrentBG.text = points[23];
-      updateAxisUnits("mg");
-    } else if (prefBgUnits === "mmol") {
-      myCurrentBG.text = mmol(points[23]);
-      updateAxisUnits("mmol")
+    if (points[0] != undefined) {
+      if(prefBgUnits === "mg") {
+        myCurrentBG.text = points[0];
+        myCurrentBG.fill = "orangered";
+        updateAxisUnits("mg");
+      } else if (prefBgUnits === "mmol") {
+        myCurrentBG.text = mmol(points[0]);
+        myCurrentBG.fill = "orangered";
+        updateAxisUnits("mmol")
+      }
+    } else if (points[0] == undefined) {
+      function findValid(element) {
+       return element != undefined;
+      } 
+      myCurrentBG.text = points[points.findIndex(findValid)];
+      myCurrentBG.color = "grey";
     }
-    updateBGTrend(trend);
+      updateBGTrend(trend);
   
     for (let index = 0; index <= 23; index++) {
-      let pointsIndex = 23 - index;
       if (points[index] != undefined) {
         graphPoints[index].cy = (250 - points[index]) + 10;
       } else if (points[index] == undefined) {
