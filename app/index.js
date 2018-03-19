@@ -48,8 +48,7 @@ let myBGUnits = document.getElementById("myBGUnits");
 let myBGUpdateArc = document.getElementById("myBGUpdateArc");
 let myBGUpdateArcBackground = document.getElementById("myBGUpdateArcBackground");
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
-let myBGTrendBackground = document.getElementById("myBGTrendBackground");
-let myBGTrendPointer = document.getElementById("myBGTrendPointer");
+let myBGTrend = document.getElementById("myBGTrend");
 let bgCount = 24;
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
@@ -93,8 +92,6 @@ function mmol( bg ) {
   let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
   return mmolBG;
 }
-
-
 
 //functions for screen switching
 function showMainScreen() {
@@ -208,32 +205,34 @@ function updateBGTrend(Trend) {
   console.log('In Trend update - ' + Trend);
   if (Trend === "DoubleUp") {
     console.log('Matched 1');
-    myBGTrendBackground.style.fill = "#FF0000";
-    myBGTrendPointer.startAngle = 0;
+    myBGTrend.style.fill = "#FF0000";
+    myBGTrend.textContent = "🡑";
   } else if (Trend === "SingleUp") {
     console.log('Matched 2');
-    myBGTrendBackground.style.fill = "#FFFF00";
-    myBGTrendPointer.startAngle = 0;
+    myBGTrend.style.fill = "#008000";
+    myBGTrend.textContent = "🡑";
   } else if (Trend === "FortyFiveUp") {
     console.log('Matched 3');
-    myBGTrendBackground.style.fill = "#008000";
-    myBGTrendPointer.startAngle = 41;
+    myBGTrend.style.fill = "#008600";
+    myBGTrend.textContent = "🡕";
   } else if (Trend === "Flat") {
     console.log('Matched 4');
-    myBGTrendBackground.style.fill = "#008600";
-    myBGTrendPointer.startAngle = 86;
+    myBGTrend.style.fill = "#008600";
+    myBGTrend.textContent = "🡒";
+    console.log(myBGTrend.style.fill);
+    console.log(myBGTrend.textContent);
   } else if (Trend === "FortyFiveDown") {
     console.log('Matched 5');
-    myBGTrendBackground.style.fill = "#008000";
-    myBGTrendPointer.startAngle = 131;
+    myBGTrend.style.fill = "#008600";
+    myBGTrend.textContent = "🡖";
   } else if (Trend === "SingleDown") {
     console.log('Matched 6');
-    myBGTrendBackground.style.fill = "#FFFF00";
-    myBGTrendPointer.startAngle = 172;
+    myBGTrend.style.fill = "#008000";
+    myBGTrend.textContent = "🡑";
   } else if (Trend === "DoubleDown") {
     console.log('Matched 7');
-    myBGTrendBackground.style.fill = "#FF0000";
-    myBGTrendPointer.startAngle = 172;
+    myBGTrend.style.fill = "#FF0000";
+    myBGTrend.textContent = "🡓"
   }
 
 }
@@ -402,8 +401,15 @@ function updategraph(data) {
       function findValid(element) {
        return element != undefined;
       } 
-      myCurrentBG.text = points[points.findIndex(findValid)];
-      myCurrentBG.color = "grey";
+      if(prefBgUnits === "mg") {
+        myCurrentBG.text = points[points.findIndex(findValid)];
+        myCurrentBG.fill = "grey";
+        updateAxisUnits("mg");
+      } else if (prefBgUnits === "mmol") {
+        myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
+        myCurrentBG.fill = "grey";
+        updateAxisUnits("mmol")
+      }
     }
       updateBGTrend(trend);
   
@@ -446,4 +452,51 @@ messaging.peerSocket.onmessage = function(evt) {
     let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
     fs.writeFileSync("theme.txt", json_theme, "json");
   }
+}
+
+// Polyfill for shortcomings.
+
+// https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
+if (!Array.prototype.findIndex) {
+  Object.defineProperty(Array.prototype, 'findIndex', {
+    value: function(predicate) {
+     // 1. Let O be ? ToObject(this value).
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+      if (typeof predicate !== 'function') {
+        throw new TypeError('predicate must be a function');
+      }
+
+      // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+      var thisArg = arguments[1];
+
+      // 5. Let k be 0.
+      var k = 0;
+
+      // 6. Repeat, while k < len
+      while (k < len) {
+        // a. Let Pk be ! ToString(k).
+        // b. Let kValue be ? Get(O, Pk).
+        // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+        // d. If testResult is true, return k.
+        var kValue = o[k];
+        if (predicate.call(thisArg, kValue, k, o)) {
+          return k;
+        }
+        // e. Increase k by 1.
+        k++;
+      }
+
+      // 7. Return -1.
+      return -1;
+    }
+  });
 }
