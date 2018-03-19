@@ -206,33 +206,33 @@ function updateBGTrend(Trend) {
   if (Trend === "DoubleUp") {
     console.log('Matched 1');
     myBGTrend.style.fill = "#FF0000";
-    myBGTrend.textContent = "🡑";
+    myBGTrend.text = "🡑";
   } else if (Trend === "SingleUp") {
     console.log('Matched 2');
     myBGTrend.style.fill = "#008000";
-    myBGTrend.textContent = "🡑";
+    myBGTrend.text = "🡑";
   } else if (Trend === "FortyFiveUp") {
     console.log('Matched 3');
     myBGTrend.style.fill = "#008600";
-    myBGTrend.textContent = "🡕";
+    myBGTrend.text = "🡕";
   } else if (Trend === "Flat") {
     console.log('Matched 4');
     myBGTrend.style.fill = "#008600";
-    myBGTrend.textContent = "🡒";
+    myBGTrend.text = "🡒";
     console.log(myBGTrend.style.fill);
-    console.log(myBGTrend.textContent);
+    console.log(myBGTrend.text);
   } else if (Trend === "FortyFiveDown") {
     console.log('Matched 5');
     myBGTrend.style.fill = "#008600";
-    myBGTrend.textContent = "🡖";
+    myBGTrend.text = "🡖";
   } else if (Trend === "SingleDown") {
     console.log('Matched 6');
     myBGTrend.style.fill = "#008000";
-    myBGTrend.textContent = "🡑";
+    myBGTrend.text = "🡑";
   } else if (Trend === "DoubleDown") {
     console.log('Matched 7');
     myBGTrend.style.fill = "#FF0000";
-    myBGTrend.textContent = "🡓"
+    myBGTrend.text = "🡓"
   }
 
 }
