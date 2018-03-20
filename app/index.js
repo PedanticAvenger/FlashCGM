@@ -193,10 +193,11 @@ function updateClock() {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
   }
-  let timeCheck = Math.round((Date.now() - lastReadingTimestamp)/1000)/15
+  let timeCheck =((Date.now() -  Math.round(lastReadingTimestamp))/1000)/15
   if ( timeCheck === parseInt(timeCheck, 10))  {
-    console.log("Checking last poll time: " + Math.round(Date.now()/1000 - lastReadingTimestamp));
-    updateBGPollingStatus();
+    console.log("Checking last poll time: " + timeCheck);
+    let checkTime = (Date.now() -  Math.round(lastReadingTimestamp))/1000;
+    updateBGPollingStatus(checkTime);
   }
 }
 
@@ -242,21 +243,20 @@ function updateBGTrend(Trend) {
     myBGTrend.text = newDirection;
 }
 
-function updateBGPollingStatus() {
+function updateBGPollingStatus(timeCheck) {
   /* Ok, we should be looking at the timestamp of the last polled datapoint.
   There may be issues if we are grabbing data from nightscout rather than the paired phone but
   it should really be at most a minute out in a scenario like parent has watch and following child
   with child phone updating nightscout.
   */
   //This angle updates in 72 degree increments per minute to fill ring in 5 min.
-  currSeconds = Math.round(d.getTime()/1000);
-  var timeCheck = (currSeconds - lastReadingTimestamp);
-  var sweepAngleBase = 72;
+  
+  var sweepAngleBase = 90;
   var newSweepAngle = 0;
   var newArcFill = "#7CFC00";
   var newArcBackgroundFill = "#333344";
   var newMissedCounter = 0;
-//  console.log("Called Polling Status Update: " + timeCheck);
+  console.log("Called Polling Status Update: " + timeCheck);
   
   if (0 <= timeCheck && timeCheck < 60) {
     newSweepAngle = 0;
@@ -273,59 +273,59 @@ function updateBGPollingStatus() {
     newArcFill = "#7CFC00";
   }else if (300 <= timeCheck && timeCheck < 360) {
     newSweepAngle = sweepAngleBase*0;
-    newArcFill = "#ffd400";
+    newArcFill = "#ffff00";
     newArcBackgroundFill = "#7CFC00";
     newMissedCounter = 1;        
   }else if (360 <= timeCheck && timeCheck < 420) {
     newSweepAngle = sweepAngleBase*1;
-    newArcFill = "#ffd400";
+    newArcFill = "#ffff00";
     newArcBackgroundFill = "#7CFC00";
     newMissedCounter = 1;    
   }else if (420 <= timeCheck && timeCheck < 480) {
     newSweepAngle = sweepAngleBase*2;
-    newArcFill = "#ffd400";
+    newArcFill = "#ffff00";
     newArcBackgroundFill = "#7CFC00";
     newMissedCounter = 1;    
   }else if (480 <= timeCheck && timeCheck < 540) {
     newSweepAngle = sweepAngleBase*3;
-    newArcFill = "#ffd400";
+    newArcFill = "#ffff00";
     newArcBackgroundFill = "#7CFC00";
     newMissedCounter = 1;    
   }else if (540 <= timeCheck && timeCheck < 600) {
     newSweepAngle = sweepAngleBase*4;
-    newArcFill = "#ffd400";
+    newArcFill = "#ffff00";
     newArcBackgroundFill = "#7CFC00";
     newMissedCounter = 1;    
   }else if (600 <= timeCheck && timeCheck < 660) {
     newSweepAngle = sweepAngleBase*0;
     newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffd400";
+    newArcBackgroundFill = "#ffff00";
     newMissedCounter = 2;
   }else if (660 <= timeCheck && timeCheck < 720) {
     newSweepAngle = sweepAngleBase*1;
     newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffd400";
+    newArcBackgroundFill = "#ffff00";
     newMissedCounter = 2;
   }else if (720 <= timeCheck && timeCheck < 780) {
     newSweepAngle = sweepAngleBase*2;
     newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffd400";
+    newArcBackgroundFill = "#ffff00";
     newMissedCounter = 2;    
   }else if (780 <= timeCheck && timeCheck < 840) {
     newSweepAngle = sweepAngleBase*3;
     newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffd400";
+    newArcBackgroundFill = "#ffff00";
     newMissedCounter = 2;  
   }else if (840 <= timeCheck && timeCheck < 900) {
     newSweepAngle = sweepAngleBase*4;
     newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffd400";
+    newArcBackgroundFill = "#ffff00";
     newMissedCounter = 2;  
   }else if (900 <= timeCheck) {
     newSweepAngle = sweepAngleBase*0;
     newArcFill = "#fc0000";
     newArcBackgroundFill = "#fc0000";
-    newMissedCounter = Math.abs(timecheck / 300);  
+    newMissedCounter = Math.abs(timeCheck / 300);  
   }
 
 //  console.log("New Sweep Angle: " + newSweepAngle);
@@ -333,7 +333,7 @@ function updateBGPollingStatus() {
 //  console.log("New Arc Color: " + newArcFill);
   myBGUpdateRing.style.fill = newArcFill;
 //  console.log("New fill Color: " + newArcBackgroundFill);
-  myBGUpdateRingBkgnd.fill = newArcBackgroundFill;
+  myBGUpdateRingBkgnd.style.fill = newArcBackgroundFill;
 //  console.log("New counter: " + newMissedCounter);
   myMissedBGPollCounter.text = newMissedCounter;
   /* myBGUpdateArc.fill should be green for the first poll, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)   myBGUpdateArcBackground.fill should be grey for the first poll, green for the second, yellow for the third then just red or set sweep angle to 0
