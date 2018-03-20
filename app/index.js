@@ -418,14 +418,21 @@ function updategraph(data) {
     }
       updateBGTrend(trend);
   
-    for (let index = 0; index <= 23; index++) {
-      if (points[index] != undefined) {
-        graphPoints[index].cy = (250 - points[index]) + 10;
-      } else if (points[index] == undefined) {
-        graphPoints[index].cy = -10;
+  for (let index = 0; index <= 23; index++) {
+    if (points[index] != undefined) {
+      graphPoints[index].cy = (250 - points[index]) + 10;
+      if (points[index] <= prefLowLevel) {
+        graphPoints[index].style.fill = "red";
+      } else if (prefLowLevel < points[index] && points[index] <= prefHighLevel) {
+        graphPoints[index].style.fill = "green"; 
+      } else if (prefHighLevel < points[index]) {
+        graphPoints[index].style.fill = "yellow"; 
       }
+    } else if (points[index] == undefined) {
+      graphPoints[index].cy = -10;
     }
   }
+}
 
 function updateSettings(settings) {
 //  console.log("Whatsettings:" + JSON.stringify(settings));
