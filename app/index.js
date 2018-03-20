@@ -194,7 +194,7 @@ function updateClock() {
     heartRing.sweepAngle = 0;
   }
   if ( (d.seconds - lastReadingTimestamp/1000) > 15 ) {
-    console.log((d.seconds - lastReadingTimestamp));
+    console.log("Checking last poll time: " + (d.seconds - lastReadingTimestamp));
     updateBGPollingStatus();
   }
 }
@@ -202,39 +202,43 @@ function updateClock() {
 
 
 function updateBGTrend(Trend) {
+  let newFill = "#008600";
+  let newDirection = "➡";
+  
   console.log('In Trend update - ' + Trend);
   if (Trend === "DoubleUp") {
     console.log('Matched 1');
-    myBGTrend.style.fill = "#FF0000";
-    myBGTrend.text = "🡑";
+    newFill = "#FF0000";
+    newDirection = "⬆⬆";
   } else if (Trend === "SingleUp") {
     console.log('Matched 2');
-    myBGTrend.style.fill = "#008000";
-    myBGTrend.text = "🡑";
+    newFill = "#008600";
+    newDirection = "⬆";
   } else if (Trend === "FortyFiveUp") {
     console.log('Matched 3');
-    myBGTrend.style.fill = "#008600";
-    myBGTrend.text = "🡕";
+    newFill = "#008600";
+    newDirection = "↗";
   } else if (Trend === "Flat") {
     console.log('Matched 4');
-    myBGTrend.style.fill = "#008600";
-    myBGTrend.text = "🡒";
-    console.log(myBGTrend.style.fill);
-    console.log(myBGTrend.text);
+    newFill = "#008600";
+    newDirection = "➡";
   } else if (Trend === "FortyFiveDown") {
     console.log('Matched 5');
-    myBGTrend.style.fill = "#008600";
-    myBGTrend.text = "🡖";
+    newFill = "#008600";
+    newDirection = "↘";
   } else if (Trend === "SingleDown") {
     console.log('Matched 6');
-    myBGTrend.style.fill = "#008000";
-    myBGTrend.text = "🡑";
+    newFill = "#008000";
+    newDirection = "↘";
   } else if (Trend === "DoubleDown") {
     console.log('Matched 7');
-    myBGTrend.style.fill = "#FF0000";
-    myBGTrend.text = "🡓"
+    newFill = "#FF0000";
+    newDirection = "⬇⬇";
   }
-
+    console.log("Fill: " + newFill);
+    myBGTrend.fill = newFill;
+    console.log("Content: " + newDirection);
+    myBGTrend.text = newDirection;
 }
 
 function updateBGPollingStatus() {
