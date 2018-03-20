@@ -29,13 +29,13 @@
   <circle class="graph-point" cx="10" cy="0" r="2"/>
 </g>
 <g id="axis">
-   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="17%" text-anchor="end" fill="white">200</text>
-   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="30%" text-anchor="end" fill="white">175</text>
-   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="43%" text-anchor="end" fill="white">150</text>
-   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="56%" text-anchor="end" fill="white">125</text>
-   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="69%" text-anchor="end" fill="white">100</text>
-   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="82%" text-anchor="end" fill="white">75</text>
-   <text class="graph-data-range" font-family="System-Light" font-size="16" x="347" y="95%" text-anchor="end" fill="white">50</text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="345" y="17%" text-anchor="end" fill="white">200 </text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="345" y="30%" text-anchor="end" fill="white">175 </text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="345" y="43%" text-anchor="end" fill="white">150 </text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="345" y="56%" text-anchor="end" fill="white">125 </text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="345" y="69%" text-anchor="end" fill="white">100 </text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="345" y="82%" text-anchor="end" fill="white">75  </text>
+   <text class="graph-data-range" font-family="System-Light" font-size="16" x="345" y="95%" text-anchor="end" fill="white">50  </text>
    <line y1="0" x1="316" y2="100%" x2="316" fill="white" stroke-width="1"/>
    <line y1="25%" x1="0" y2="25%" x2="316" fill="#DAA520" stroke-width="1"/>
    <line y1="75%" x1="0" y2="75%" x2="316" fill="#DAA520" stroke-width="1"/>

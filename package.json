@@ -12,6 +12,9 @@
       "access_internet",
       "run_background"
     ],
+    "buildTargets": [
+      "higgs"
+    ],
     "i18n": {
       "en": {
         "name": "XDripFlashRing"

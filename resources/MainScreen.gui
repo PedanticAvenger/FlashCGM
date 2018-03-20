@@ -8,11 +8,10 @@
   <text id="myBGUnits" />
   /* Ok, changing this to an arc of 180 degrees with a white indicator arc on top and ability to change color.
   Thinking green for flat and slight rise/drop, yellow for up and down, red for double up and down */
-  <arc id="myBGTrendBackground" x="290" y="96" width="40" height="40" fill="#333344" arc-width="4" start-angle="0" sweep-angle="180" />
-  <arc id="myBGTrendPointer" x="290" y="96" width="40" height="40" fill="#F8F8FF" arc-width="4" start-angle="0" sweep-angle="8" />
-  <arc id="myBGUpdateArcBackground" x="230" y="96" width="40" height="40" fill="#333344" arc-width="3" start-angle="0" sweep-angle="360" />
-  <arc id="myBGUpdateArc" x="230" y="96" width="40" height="40" fill="#333344" arc-width="3" start-angle="0" sweep-angle="360" />
-  <text id="myMissedBGPollCounter" />
+  <arc id="myBGUpdateRingBkgnd" x="230" y="96" width="40" height="40" fill="#333344" arc-width="3" start-angle="0" sweep-angle="360" />
+  <text id="myMissedBGPollCounter" /> 
+  <arc id="myBGUpdateRing" x="230" y="96" width="40" height="40" fill="#002000" arc-width="3" start-angle="0" sweep-angle="0" />
+  <text id="myBGTrend">🔜</text> 
   <rect id="button1" pointer-events="all" x="209" y="0" width="139" height="140" opacity="0" />
 /* Modify the width of the upperLine and bottomLine to fit with BG display.  I don't remember what it was but am sure this could be further improved */
   <line id="upperLine" x1="15" y1="100" x2="60%-15" y2="100" fill="#333333" stroke-width="1" />

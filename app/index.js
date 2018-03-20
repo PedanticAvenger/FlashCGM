@@ -1,19 +1,10 @@
-//Working on all code using VS Code, @ts-X codes below are for that.
-//@ts-ignore
 import clock from "clock";
-//@ts-ignore
 import document from "document";
-//@ts-ignore
 import userActivity from "user-activity";
-//@ts-ignore
 import { HeartRateSensor } from "heart-rate";
-//@ts-ignore
 import { locale } from "user-settings";
-//@ts-ignore
 import { preferences } from "user-settings";
-//@ts-ignore
 import * as messaging from "messaging";
-//@ts-ignore
 import * as fs from "fs";
 import * as util from "../common/utils";
 
@@ -54,20 +45,21 @@ let myDate = document.getElementById("myDate");
 //Inserted for main screen CGM Data
 let myCurrentBG = document.getElementById("myCurrentBG");
 let myBGUnits = document.getElementById("myBGUnits");
-let myBGUpdateArc = document.getElementById("myBGUpdateArc");
-let myBGUpdateArcBackground = document.getElementById("myBGUpdateArcBackground");
+let myBGUpdateRing = document.getElementById("myBGUpdateRing");
+let myBGUpdateRingBkgnd = document.getElementById("myBGUpdateRingBkgnd");
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
-let myBGTrendBackground = document.getElementById("myBGTrendBackground");
-let myBGTrendPointer = document.getElementById("myBGTrendPointer");
+let myBGTrend = document.getElementById("myBGTrend");
 let bgCount = 24;
 let graph = document.getElementById("graph");
 let axis = document.getElementById("axis");
 let prefBgUnits = "mg";
+
 // The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
 let prefHighLevel = 200;
 let prefLowLevel = 70;
 var d = new Date();
-var currSeconds = Math.round(d.getTime() / 1000);
+var currSeconds = Math.round(d.getTime()/1000);
+var lastReadingTimestamp = currSeconds*1000;
 
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
@@ -100,8 +92,6 @@ function mmol( bg ) {
   let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
   return mmolBG;
 }
-
-
 
 //functions for screen switching
 function showMainScreen() {
@@ -176,7 +166,7 @@ function updateClock() {
   let wday = today.getDay();
   let month = util.zeroPad(today.getMonth()+1);
   let year = today.getFullYear();
-//  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
+  //  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
   let hours = util.formatHour(today.getHours(), clockPref);
   let mins = util.zeroPad(today.getMinutes());
   let prefix = lang.substring(0,2);
@@ -203,94 +193,152 @@ function updateClock() {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
   }
+  let timeCheck =((Date.now() -  Math.round(lastReadingTimestamp))/1000)/15
+  if ( timeCheck === parseInt(timeCheck, 10))  {
+    console.log("Checking last poll time: " + timeCheck);
+    let checkTime = (Date.now() -  Math.round(lastReadingTimestamp))/1000;
+    updateBGPollingStatus(checkTime);
+  }
 }
 
 
 
 function updateBGTrend(Trend) {
-  console.log('In Trend update - ' + Trend);
+  let newFill = "#008600";
+  let newDirection = "➡";
+  
+//  console.log('In Trend update - ' + Trend);
   if (Trend === "DoubleUp") {
-    console.log('Matched 1');
-    myBGTrendBackground.style.fill = "#FF0000";
-    myBGTrendPointer.startAngle = 0;
+//    console.log('Matched 1');
+    newFill = "#FF0000";
+    newDirection = "⏫";
   } else if (Trend === "SingleUp") {
-    console.log('Matched 2');
-    myBGTrendBackground.style.fill = "#FFFF00";
-    myBGTrendPointer.startAngle = 0;
+//    console.log('Matched 2');
+    newFill = "#008600";
+    newDirection = "⬆";
   } else if (Trend === "FortyFiveUp") {
-    console.log('Matched 3');
-    myBGTrendBackground.style.fill = "#008000";
-    myBGTrendPointer.startAngle = 41;
+//    console.log('Matched 3');
+    newFill = "#008600";
+    newDirection = "↗";
   } else if (Trend === "Flat") {
-    console.log('Matched 4');
-    myBGTrendBackground.style.fill = "#008600";
-    myBGTrendPointer.startAngle = 86;
+//    console.log('Matched 4');
+    newFill = "#008600";
+    newDirection = "➡";
   } else if (Trend === "FortyFiveDown") {
-    console.log('Matched 5');
-    myBGTrendBackground.style.fill = "#008000";
-    myBGTrendPointer.startAngle = 131;
+//    console.log('Matched 5');
+    newFill = "#008600";
+    newDirection = "↘";
   } else if (Trend === "SingleDown") {
-    console.log('Matched 6');
-    myBGTrendBackground.style.fill = "#FFFF00";
-    myBGTrendPointer.startAngle = 172;
+//    console.log('Matched 6');
+    newFill = "#008000";
+    newDirection = "↘";
   } else if (Trend === "DoubleDown") {
-    console.log('Matched 7');
-    myBGTrendBackground.style.fill = "#FF0000";
-    myBGTrendPointer.startAngle = 172;
+//    console.log('Matched 7');
+    newFill = "#FF0000";
+    newDirection = "⏬";
   }
-
+//    console.log("Fill: " + newFill);
+    myBGTrend.fill = newFill;
+//    console.log("Content: " + newDirection);
+    myBGTrend.text = newDirection;
 }
 
-function updateBGPollingStatus() {
-  /* Ok, we should be passed the timestamp of the last polled datapoint.
+function updateBGPollingStatus(timeCheck) {
+  /* Ok, we should be looking at the timestamp of the last polled datapoint.
   There may be issues if we are grabbing data from nightscout rather than the paired phone but
   it should really be at most a minute out in a scenario like parent has watch and following child
-  with their phone updating nightscout.
+  with child phone updating nightscout.
   */
   //This angle updates in 72 degree increments per minute to fill ring in 5 min.
- 
-  var timeCheck = currSeconds - lastValueTimestamp;
-  var sweepAngleBase = 72;
-  var newSweepAngle = 72;
+  
+  var sweepAngleBase = 90;
+  var newSweepAngle = 0;
   var newArcFill = "#7CFC00";
   var newArcBackgroundFill = "#333344";
-  if (0 <= timeCheck < 60) {
+  var newMissedCounter = 0;
+  console.log("Called Polling Status Update: " + timeCheck);
+  
+  if (0 <= timeCheck && timeCheck < 60) {
     newSweepAngle = 0;
-  }else if (60 <= timeCheck < 120) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*1;
+  }else if (60 <= timeCheck && timeCheck < 120) {
+    newSweepAngle = sweepAngleBase*1;
+  }else if (120 <= timeCheck && timeCheck < 180) {
+    newSweepAngle = sweepAngleBase*2;
     newArcFill = "#7CFC00";
-  }else if (120 <= timeCheck < 180) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*2;
+  }else if (180 <= timeCheck && timeCheck < 240) {
+    newSweepAngle = sweepAngleBase*3;
     newArcFill = "#7CFC00";
-
-  }else if (180 <= timeCheck < 240) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*3;
+  }else if (240 <= timeCheck && timeCheck < 300) {
+    newSweepAngle = sweepAngleBase*4;
     newArcFill = "#7CFC00";
-
-  }else if (240 <= timeCheck < 300) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*4;
-    newArcFill = "#7CFC00";
-
-  }else if (300 <= timeCheck < 600) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*5;
-    newArcFill = "#ffd400";
-    newArcBackgroundFill = "#7CFC00";    
-  }else if (600 <= timeCheck < 900) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+  }else if (300 <= timeCheck && timeCheck < 360) {
+    newSweepAngle = sweepAngleBase*0;
+    newArcFill = "#ffff00";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;        
+  }else if (360 <= timeCheck && timeCheck < 420) {
+    newSweepAngle = sweepAngleBase*1;
+    newArcFill = "#ffff00";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;    
+  }else if (420 <= timeCheck && timeCheck < 480) {
+    newSweepAngle = sweepAngleBase*2;
+    newArcFill = "#ffff00";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;    
+  }else if (480 <= timeCheck && timeCheck < 540) {
+    newSweepAngle = sweepAngleBase*3;
+    newArcFill = "#ffff00";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;    
+  }else if (540 <= timeCheck && timeCheck < 600) {
+    newSweepAngle = sweepAngleBase*4;
+    newArcFill = "#ffff00";
+    newArcBackgroundFill = "#7CFC00";
+    newMissedCounter = 1;    
+  }else if (600 <= timeCheck && timeCheck < 660) {
+    newSweepAngle = sweepAngleBase*0;
     newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffd400";
+    newArcBackgroundFill = "#ffff00";
+    newMissedCounter = 2;
+  }else if (660 <= timeCheck && timeCheck < 720) {
+    newSweepAngle = sweepAngleBase*1;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffff00";
+    newMissedCounter = 2;
+  }else if (720 <= timeCheck && timeCheck < 780) {
+    newSweepAngle = sweepAngleBase*2;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffff00";
+    newMissedCounter = 2;    
+  }else if (780 <= timeCheck && timeCheck < 840) {
+    newSweepAngle = sweepAngleBase*3;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffff00";
+    newMissedCounter = 2;  
+  }else if (840 <= timeCheck && timeCheck < 900) {
+    newSweepAngle = sweepAngleBase*4;
+    newArcFill = "#fc0000";
+    newArcBackgroundFill = "#ffff00";
+    newMissedCounter = 2;  
   }else if (900 <= timeCheck) {
-    myBGUpdateArc.sweepAngle = newSweepAngle*5;
+    newSweepAngle = sweepAngleBase*0;
     newArcFill = "#fc0000";
     newArcBackgroundFill = "#fc0000";
+    newMissedCounter = Math.abs(timeCheck / 300);  
   }
-  myBGUpdateArc.sweepAngle = newSweepAngle;
-  //myBGUpdateArc.fill should be green for the first poll, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)
-  myBGUpdateArc.fill = newArcFill;
-  //myBGUpdateArcBackground.fill should be grey for the first poll, green for the second, yellow for the third then just red or set sweep angle to 0
-  myBGUpdateArcBackground.fill = "#333344";
-  //I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
-  myMissedBGPollCounter = 0;
+
+//  console.log("New Sweep Angle: " + newSweepAngle);
+  myBGUpdateRing.sweepAngle = newSweepAngle;
+//  console.log("New Arc Color: " + newArcFill);
+  myBGUpdateRing.style.fill = newArcFill;
+//  console.log("New fill Color: " + newArcBackgroundFill);
+  myBGUpdateRingBkgnd.style.fill = newArcBackgroundFill;
+//  console.log("New counter: " + newMissedCounter);
+  myMissedBGPollCounter.text = newMissedCounter;
+  /* myBGUpdateArc.fill should be green for the first poll, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)   myBGUpdateArcBackground.fill should be grey for the first poll, green for the second, yellow for the third then just red or set sweep angle to 0
+  I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
+  */
 }
 
 // Update the clock every tick event
@@ -338,27 +386,39 @@ function updategraph(data) {
       Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
     */
     let graphPoints = graph.getElementsByClassName('graph-point');
-  //  console.log("In updategraph: " + JSON.stringify(displayData));
-  //  console.log("Get GraphData: " + JSON.stringify(displayData.graphData));
-  //  var points = messageData.bgdata.graphData;
-  //  var trend = messageData.bgdata.currentTrend;
-  //  var lastPollTime = messageData.bgdata.lastPollTime;
-  //  console.log(typeof messageData.bgdata.graphData);
+
     var points = data.bgdata.graphData;
     var trend = data.bgdata.currentTrend;
     var lastPollTime = data.bgdata.lastPollTime;
+    lastReadingTimestamp = data.bgdata.lastPollTime;
   
-    if(prefBgUnits === "mg") {
-      myCurrentBG.text = points[23];
-      updateAxisUnits("mg");
-    } else if (prefBgUnits === "mmol") {
-      myCurrentBG.text = mmol(points[23]);
-      updateAxisUnits("mmol")
+    if (points[0] != undefined) {
+      if(prefBgUnits === "mg") {
+        myCurrentBG.text = points[0];
+        myCurrentBG.fill = "orangered";
+        updateAxisUnits("mg");
+      } else if (prefBgUnits === "mmol") {
+        myCurrentBG.text = mmol(points[0]);
+        myCurrentBG.fill = "orangered";
+        updateAxisUnits("mmol")
+      }
+    } else if (points[0] == undefined) {
+      function findValid(element) {
+       return element != undefined;
+      } 
+      if(prefBgUnits === "mg") {
+        myCurrentBG.text = points[points.findIndex(findValid)];
+        myCurrentBG.fill = "grey";
+        updateAxisUnits("mg");
+      } else if (prefBgUnits === "mmol") {
+        myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
+        myCurrentBG.fill = "grey";
+        updateAxisUnits("mmol")
+      }
     }
-    updateBGTrend(trend);
+      updateBGTrend(trend);
   
     for (let index = 0; index <= 23; index++) {
-      let pointsIndex = 23 - index;
       if (points[index] != undefined) {
         graphPoints[index].cy = (250 - points[index]) + 10;
       } else if (points[index] == undefined) {
@@ -397,4 +457,51 @@ messaging.peerSocket.onmessage = function(evt) {
     let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
     fs.writeFileSync("theme.txt", json_theme, "json");
   }
+}
+
+// Polyfill for shortcomings.
+
+// https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
+if (!Array.prototype.findIndex) {
+  Object.defineProperty(Array.prototype, 'findIndex', {
+    value: function(predicate) {
+     // 1. Let O be ? ToObject(this value).
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+      if (typeof predicate !== 'function') {
+        throw new TypeError('predicate must be a function');
+      }
+
+      // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+      var thisArg = arguments[1];
+
+      // 5. Let k be 0.
+      var k = 0;
+
+      // 6. Repeat, while k < len
+      while (k < len) {
+        // a. Let Pk be ! ToString(k).
+        // b. Let kValue be ? Get(O, Pk).
+        // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+        // d. If testResult is true, return k.
+        var kValue = o[k];
+        if (predicate.call(thisArg, kValue, k, o)) {
+          return k;
+        }
+        // e. Increase k by 1.
+        k++;
+      }
+
+      // 7. Return -1.
+      return -1;
+    }
+  });
 }
