@@ -193,10 +193,11 @@ function updateClock() {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
   }
-  let timeCheck =((Date.now() -  Math.round(lastReadingTimestamp))/1000)/15
+  let timeCheck =(Math.round(Date.now()/1000 -  lastReadingTimestamp)/15);
+//  console.log("Time Check: " + timeCheck)
   if ( timeCheck === parseInt(timeCheck, 10))  {
-    console.log("Checking last poll time: " + timeCheck);
-    let checkTime = (Date.now() -  Math.round(lastReadingTimestamp))/1000;
+//    console.log("Checking last poll time: " + timeCheck);
+    let checkTime = timeCheck*15;
     updateBGPollingStatus(checkTime);
   }
 }
@@ -256,7 +257,7 @@ function updateBGPollingStatus(timeCheck) {
   var newArcFill = "#7CFC00";
   var newArcBackgroundFill = "#333344";
   var newMissedCounter = 0;
-  console.log("Called Polling Status Update: " + timeCheck);
+//  console.log("Called Polling Status Update: " + timeCheck);
   
   if (0 <= timeCheck && timeCheck < 60) {
     newSweepAngle = 0;
@@ -416,23 +417,23 @@ function updategraph(data) {
         updateAxisUnits("mmol")
       }
     }
-      updateBGTrend(trend);
-  
-  for (let index = 0; index <= 23; index++) {
-    if (points[index] != undefined) {
-      graphPoints[index].cy = (250 - points[index]) + 10;
-      if (points[index] <= prefLowLevel) {
-        graphPoints[index].style.fill = "red";
-      } else if (prefLowLevel < points[index] && points[index] <= prefHighLevel) {
-        graphPoints[index].style.fill = "green"; 
-      } else if (prefHighLevel < points[index]) {
-        graphPoints[index].style.fill = "yellow"; 
+    updateBGTrend(trend);
+//    console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel)
+    for (let index = 0; index <= 23; index++) {
+      if (points[index] != undefined) {
+        graphPoints[index].cy = (250 - points[index]) + 10;
+        if (points[index] <= prefLowLevel) {
+          graphPoints[index].style.fill = "red";
+        } else if (prefLowLevel < points[index] && points[index] <= prefHighLevel) {
+          graphPoints[index].style.fill = "green"; 
+        } else if (prefHighLevel < points[index]) {
+          graphPoints[index].style.fill = "yellow"; 
+        }
+      } else if (points[index] == undefined) {
+        graphPoints[index].cy = -10;
       }
-    } else if (points[index] == undefined) {
-      graphPoints[index].cy = -10;
     }
   }
-}
 
 function updateSettings(settings) {
 //  console.log("Whatsettings:" + JSON.stringify(settings));
