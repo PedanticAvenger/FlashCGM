@@ -107,8 +107,8 @@ function buildSettings(settings) {
 //  console.log(JSON.stringify(obj));
   bgHighLevel = obj.settings.thresholds.bgHigh;
   bgLowLevel =  obj.settings.thresholds.bgLow;
-//  bgTargetTop =  obj.settings.thresholds.bgTargetTop;
-//  bgTargetBottom =  obj.settings.thresholds.bgTargetBottom;
+//  bgTargetTop =  obj.thresholds.bgTargetTop;
+//  bgTargetBottom =  obj.thresholds.bgTargetBottom;
   bgDataUnits =  obj.settings.units;
   const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
@@ -181,16 +181,13 @@ function restoreSettings() {
       };
 
       if(key === "dataSourceURL") {
-        console.log('dataSourceURL');
-        console.log(JSON.parse(settingsStorage.getItem(key)).name);
+        console.log("DataSourceURL: " + JSON.parse(settingsStorage.getItem(key)).name);
         dataUrl = JSON.parse(settingsStorage.getItem(key)).name;
       }else if(key === "settingsSourceURL") {
-        console.log('settingsUrl');
-        console.log(JSON.parse(settingsStorage.getItem(key)).name);
+        console.log("SettingsURL: " + JSON.parse(settingsStorage.getItem(key)).name);
         settingsUrl = JSON.parse(settingsStorage.getItem(key)).name;
       }else if(key === "unitsType") {
-        console.log('unitsType');
-        console.log(JSON.parse(settingsStorage.getItem(key)));
+        console.log("UnitsType: " + JSON.parse(settingsStorage.getItem(key)));
         bgDataType = JSON.parse(settingsStorage.getItem(key));
       }
   }
@@ -210,7 +207,7 @@ function sleep(ms) {
 }
 
 async function initialSetup() {
-  console.log('Taking a startup break...');
+  console.log('Taking a break...');
   await sleep(5000);
   console.log('5 second later');
   processDisplayData();
@@ -219,18 +216,20 @@ async function initialSetup() {
 
 settingsStorage.onchange = function(evt) {
   restoreSettings();
-/*  This will need to come back in some form to handle changes to THEME values.  Eval if it changed?  Or just always send?
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     let data = JSON.parse(evt.newValue);
-    messaging.peerSocket.send(data["values"][0].value);
+    let messageContent = {
+      "theme" :
+        data["values"][0].value
+     };
+    messaging.peerSocket.send(messageContent);
+    console.log("Sent Theme to watch:" + JSON.stringify(messageContent));
   } else {
     console.log("companion - no connection");
     me.wakeInterval = 2000;
-    setTimeout(function(){let data = JSON.parse(evt.newValue); messaging.peerSocket.send(data["values"][0].value);}, 2500);
+    setTimeout(function(){let data = JSON.parse(evt.newValue); let messageContent = {"theme":[data["values"][0].value]}; messaging.peerSocket.send(messageContent);}, 2500);
     me.wakeInterval = undefined;
   }
-*/
-
 }
 
 

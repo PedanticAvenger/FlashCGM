@@ -424,7 +424,7 @@ function updategraph(data) {
         graphPoints[index].cy = (250 - points[index]) + 10;
         if (points[index] <= prefLowLevel) {
           graphPoints[index].style.fill = "red";
-        } else if (prefLowLevel < points[index] && points[index] <= prefHighLevel) {
+        } else if ((prefLowLevel < points[index]) && (points[index] <= prefHighLevel)) {
           graphPoints[index].style.fill = "green"; 
         } else if (prefHighLevel < points[index]) {
           graphPoints[index].style.fill = "yellow"; 
@@ -445,24 +445,24 @@ function updateSettings(settings) {
 
   myBGUnits.text = prefBgUnits;
 }
+
 // Listen for the onmessage event
 /*
 Alright, need to update message handling to send back current steps and heartrate.
 Wondering if HR and Steps should be triggered by updateClock() or by activity in updateBGStats().
 */
 messaging.peerSocket.onmessage = function(evt) {
-
+  console.log(JSON.stringify(evt));
   if (evt.data.hasOwnProperty("settings")) {
     console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
     updateSettings(evt.data)
   } else if (evt.data.hasOwnProperty("bgdata")) {
     console.log("Triggered watch data update: " + JSON.stringify(evt.data));
     updategraph(evt.data);
-  } else if (evt.hasOwnProperty("theme")) {
-    console.log("Triggered a theme update.");
-//This theme stuff needs a re-do, don't forget!
-    applyTheme(evt.data.background, evt.data.foreground);
-    let json_theme = {"backg": evt.data.background, "foreg": evt.data.foreground};
+  } else if (evt.data.hasOwnProperty("theme")) {
+    console.log("Triggered a theme update." + JSON.stringify(evt));
+    applyTheme(evt.data.theme.background, evt.data.theme.foreground);
+    let json_theme = {"backg": evt.data.theme.background, "foreg": evt.data.theme.foreground};
     fs.writeFileSync("theme.txt", json_theme, "json");
   }
 }
