@@ -56,14 +56,34 @@
   fill: orangered;
 }
 
+#myBGTrend {
+  font-size: 40;
+  font-family: Seville-Bold;
+  font-weight: regular;
+  text-length: 30;
+  text-anchor: middle;
+  x: 315;
+  y: 130;
+  fill: green;
+}
 
 #myMissedBGPollCounter {
   font-size: 28;
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 251;
-  y: 124;
+  x: 250;
+  y: 125;
+  fill: orangered;
+}
+
+#myBGTrend {
+  font-size: 28;
+  font-family: System-Regular;
+  text-length: 80;
+  text-anchor: middle;
+  x: 310;
+  y: 125;
   fill: orangered;
 }
 

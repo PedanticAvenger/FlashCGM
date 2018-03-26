@@ -104,11 +104,11 @@ const settingsPoll = () => {
 function buildSettings(settings) {
   // Need to setup High line, Low Line, Units.
   var obj = JSON.parse(settings);
-  console.log(JSON.stringify(obj));
+//  console.log(JSON.stringify(obj));
   bgHighLevel = obj.settings.thresholds.bgHigh;
   bgLowLevel =  obj.settings.thresholds.bgLow;
-//  bgTargetTop =  obj.settings.thresholds.bgTargetTop;
-//  bgTargetBottom =  obj.settings.thresholds.bgTargetBottom;
+//  bgTargetTop =  obj.thresholds.bgTargetTop;
+//  bgTargetBottom =  obj.thresholds.bgTargetBottom;
   bgDataUnits =  obj.settings.units;
   const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
@@ -128,41 +128,35 @@ function buildGraphData(data) {
   // look at timestamps to determine if a missed poll happened and make that graph point disappear.
   let obj = JSON.parse(data);
   let graphpointindex = 0;
-  lastTimestamp = new Date().getTime();
+  var runningTimestamp = new Date().getTime();
   var indexarray = [];
 
   // build the index
-  for (var x in obj) {
-     indexarray.push({ 'key': x, 'date': obj[x]['date'] });
-  }
-
-  // sort the index
-  indexarray.sort(function (a, b) { 
-     var as = a['date'], 
-         bs = b['date']; 
-
-     return as == bs ? 0 : (as < bs ? 1 : -1); 
-  }); 
+  obj.sort(function(a, b) { 
+    return b.date - a.date
+   })
  
   let index = 0;
-  for (graphpointindex = 0; graphpointindex <= 23; graphpointindex++) {
-    if (index < indexarray.length) {
-      while (((lastTimestamp - obj[indexarray[index]['key']].date) >= 301000) && (graphpointindex <= 23)) {
+  let validTimeStamp = false;
+//  console.log(JSON.stringify(obj));
+  for (graphpointindex = 0; graphpointindex < 24; graphpointindex++) {
+    if (index < obj.length) {
+      while (((runningTimestamp - obj[index].date) >= 305000) && (graphpointindex < 24)) {
         points[graphpointindex] = undefined;
-        console.log("Added a void to points array at " + graphpointindex);
-        lastTimestamp = lastTimestamp - 300000;
+        runningTimestamp = runningTimestamp - 300000;
         graphpointindex++;
       }
-      points[graphpointindex] = obj[indexarray[index]['key']].sgv;
-      lastTimestamp = obj[indexarray[index]['key']].date;
-      console.log("Added a number to points array at " + graphpointindex);
-    }
-    if (obj[indexarray[index]['key']].date > lastTimestamp) {
-      lastTimestamp = obj[indexarray[index]['key']].date;
-      bgTrend = obj[indexarray[index]['key']].direction;
+      points[graphpointindex] = obj[index].sgv;
+      runningTimestamp = obj[index].date;
+      if (!validTimeStamp) {
+        lastTimestamp = obj[index].date;
+        bgTrend = obj[index].direction;
+        validTimeStamp = true;
+      }
     }
     index++
   }
+  lastTimestamp = lastTimestamp/1000;
 //  console.log("GraphData:" + points);
   const messageContent = {"bgdata" : {
       "graphData": points, 
@@ -187,16 +181,13 @@ function restoreSettings() {
       };
 
       if(key === "dataSourceURL") {
-        console.log('dataSourceURL');
-        console.log(JSON.parse(settingsStorage.getItem(key)).name);
+        console.log("DataSourceURL: " + JSON.parse(settingsStorage.getItem(key)).name);
         dataUrl = JSON.parse(settingsStorage.getItem(key)).name;
       }else if(key === "settingsSourceURL") {
-        console.log('settingsUrl');
-        console.log(JSON.parse(settingsStorage.getItem(key)).name);
+        console.log("SettingsURL: " + JSON.parse(settingsStorage.getItem(key)).name);
         settingsUrl = JSON.parse(settingsStorage.getItem(key)).name;
       }else if(key === "unitsType") {
-        console.log('unitsType');
-        console.log(JSON.parse(settingsStorage.getItem(key)));
+        console.log("UnitsType: " + JSON.parse(settingsStorage.getItem(key)));
         bgDataType = JSON.parse(settingsStorage.getItem(key));
       }
   }
@@ -216,12 +207,30 @@ function sleep(ms) {
 }
 
 async function initialSetup() {
-  console.log("Waiting 5 seconds to send data to watch.");
+  console.log('Taking a break...');
   await sleep(5000);
-  console.log("Process triggered");
+  console.log('5 second later');
   processDisplayData();
 }
 
+
+settingsStorage.onchange = function(evt) {
+  restoreSettings();
+  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    let data = JSON.parse(evt.newValue);
+    let messageContent = {
+      "theme" :
+        data["values"][0].value
+     };
+    messaging.peerSocket.send(messageContent);
+    console.log("Sent Theme to watch:" + JSON.stringify(messageContent));
+  } else {
+    console.log("companion - no connection");
+    me.wakeInterval = 2000;
+    setTimeout(function(){let data = JSON.parse(evt.newValue); let messageContent = {"theme":[data["values"][0].value]}; messaging.peerSocket.send(messageContent);}, 2500);
+    me.wakeInterval = undefined;
+  }
+}
 
 
 // Ok, so we will be having various message types going back and forth to the watch.
@@ -234,21 +243,6 @@ async function initialSetup() {
 // variable for current value in appropriate display units
 // variable for last successful poll (as determined from timestamp of last value we get from xdrip/nightscout)
 
-/*  Re-enable this after re-write to integrate into newer messaging format
-
-settingsStorage.onchange = function(evt) {
-  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-    let data = JSON.parse(evt.newValue);
-    messaging.peerSocket.send(data["values"][0].value);
-  } else {
-    console.log("companion - no connection");
-    me.wakeInterval = 2000;
-    setTimeout(function(){let data = JSON.parse(evt.newValue); messaging.peerSocket.send(data["values"][0].value);}, 2500);
-    me.wakeInterval = undefined;
-  }
-}
-
-*/
 
 /*
   Workflow thoughts:
