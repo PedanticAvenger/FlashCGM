@@ -76,7 +76,7 @@ let upperLine = document.getElementById("upperLine");
 let bottomLine = document.getElementById("bottomLine");
 
 function applyTheme(background, foreground) {
-  //Add Theme settings for Main screen BG color, and anything else we add as customizable.
+  // Add Theme settings for Main screen BG color, and anything else we add as customizable.
   myClock.style.fill = background;
   dailysteps.style.fill = background;
   dailystairs.style.fill = background;
@@ -89,7 +89,7 @@ function applyTheme(background, foreground) {
 }
 
 function mmol( bg ) {
-  let mmolBG = Math.round( (0.0555 * bg) * 10 ) / 10;
+  let mmolBG = myNamespace.round( (bg / 18.0182), 1 ).toFixed(1);
   return mmolBG;
 }
 
@@ -513,3 +513,13 @@ if (!Array.prototype.findIndex) {
     }
   });
 }
+
+//Add a rounding function that displays BG values more "nicely".
+var myNamespace = {};
+
+myNamespace.round = function(number, precision) {
+    var factor = Math.pow(10, precision);
+    var tempNumber = number * factor;
+    var roundedTempNumber = Math.round(tempNumber);
+    return roundedTempNumber / factor;
+};

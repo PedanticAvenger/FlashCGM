@@ -67,6 +67,16 @@
   fill: orangered;
 }
 
+#myBGTrend {
+  font-size: 28;
+  font-family: System-Regular;
+  text-length: 80;
+  text-anchor: middle;
+  x: 290;
+  y: 125;
+  fill: orangered;
+}
+
 #mySteps {
   font-size: 28;
   font-family: System-Regular;
