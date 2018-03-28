@@ -199,18 +199,6 @@ function restoreSettings() {
 }
 
 function processDisplayData () {
-  if (settingsStorage.length === 0) {
-    let defaultDataSourceURL = "http://127.0.0.1:17580/sgv.json?count=24&brief_mode=Y";
-    let defaultSettingsURL = "http://127.0.0.1:17580/status.json";
-    let defaultUnitsType = "mg/dl";
-    let defaultTheme = {background: "#f8fcf8", foreground: "#707070"};
-    
-    settingsStorage.setItem("Theme", JSON.stringify(defaultTheme));
-    settingsStorage.setItem("dataSourceURL", JSON.stringify(defaultDataSourceURL));
-    settingsStorage.setItem("settingsSourceURL", JSON.stringify(defaultSettingsURL));
-    settingsStorage.setItem("unitsType", JSON.stringify(defaultUnitsType));
-
-  }
   if (sendSettings) {
     console.log("Grabbing Settings.");
     let value = settingsPoll();
@@ -224,6 +212,18 @@ function sleep(ms) {
 }
 
 async function initialSetup() {
+  if (settingsStorage.length === 0) {
+    let defaultDataSourceURL = "http://127.0.0.1:17580/sgv.json?count=24&brief_mode=Y";
+    let defaultSettingsURL = "http://127.0.0.1:17580/status.json";
+    let defaultUnitsType = "mg/dl";
+    let defaultTheme = {background: "#f8fcf8", foreground: "#707070"};
+    
+    settingsStorage.setItem("Theme", JSON.stringify(defaultTheme));
+    settingsStorage.setItem("dataSourceURL", JSON.stringify(defaultDataSourceURL));
+    settingsStorage.setItem("settingsSourceURL", JSON.stringify(defaultSettingsURL));
+    settingsStorage.setItem("unitsType", JSON.stringify(defaultUnitsType));
+
+  }
   console.log('Taking a break...');
   await sleep(5000);
   console.log('5 second later');
