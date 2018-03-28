@@ -4,7 +4,8 @@ import * as messaging from "messaging";
 let dataUrl = JSON.parse(settingsStorage.getItem("dataSourceURL")).name;
 let settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
 
-let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
+//let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
+let bgDataType = "mg";
 let sendSettings = true;
 
 var bgDataUnits = "mg";
@@ -44,7 +45,7 @@ const dataPoll = () => {
         response.text().then(data => {
           console.log('fetched Data from API');
           let obj = JSON.parse(data);
-          buildGraphData(data);
+          let returnval = buildGraphData(data);
         })
         .catch(responseParsingError => {
           console.log("Response parsing error in data!");
@@ -63,6 +64,7 @@ const dataPoll = () => {
   } else {
     console.log('no url stored in settings to use to get data.');
   }
+  return true;
 };
 
 const settingsPoll = () => {
@@ -80,7 +82,7 @@ const settingsPoll = () => {
         console.log('Get Settings From Phone');
         response.text().then(statusreply => {
           console.log("fetched settings from API");
-          buildSettings(statusreply);
+          let returnval = buildSettings(statusreply);
         })
           .catch(responseParsingError => {
             console.log('Response parsing error in settings!');
@@ -99,6 +101,7 @@ const settingsPoll = () => {
   } else {
     console.log("no url stored in app settings to use to get settings.");
   }
+  return true;
 };
 
 function buildSettings(settings) {
@@ -106,14 +109,14 @@ function buildSettings(settings) {
   var obj = JSON.parse(settings);
 //  console.log(JSON.stringify(obj));
   bgHighLevel = obj.settings.thresholds.bgHigh;
-  bgLowLevel =  obj.settings.thresholds.bgLow;
-//  bgTargetTop =  obj.thresholds.bgTargetTop;
-//  bgTargetBottom =  obj.thresholds.bgTargetBottom;
-  bgDataUnits =  obj.settings.units;
+  bgLowLevel = obj.settings.thresholds.bgLow;
+  bgTargetTop = obj.settings.thresholds.bgTargetTop;
+  bgTargetBottom = obj.settings.thresholds.bgTargetBottom;
+  bgDataUnits = obj.settings.units;
   const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
-//      "bgTargetTop" : bgTargetTop,
-//      "bgTargetBottom" : bgTargetBottom,
+      "bgTargetTop" : bgTargetTop,
+      "bgTargetBottom" : bgTargetBottom,
       "bgHighLevel" : bgHighLevel,
       "bgLowLevel" : bgLowLevel
     },
@@ -121,6 +124,7 @@ function buildSettings(settings) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
+  return true;
 }
 
 function buildGraphData(data) {
@@ -168,6 +172,7 @@ function buildGraphData(data) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
+  return true;
 }
 
 function restoreSettings() {
@@ -194,12 +199,24 @@ function restoreSettings() {
 }
 
 function processDisplayData () {
+  if (settingsStorage.length === 0) {
+    let defaultDataSourceURL = "http://127.0.0.1:17580/sgv.json?count=24&brief_mode=Y";
+    let defaultSettingsURL = "http://127.0.0.1:17580/status.json";
+    let defaultUnitsType = "mg/dl";
+    let defaultTheme = {background: "#f8fcf8", foreground: "#707070"};
+    
+    settingsStorage.setItem("Theme", JSON.stringify(defaultTheme));
+    settingsStorage.setItem("dataSourceURL", JSON.stringify(defaultDataSourceURL));
+    settingsStorage.setItem("settingsSourceURL", JSON.stringify(defaultSettingsURL));
+    settingsStorage.setItem("unitsType", JSON.stringify(defaultUnitsType));
+
+  }
   if (sendSettings) {
     console.log("Grabbing Settings.");
-    settingsPoll();
+    let value = settingsPoll();
 //    sendSettings = false;
   } 
-  dataPoll()
+  let value2 = dataPoll()
   
 }
 function sleep(ms) {
@@ -230,6 +247,18 @@ settingsStorage.onchange = function(evt) {
     setTimeout(function(){let data = JSON.parse(evt.newValue); let messageContent = {"theme":[data["values"][0].value]}; messaging.peerSocket.send(messageContent);}, 2500);
     me.wakeInterval = undefined;
   }
+/*  This will need to come back in some form to handle changes to THEME values.  Eval if it changed?  Or just always send?
+  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    let data = JSON.parse(evt.newValue);
+    messaging.peerSocket.send(data["values"][0].value);
+  } else {
+    console.log("companion - no connection");
+    me.wakeInterval = 2000;
+    setTimeout(function(){let data = JSON.parse(evt.newValue); messaging.peerSocket.send(data["values"][0].value);}, 2500);
+    me.wakeInterval = undefined;
+  }
+*/
+
 }
 
 

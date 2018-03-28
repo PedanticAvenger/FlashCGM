@@ -57,6 +57,8 @@ let prefBgUnits = "mg";
 // The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
 let prefHighLevel = 200;
 let prefLowLevel = 70;
+let prefHighTarget = 200;
+let prefLowTarget = 70;
 var d = new Date();
 var currSeconds = Math.round(d.getTime()/1000);
 var lastReadingTimestamp = currSeconds*1000;
@@ -76,7 +78,8 @@ let upperLine = document.getElementById("upperLine");
 let bottomLine = document.getElementById("bottomLine");
 
 function applyTheme(background, foreground) {
-  // Add Theme settings for Main screen BG color, and anything else we add as customizable.
+  //Add Theme settings for Main screen BG color, and anything else we add as customizable.
+  console.log("Called applyTheme!");
   myClock.style.fill = background;
   dailysteps.style.fill = background;
   dailystairs.style.fill = background;
@@ -326,7 +329,7 @@ function updateBGPollingStatus(timeCheck) {
     newSweepAngle = sweepAngleBase*0;
     newArcFill = "#fc0000";
     newArcBackgroundFill = "#fc0000";
-    newMissedCounter = Math.abs(timeCheck / 300);  
+    newMissedCounter = Math.floor(timeCheck / 300);  
   }
 
 //  console.log("New Sweep Angle: " + newSweepAngle);
@@ -418,15 +421,15 @@ function updategraph(data) {
       }
     }
     updateBGTrend(trend);
-//    console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel)
+    console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel)
     for (let index = 0; index <= 23; index++) {
       if (points[index] != undefined) {
         graphPoints[index].cy = (250 - points[index]) + 10;
-        if (points[index] <= prefLowLevel) {
+        if (points[index] <= prefLowTarget) {
           graphPoints[index].style.fill = "red";
-        } else if ((prefLowLevel < points[index]) && (points[index] <= prefHighLevel)) {
+        } else if ((prefLowTarget < points[index]) && (points[index] <= prefHighTarget)) {
           graphPoints[index].style.fill = "green"; 
-        } else if (prefHighLevel < points[index]) {
+        } else if (prefHighTarget < points[index]) {
           graphPoints[index].style.fill = "yellow"; 
         }
       } else if (points[index] == undefined) {
@@ -438,8 +441,8 @@ function updategraph(data) {
 function updateSettings(settings) {
 //  console.log("Whatsettings:" + JSON.stringify(settings));
   prefBgUnits = settings.settings.bgDataUnits;
-//  let prefHighTarget = obj.settings.bgTargetTop;
-//  let prefLowTarget = obj.settings.bgTargetBottom;
+  prefHighTarget = settings.settings.bgTargetTop;
+  prefLowTarget = settings.settings.bgTargetBottom;
   prefHighLevel = settings.settings.bgHighLevel;
   prefLowLevel = settings.settings.bgLowLevel;
 
