@@ -1,4 +1,5 @@
 import { settingsStorage } from "settings";
+import { me } from "companion";
 import * as messaging from "messaging";
 
 let dataUrl = JSON.parse(settingsStorage.getItem("dataSourceURL")).name;
@@ -205,7 +206,6 @@ function processDisplayData () {
 //    sendSettings = false;
   } 
   let value2 = dataPoll()
-  
 }
 
 async function initialSetup() {
@@ -222,9 +222,7 @@ async function initialSetup() {
 
   }
   console.log('Taking a break...');
-  setTimeout(function() {
-    console.log('5 second later');
-  }, (5000));
+  setTimeout(function() { console.log('5 second later'); }, 5000);
   processDisplayData();
 }
 
@@ -245,20 +243,8 @@ settingsStorage.onchange = function(evt) {
     setTimeout(function(){let data = JSON.parse(evt.newValue); let messageContent = {"theme":[data["values"][0].value]}; messaging.peerSocket.send(messageContent);}, 2500);
     me.wakeInterval = undefined;
   }
-/*  This will need to come back in some form to handle changes to THEME values.  Eval if it changed?  Or just always send?
-  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-    let data = JSON.parse(evt.newValue);
-    messaging.peerSocket.send(data["values"][0].value);
-  } else {
-    console.log("companion - no connection");
-    me.wakeInterval = 2000;
-    setTimeout(function(){let data = JSON.parse(evt.newValue); messaging.peerSocket.send(data["values"][0].value);}, 2500);
-    me.wakeInterval = undefined;
-  }
-*/
 
 }
-
 
 // Ok, so we will be having various message types going back and forth to the watch.
 // Should we set a flag in the data bundle of each message to modularize the processing on the watch-side?
