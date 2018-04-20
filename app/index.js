@@ -8,6 +8,7 @@ import * as messaging from "messaging";
 import * as fs from "fs";
 import * as util from "../common/utils";
 
+
 //Define screen change stuff
 let MainScreen = document.getElementById("MainScreen");
 let GraphScreen= document.getElementById("GraphScreen");
@@ -373,11 +374,11 @@ function updateAxisUnits(units) {
     labels[5].text = "75";
     labels[6].text = "50";
   } else if (units === "mmol") {
-    labels[0].text = "11.1";
+    labels[0].text = "11";
     labels[1].text = "9.7";
     labels[2].text = "8.3";
-    labels[3].text = "6.9";
-    labels[4].text = "5.6";
+    labels[3].text = "7.1";
+    labels[4].text = "5.5";
     labels[5].text = "4.2";
     labels[6].text = "2.7";
   }
@@ -424,7 +425,7 @@ function updategraph(data) {
     console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel)
     for (let index = 0; index <= 23; index++) {
       if (points[index] != undefined) {
-        graphPoints[index].cy = (250 - points[index]) + 10;
+        graphPoints[index].cy = (250 - points[index]) - 5;
         if (points[index] <= prefLowTarget) {
           graphPoints[index].style.fill = "red";
         } else if ((prefLowTarget < points[index]) && (points[index] <= prefHighTarget)) {

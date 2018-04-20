@@ -1,5 +1,4 @@
 import { settingsStorage } from "settings";
-import { me } from "companion";
 import * as messaging from "messaging";
 
 let dataUrl = JSON.parse(settingsStorage.getItem("dataSourceURL")).name;
@@ -19,7 +18,6 @@ let bgTrend = "Flat";
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 var currentTimestamp = Math.round(new Date().getTime()/1000);
 var lastTimestamp = 0;
-
 
 messaging.peerSocket.onopen = () => {
   console.log("Companion Socket Open");
@@ -206,6 +204,7 @@ function processDisplayData () {
 //    sendSettings = false;
   } 
   let value2 = dataPoll()
+  
 }
 
 async function initialSetup() {
@@ -222,7 +221,8 @@ async function initialSetup() {
 
   }
   console.log('Taking a break...');
-  setTimeout(function() { console.log('5 second later'); }, 5000);
+  sleep(5000);
+  console.log('5 second later');
   processDisplayData();
 }
 
@@ -244,6 +244,10 @@ settingsStorage.onchange = function(evt) {
     me.wakeInterval = undefined;
   }
 
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Ok, so we will be having various message types going back and forth to the watch.
