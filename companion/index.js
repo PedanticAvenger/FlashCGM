@@ -207,9 +207,6 @@ function processDisplayData () {
   let value2 = dataPoll()
   
 }
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function initialSetup() {
   if (settingsStorage.length === 0) {
@@ -225,8 +222,9 @@ async function initialSetup() {
 
   }
   console.log('Taking a break...');
-  await sleep(5000);
-  console.log('5 second later');
+  seTimeout(function() {
+    console.log('5 second later');
+  }, (5000));
   processDisplayData();
 }
 
