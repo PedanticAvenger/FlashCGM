@@ -222,7 +222,7 @@ async function initialSetup() {
 
   }
   console.log('Taking a break...');
-  seTimeout(function() {
+  setTimeout(function() {
     console.log('5 second later');
   }, (5000));
   processDisplayData();
