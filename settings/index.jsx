@@ -68,22 +68,32 @@ function mySettings(props) {
         title={<Text bold align="center">Data Source Settings</Text>}>
 
         <TextInput
+          defaultValue="http://127.0.0.1:17580/status.json"
           settingsKey="settingsSourceURL"
           label="Settings API URL"
-          placeholder="Please set Settings URL"
         />
         <Text>
           This is the URL the app will use to fetch settings like units, high and low thresholds from.
-          If you are using xdrip it is likely http://127.0.0.1:17580/status.json and if you are using Nightscout it is likely https://(nightscout site FQDN)>/api/v1/status.json
+          </Text><Text>
+          If you are using xDrip+ leave this blank. 
+          </Text><Text>
+          If you are using Nightscout it is likely:
+          </Text><Text italic>
+           https://(Nightscout FQDN)>/api/v1/status.json
           </Text>
         <TextInput
           settingsKey="dataSourceURL"
           label="Data API URL"
-          placeholder="Please set Data URL"
+          defaultValue="http://127.0.0.1:17580/sgv.json?count=24"
         />
         <Text>
           This is the URL the app will use to fetch data points for graph and BG value display.
-          If you are using xdrip it is likely http://127.0.0.1:17580/sgv.json and if you are using Nightscout it is likely https://(nightscout site FQDN)/api/v1/entries/sgv.json?count=24
+          </Text><Text>
+          If you are using xDrip+ leave this blank. 
+          </Text><Text>
+          If you are using Nightscout it is likely:
+          </Text><Text italic>
+           https://(Nightscout FQDN)/api/v1/entries/sgv.json?count=24
           </Text>
       </Section>
 
