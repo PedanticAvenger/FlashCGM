@@ -400,11 +400,11 @@ function updategraph(data) {
     if (points[0] != undefined) {
       if(prefBgUnits === "mg") {
         myCurrentBG.text = points[0];
-        myCurrentBG.fill = "orangered";
+        myCurrentBG.style.fill = "orangered";
         updateAxisUnits("mg");
       } else if (prefBgUnits === "mmol") {
         myCurrentBG.text = mmol(points[0]);
-        myCurrentBG.fill = "orangered";
+        myCurrentBG.style.fill = "orangered";
         updateAxisUnits("mmol")
       }
     } else if (points[0] == undefined) {
@@ -413,11 +413,11 @@ function updategraph(data) {
       } 
       if(prefBgUnits === "mg") {
         myCurrentBG.text = points[points.findIndex(findValid)];
-        myCurrentBG.fill = "grey";
+        myCurrentBG.style.fill = "grey";
         updateAxisUnits("mg");
       } else if (prefBgUnits === "mmol") {
         myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
-        myCurrentBG.fill = "grey";
+        myCurrentBG.style.fill = "grey";
         updateAxisUnits("mmol")
       }
     }
