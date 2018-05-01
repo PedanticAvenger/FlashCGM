@@ -222,21 +222,11 @@ function updateBGTrend(Trend) {
   let newFill = "#008600";
   
 //  console.log('In Trend update - ' + Trend);
-  if (Trend === "DoubleUp") {
+  if (Trend === "DoubleUp" || Trend === "DoubleDown") {
     newFill = "#FF0000";
-  } else if (Trend === "SingleUp") {
+  } else if (Trend === "SingleUp" || Trend === "FortyFiveUp" || Trend === "Flat" || Trend === "FortyFiveDown" || Trend === "SingleDown") {
     newFill = "#008600";
-  } else if (Trend === "FortyFiveUp") {
-    newFill = "#008600";
-  } else if (Trend === "Flat") {
-    newFill = "#008600";
-  } else if (Trend === "FortyFiveDown") {
-    newFill = "#008600";
-  } else if (Trend === "SingleDown") {
-    newFill = "#008000";
-  } else if (Trend === "DoubleDown") {
-    newFill = "#FF0000";
-  }
+  } 
 //    console.log("Fill: " + newFill);
     myBGTrend.style.fill = newFill;
 //    console.log("Content: " + newDirection);
@@ -398,8 +388,8 @@ function updategraph(data) {
     var datavalues = points.map(function(val) { return val == null ? -60 : val;});
 
     if (device.screen.width === 300) {
-      myGraph.setSize(280,200);
-      myGraph.setPosition(0,30);      
+      myGraph.setSize(300,172);
+      myGraph.setPosition(0,64);      
     } else {
       myGraph.setSize(348,200);
       myGraph.setPosition(0,25);
@@ -407,10 +397,10 @@ function updategraph(data) {
     myGraph.setHiLo(prefHighTarget, prefLowTarget);
     
     let minval = Math.min.apply(null,testvalues);
-    minval = minval > 36 ? 36 : minval;
+//    minval = minval > 36 ? 36 : minval;
     
     let maxval = Math.max.apply(null,testvalues);
-    maxval = maxval < 280 ? 280 : maxval;  
+//    maxval = maxval < 280 ? 280 : maxval;  
   
     myGraph.setYRange(minval, maxval);
   
@@ -419,15 +409,15 @@ function updategraph(data) {
       maxval = mmol(maxval);
       minval = mmol(minval);
       scale1.text = maxval;
-      scale2.text = (maxval * 0.75).toFixed(1);
-      scale3.text = (maxval * 0.5).toFixed(1);
-      scale4.text = (maxval * 0.25).toFixed(1);
+      scale2.text = (maxval-(maxval-minval) * 0.25).toFixed(1);
+      scale3.text = (maxval-(maxval-minval) * 0.5).toFixed(1);
+      scale4.text = (maxval-(maxval-minval) * 0.75).toFixed(1);
       scale5.text = minval;
     } else {
       scale1.text = maxval;
-      scale2.text = Math.round(maxval * 0.75);
-      scale3.text = Math.round(maxval * 0.5);
-      scale4.text = Math.round(maxval * 0.25);
+      scale2.text = Math.round(maxval-(maxval-minval) * 0.25);
+      scale3.text = Math.round(maxval-(maxval-minval) * 0.5);
+      scale4.text = Math.round(maxval-(maxval-minval) * 0.25);
       scale5.text = minval;
     }
     myGraph.update(datavalues);

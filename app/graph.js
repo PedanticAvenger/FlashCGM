@@ -86,9 +86,9 @@ export default class Graph {
     var scalingfactor = 0;
    //this._bg.style.fill = this._bgcolor;
     if (device.screen.width === 300) {
-      scalingfactor = 3;     
+      scalingfactor = -3;     
     } else {
-      scalingfactor= 20;
+      scalingfactor= -3;
     }
    this._tHighLine.y1 = this._height - ((this._tHigh-this._ymin) / this._yscale) - scalingfactor;
    this._tHighLine.y2 = this._height - ((this._tHigh-this._ymin) / this._yscale) - scalingfactor;
