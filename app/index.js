@@ -1,18 +1,29 @@
 import clock from "clock";
 import document from "document";
 import userActivity from "user-activity";
+import { me as device } from "device";
 import { HeartRateSensor } from "heart-rate";
 import { locale } from "user-settings";
 import { preferences } from "user-settings";
 import * as messaging from "messaging";
 import * as fs from "fs";
 import * as util from "../common/utils";
+import Graph from "graph.js";
 
-//Define screen change stuff
+if (!device.screen) device.screen = { width: 348, height: 250 };
+
+//Define screen change stuff and display stuff
 let MainScreen = document.getElementById("MainScreen");
 let GraphScreen= document.getElementById("GraphScreen");
+let scale1 = document.getElementById("scale1");
+let scale2 = document.getElementById("scale2");
+let scale3 = document.getElementById("scale3");
+let scale4 = document.getElementById("scale4");
+let scale5 = document.getElementById("scale5");
 let button1 = document.getElementById("button1");
 let button2 = document.getElementById("button2");
+let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{2191}","FortyFiveUp":"\u{2197}","FortyFiveDown":"\u{2198}","SingleDown":"\u{2193}","DoubleDown":"\u{2193}\u{2193}","None":"-","NOT COMPUTABLE":"-","RATE OUT OF RANGE":"-"};
+
 
 // Update the clock every minute
 clock.granularity = "seconds";
@@ -36,7 +47,6 @@ const distanceGoal = userActivity.goals.distance;
 const caloriesGoal = userActivity.goals["calories"];
 const stepsGoal = userActivity.goals.steps;
 const elevationGoal = userActivity.goals.elevationGain;
-const activeGoal = userActivity.goals.activeMinutes;
 
 // Get a handle on the <text> element
 let myClock = document.getElementById("myLabel");
@@ -50,13 +60,15 @@ let myBGUpdateRingBkgnd = document.getElementById("myBGUpdateRingBkgnd");
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrend = document.getElementById("myBGTrend");
 let bgCount = 24;
-let graph = document.getElementById("graph");
-let axis = document.getElementById("axis");
+let docGraph = document.getElementById("docGraph");
+let myGraph = new Graph(docGraph);
 let prefBgUnits = "mg";
 
 // The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
 let prefHighLevel = 200;
 let prefLowLevel = 70;
+let prefHighTarget = 200;
+let prefLowTarget = 70;
 var d = new Date();
 var currSeconds = Math.round(d.getTime()/1000);
 var lastReadingTimestamp = currSeconds*1000;
@@ -65,7 +77,6 @@ var lastReadingTimestamp = currSeconds*1000;
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
 let dailycals = document.getElementById("myCals");
-let dailymins = document.getElementById("myMins");
 let currentheart = document.getElementById("myHR");
 let heartRing = document.getElementById("hrtArc");
 let stepRing = document.getElementById("stepsArc");
@@ -76,18 +87,24 @@ let upperLine = document.getElementById("upperLine");
 let bottomLine = document.getElementById("bottomLine");
 
 function applyTheme(background, foreground) {
-  // Add Theme settings for Main screen BG color, and anything else we add as customizable.
+  //Add Theme settings for Main screen color, and anything else we add as customizable.
+//  console.log("Called applyTheme!");
   myClock.style.fill = background;
   dailysteps.style.fill = background;
   dailystairs.style.fill = background;
   dailycals.style.fill = background;
-  dailymins.style.fill = background;
   heart.style.fill = background;
   myDate.style.fill = foreground;
   upperLine.style.fill = foreground;
   bottomLine.style.fill = foreground;
 }
 
+function applyBgTheme(foreground) {
+  //Add Theme settings for Main screen BG color, and anything else we add as customizable.
+  console.log("Called applyBgTheme!");
+  myCurrentBG.style.fill = foreground;
+  myBGUnits.style.fill = foreground;
+}
 function mmol( bg ) {
   let mmolBG = myNamespace.round( (bg / 18.0182), 1 ).toFixed(1);
   return mmolBG;
@@ -119,12 +136,9 @@ function updateStats() {
   const amountSteps = userActivity.today.adjusted[metricSteps] || 0;
   const metricCals = "calories";  // distance, calories, elevationGain, activeMinutes
   const amountCals = userActivity.today.adjusted[metricCals] || 0;
-  const metricActive = "activeMinutes";
-  const amountActive = userActivity.today.adjusted[metricActive] || 0;
   const metricElevation = "elevationGain";
   const amountElevation = userActivity.today.adjusted[metricElevation] || 0
   dailystairs.text = amountElevation;
-  dailymins.text = amountActive;
   let stepString = util.thsdDot(amountSteps);
   let calString = util.thsdDot(amountCals);
   dailysteps.text = stepString;
@@ -206,42 +220,27 @@ function updateClock() {
 
 function updateBGTrend(Trend) {
   let newFill = "#008600";
-  let newDirection = "➡";
   
 //  console.log('In Trend update - ' + Trend);
   if (Trend === "DoubleUp") {
-//    console.log('Matched 1');
     newFill = "#FF0000";
-    newDirection = "⏫";
   } else if (Trend === "SingleUp") {
-//    console.log('Matched 2');
     newFill = "#008600";
-    newDirection = "⬆";
   } else if (Trend === "FortyFiveUp") {
-//    console.log('Matched 3');
     newFill = "#008600";
-    newDirection = "↗";
   } else if (Trend === "Flat") {
-//    console.log('Matched 4');
     newFill = "#008600";
-    newDirection = "➡";
   } else if (Trend === "FortyFiveDown") {
-//    console.log('Matched 5');
     newFill = "#008600";
-    newDirection = "↘";
   } else if (Trend === "SingleDown") {
-//    console.log('Matched 6');
     newFill = "#008000";
-    newDirection = "↘";
   } else if (Trend === "DoubleDown") {
-//    console.log('Matched 7');
     newFill = "#FF0000";
-    newDirection = "⏬";
   }
 //    console.log("Fill: " + newFill);
-    myBGTrend.fill = newFill;
+    myBGTrend.style.fill = newFill;
 //    console.log("Content: " + newDirection);
-    myBGTrend.text = newDirection;
+    myBGTrend.text = arrowIcon[Trend];
 }
 
 function updateBGPollingStatus(timeCheck) {
@@ -326,7 +325,7 @@ function updateBGPollingStatus(timeCheck) {
     newSweepAngle = sweepAngleBase*0;
     newArcFill = "#fc0000";
     newArcBackgroundFill = "#fc0000";
-    newMissedCounter = Math.abs(timeCheck / 300);  
+    newMissedCounter = Math.floor(timeCheck / 300);  
   }
 
 //  console.log("New Sweep Angle: " + newSweepAngle);
@@ -358,88 +357,88 @@ messaging.peerSocket.close = () => {
 }
 
 
-function updateAxisUnits(units) {
-  // This needs to be integrated into an autoscaling graph function(s)  static is no good
-  let labels = axis.getElementsByClassName('graph-data-range');
-  if (units === "mg") {
-    labels[0].text = "200";
-    labels[1].text = "175";
-    labels[2].text = "150";
-    labels[3].text = "125";
-    labels[4].text = "100";
-    labels[5].text = "75";
-    labels[6].text = "50";
-  } else if (units === "mmol") {
-    labels[0].text = "11.1";
-    labels[1].text = "9.7";
-    labels[2].text = "8.3";
-    labels[3].text = "6.9";
-    labels[4].text = "5.6";
-    labels[5].text = "4.2";
-    labels[6].text = "2.7";
-  }
-}
-
 function updategraph(data) {
   //  console.log("Variable Type: " + typeof messageData);
     /*
       Before recode this only built the graph points.
       Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
     */
-    let graphPoints = graph.getElementsByClassName('graph-point');
-
     var points = data.bgdata.graphData;
     var trend = data.bgdata.currentTrend;
     var lastPollTime = data.bgdata.lastPollTime;
     lastReadingTimestamp = data.bgdata.lastPollTime;
   
-    if (points[0] != undefined) {
+    if (points[23] != undefined) {
       if(prefBgUnits === "mg") {
-        myCurrentBG.text = points[0];
-        myCurrentBG.fill = "orangered";
-        updateAxisUnits("mg");
+        myCurrentBG.text = points[23];
+        myCurrentBG.style.fill = "orangered";
       } else if (prefBgUnits === "mmol") {
-        myCurrentBG.text = mmol(points[0]);
-        myCurrentBG.fill = "orangered";
-        updateAxisUnits("mmol")
+        myCurrentBG.text = mmol(points[23]);
+        myCurrentBG.style.fill = "orangered";
       }
-    } else if (points[0] == undefined) {
+    } else if (points[23] == undefined) {
       function findValid(element) {
        return element != undefined;
       } 
       if(prefBgUnits === "mg") {
         myCurrentBG.text = points[points.findIndex(findValid)];
-        myCurrentBG.fill = "grey";
-        updateAxisUnits("mg");
+        myCurrentBG.style.fill = "grey";
       } else if (prefBgUnits === "mmol") {
         myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
-        myCurrentBG.fill = "grey";
-        updateAxisUnits("mmol")
+        myCurrentBG.style.fill = "grey";
       }
     }
     updateBGTrend(trend);
-//    console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel)
-    for (let index = 0; index <= 23; index++) {
-      if (points[index] != undefined) {
-        graphPoints[index].cy = (250 - points[index]) + 10;
-        if (points[index] <= prefLowLevel) {
-          graphPoints[index].style.fill = "red";
-        } else if ((prefLowLevel < points[index]) && (points[index] <= prefHighLevel)) {
-          graphPoints[index].style.fill = "green"; 
-        } else if (prefHighLevel < points[index]) {
-          graphPoints[index].style.fill = "yellow"; 
-        }
-      } else if (points[index] == undefined) {
-        graphPoints[index].cy = -10;
-      }
+    console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel);
+    console.log("High/Low Target: " + prefHighTarget + "/" + prefLowTarget);
+
+    let docGraph = document.getElementById("docGraph");
+    let myGraph = new Graph(docGraph);
+    var testvalues = points.map(function(o) { return o; }).filter(isFinite);
+    var datavalues = points.map(function(val) { return val == null ? -60 : val;});
+
+    if (device.screen.width === 300) {
+      myGraph.setSize(280,200);
+      myGraph.setPosition(0,30);      
+    } else {
+      myGraph.setSize(348,200);
+      myGraph.setPosition(0,25);
     }
-  }
+    myGraph.setHiLo(prefHighTarget, prefLowTarget);
+    
+    let minval = Math.min.apply(null,testvalues);
+    minval = minval > 36 ? 36 : minval;
+    
+    let maxval = Math.max.apply(null,testvalues);
+    maxval = maxval < 280 ? 280 : maxval;  
+  
+    myGraph.setYRange(minval, maxval);
+  
+    // Update Y axis labels
+    if (prefBgUnits == "mmol") {
+      maxval = mmol(maxval);
+      minval = mmol(minval);
+      scale1.text = maxval;
+      scale2.text = (maxval * 0.75).toFixed(1);
+      scale3.text = (maxval * 0.5).toFixed(1);
+      scale4.text = (maxval * 0.25).toFixed(1);
+      scale5.text = minval;
+    } else {
+      scale1.text = maxval;
+      scale2.text = Math.round(maxval * 0.75);
+      scale3.text = Math.round(maxval * 0.5);
+      scale4.text = Math.round(maxval * 0.25);
+      scale5.text = minval;
+    }
+    myGraph.update(datavalues);
+
+}
 
 function updateSettings(settings) {
 //  console.log("Whatsettings:" + JSON.stringify(settings));
   prefBgUnits = settings.settings.bgDataUnits;
-//  let prefHighTarget = obj.settings.bgTargetTop;
-//  let prefLowTarget = obj.settings.bgTargetBottom;
+  prefHighTarget = settings.settings.bgTargetTop;
+  prefLowTarget = settings.settings.bgTargetBottom;
   prefHighLevel = settings.settings.bgHighLevel;
   prefLowLevel = settings.settings.bgLowLevel;
 
@@ -447,20 +446,21 @@ function updateSettings(settings) {
 }
 
 // Listen for the onmessage event
-/*
-Alright, need to update message handling to send back current steps and heartrate.
-Wondering if HR and Steps should be triggered by updateClock() or by activity in updateBGStats().
-*/
 messaging.peerSocket.onmessage = function(evt) {
-  console.log(JSON.stringify(evt));
+  // console.log(JSON.stringify(evt));
   if (evt.data.hasOwnProperty("settings")) {
-    console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
+   // console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
     updateSettings(evt.data)
   } else if (evt.data.hasOwnProperty("bgdata")) {
-    console.log("Triggered watch data update: " + JSON.stringify(evt.data));
+  //  console.log("Triggered watch data update: " + JSON.stringify(evt.data));
     updategraph(evt.data);
+  } else if (evt.data.hasOwnProperty("bgDisplayColor")) {
+   // console.log("Triggered watch bgtheme update: " + JSON.stringify(evt.data));
+    var newcolor = evt.data.bgDisplayColor;
+  //  console.log("bgtheme color: " + newcolor);
+    applyBgTheme(evt.data.bgDisplayColor);
   } else if (evt.data.hasOwnProperty("theme")) {
-    console.log("Triggered a theme update." + JSON.stringify(evt));
+   // console.log("Triggered a theme update." + JSON.stringify(evt));
     applyTheme(evt.data.theme.background, evt.data.theme.foreground);
     let json_theme = {"backg": evt.data.theme.background, "foreg": evt.data.theme.foreground};
     fs.writeFileSync("theme.txt", json_theme, "json");

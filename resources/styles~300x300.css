@@ -3,7 +3,7 @@
 }
 
 #myLabel {
-  font-size: 75;
+  font-size: 70;
   font-weight: bold;
   font-family: Colfax-Medium;
   text-length: 80;
@@ -14,7 +14,7 @@
 }
 
 #myDate {
-  font-size: 25;
+  font-size: 24;
   font-family: Colfax-Regular;
   text-length: 40;
   text-anchor: middle;
@@ -25,23 +25,23 @@
 
 
 #myCurrentBG {
-  font-size: 70;
+  font-size: 65;
   font-family: Seville-Bold-Condensed;
   text-length: 20;
-  text-anchor: start;
-  x: 63%;
-  y: 25%;
+  text-anchor: middle;
+  x: 80%;
+  y: 30%;
   fill: orangered;
 }
 
 
 #myBGUnits {
-  font-size: 24;
+  font-size: 20;
   font-family: Seville-Regular;
   text-length: 20;
-  text-anchor: start;
-  x: 83%;
-  y: 20%+35;
+  text-anchor: middle;
+  x: 90%;
+  y: 38%;
   fill: orangered;
 }
 
@@ -57,13 +57,13 @@
 }
 
 #myBGTrend {
-  font-size: 40;
-  font-family: Seville-Bold;
+  font-size: 80;
+  font-family: Fabrikat;
   font-weight: regular;
   text-length: 30;
   text-anchor: middle;
-  x: 315;
-  y: 130;
+  x: 90%;
+  y: 45%;
   fill: green;
 }
 
@@ -72,8 +72,8 @@
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 250;
-  y: 125;
+  x: 65%+20;
+  y: 40%+30;
   fill: orangered;
 }
 
@@ -82,8 +82,8 @@
   font-family: Fabrikat;
   text-length: 80;
   text-anchor: middle;
-  x: 89%;
-  y: 57%;
+  x: 87%;
+  y: 55%;
   fill: orangered;
 }
 
@@ -93,7 +93,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 12.5%;
-  y: 94%;
+  y: 90%;
   fill: #f8fcf8;
 }
 
@@ -107,14 +107,13 @@
   fill: #f8fcf8;
 }
 
-
 #myCals {
   font-size: 28;
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
   x: 62.5%;
-  y: 94%;
+  y: 90%;
   fill: #f8fcf8;
 }
 
@@ -124,7 +123,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 87.5%;
-  y: 94%;
+  y: 90%;
   fill: #f8fcf8;
 }
 
@@ -133,6 +132,13 @@
   fill: white;
   text-anchor: middle;
   text-length: 65;
+}
+
+#graph-data-range {
+  font-family: System-Light;
+  fill: gainsboro;
+  text-length: 15;
+  font-size:18;
 }
 
 .scale{
