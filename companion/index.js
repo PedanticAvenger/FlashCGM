@@ -32,8 +32,8 @@ const dataPoll = () => {
   if (dataUrl == "" || dataUrl == null) {
     dataUrl = "http://127.0.0.1:17580/sgv.json?count=24&brief_mode=Y";
   }
-//  console.log('Open Data API CONNECTION');
-//  console.log(dataUrl);
+  console.log('Open Data API CONNECTION');
+  console.log(dataUrl);
   if(dataUrl) {
     fetch(dataUrl,{
       method: 'GET',
@@ -45,7 +45,7 @@ const dataPoll = () => {
       .then(response => {
  //       console.log('Get Data From Phone');
         response.text().then(data => {
-//          console.log('fetched Data from API');
+          console.log('fetched Data from API');
           let obj = JSON.parse(data);
           let returnval = buildGraphData(data);
         })
@@ -74,8 +74,8 @@ const settingsPoll = () => {
   if (dataUrl == "" || dataUrl == null) {
     dataUrl = "http://127.0.0.1:17580/status.json";
   }
-//  console.log('Open Settings API CONNECTION');
-//  console.log(settingsUrl);
+  console.log('Open Settings API CONNECTION');
+  console.log(settingsUrl);
   if (settingsUrl) {
     fetch(settingsUrl, {
       method: 'GET',
@@ -87,7 +87,7 @@ const settingsPoll = () => {
       .then(response => {
  //       console.log('Get Settings From Phone');
         response.text().then(statusreply => {
-//          console.log("fetched settings from API");
+          console.log("fetched settings from API");
           let returnval = buildSettings(statusreply);
         })
           .catch(responseParsingError => {
@@ -158,7 +158,7 @@ function buildGraphData(data) {
         runningTimestamp = runningTimestamp - 300000;
         graphpointindex++;
       }
-      if(graphpointindex <24) {
+      if(graphpointindex < 24) {
         points[graphpointindex] = obj[index].sgv;
        runningTimestamp = obj[index].date;
       }
@@ -178,6 +178,7 @@ function buildGraphData(data) {
       "currentTrend": bgTrend
     }
   };
+  console.log(JSON.stringify(messageContent));
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
@@ -277,4 +278,4 @@ function sleep(ms) {
 }
 
 initialSetup();
-setInterval(processDisplayData, 150000); // Run every 2.5 min.
+setInterval(processDisplayData, 75000); // Run every 2.5 min.

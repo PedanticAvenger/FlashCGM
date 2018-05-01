@@ -141,6 +141,22 @@
   font-size:18;
 }
 
+.scale{
+  font-family: System-Light;
+  font-size: 18;
+  fill: white;
+  text-anchor: end;
+  text-length: 4;
+}
+
+.scaletick{
+  font-family: System-Light;
+  font-size: 14;
+  fill: white;
+  text-anchor: start;
+  text-length: 4;
+}
+
 .gval {
   fill: green;
 }

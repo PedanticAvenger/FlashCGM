@@ -13,6 +13,11 @@ import Graph from "graph.js";
 //Define screen change stuff and display stuff
 let MainScreen = document.getElementById("MainScreen");
 let GraphScreen= document.getElementById("GraphScreen");
+let scale1 = document.getElementById("scale1");
+let scale2 = document.getElementById("scale2");
+let scale3 = document.getElementById("scale3");
+let scale4 = document.getElementById("scale4");
+let scale5 = document.getElementById("scale5");
 let button1 = document.getElementById("button1");
 let button2 = document.getElementById("button2");
 let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{2191}","FortyFiveUp":"\u{2197}","FortyFiveDown":"\u{2198}","SingleDown":"\u{2193}","DoubleDown":"\u{2193}\u{2193}","None":"-","NOT COMPUTABLE":"-","RATE OUT OF RANGE":"-"};
@@ -81,7 +86,7 @@ let bottomLine = document.getElementById("bottomLine");
 
 function applyTheme(background, foreground) {
   //Add Theme settings for Main screen color, and anything else we add as customizable.
-  console.log("Called applyTheme!");
+//  console.log("Called applyTheme!");
   myClock.style.fill = background;
   dailysteps.style.fill = background;
   dailystairs.style.fill = background;
@@ -361,15 +366,15 @@ function updategraph(data) {
     var lastPollTime = data.bgdata.lastPollTime;
     lastReadingTimestamp = data.bgdata.lastPollTime;
   
-    if (points[0] != undefined) {
+    if (points[23] != undefined) {
       if(prefBgUnits === "mg") {
-        myCurrentBG.text = points[0];
+        myCurrentBG.text = points[23];
         myCurrentBG.style.fill = "orangered";
       } else if (prefBgUnits === "mmol") {
-        myCurrentBG.text = mmol(points[0]);
+        myCurrentBG.text = mmol(points[23]);
         myCurrentBG.style.fill = "orangered";
       }
-    } else if (points[0] == undefined) {
+    } else if (points[23] == undefined) {
       function findValid(element) {
        return element != undefined;
       } 
@@ -382,16 +387,41 @@ function updategraph(data) {
       }
     }
     updateBGTrend(trend);
-//    console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel)
+    console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel);
+    console.log("High/Low Target: " + prefHighTarget + "/" + prefLowTarget);
 
     let docGraph = document.getElementById("docGraph");
     let myGraph = new Graph(docGraph);
     var testvalues = points.map(function(o) { return o; }).filter(isFinite);
     var datavalues = points.map(function(val) { return val == null ? 0 : val;});
-    myGraph.setSize(348,250);
-    myGraph.setPosition(0,0);
+    myGraph.setSize(348,200);
+    myGraph.setPosition(0,25);
     myGraph.setHiLo(prefHighTarget, prefLowTarget);
-    myGraph.setYRange(Math.min.apply(null,testvalues), Math.max.apply(null,testvalues));
+    
+    let minval = Math.min.apply(null,testvalues);
+    minval = minval > 36 ? 36 : minval;
+    
+    let maxval = Math.max.apply(null,testvalues);
+    maxval = maxval < 280 ? 280 : maxval;  
+  
+    myGraph.setYRange(minval, maxval);
+  
+    // Update Y axis labels
+    if (prefBgUnits == "mmol") {
+      maxval = mmol(maxval);
+      minval = mmol(minval);
+      scale1.text = maxval;
+      scale2.text = (maxval * 0.75).toFixed(1);
+      scale3.text = (maxval * 0.5).toFixed(1);
+      scale4.text = (maxval * 0.25).toFixed(1);
+      scale5.text = minval;
+    } else {
+      scale1.text = maxval;
+      scale2.text = Math.round(maxval * 0.75);
+      scale3.text = Math.round(maxval * 0.5);
+      scale4.text = Math.round(maxval * 0.25);
+      scale5.text = minval;
+    }
     myGraph.update(datavalues);
 
 }
@@ -408,10 +438,6 @@ function updateSettings(settings) {
 }
 
 // Listen for the onmessage event
-/*
-Alright, need to update message handling to send back current steps and heartrate.
-Wondering if HR and Steps should be triggered by updateClock() or by activity in updateBGStats().
-*/
 messaging.peerSocket.onmessage = function(evt) {
   // console.log(JSON.stringify(evt));
   if (evt.data.hasOwnProperty("settings")) {
