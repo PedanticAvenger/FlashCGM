@@ -83,12 +83,17 @@ export default class Graph {
   update(v){
      
    console.log("Updating Graph...");
+    var scalingfactor = 0;
    //this._bg.style.fill = this._bgcolor;
-   
-   this._tHighLine.y1 = this._height - ((this._tHigh-this._ymin) / this._yscale) - 20;
-   this._tHighLine.y2 = this._height - ((this._tHigh-this._ymin) / this._yscale) - 20;
-   this._tLowLine.y1 = this._height - ((this._tLow-this._ymin) / this._yscale) - 20;
-   this._tLowLine.y2 = this._height - ((this._tLow-this._ymin) / this._yscale) - 20;
+    if (device.screen.width === 300) {
+      scalingfactor = 3;     
+    } else {
+      scalingfactor= 20;
+    }
+   this._tHighLine.y1 = this._height - ((this._tHigh-this._ymin) / this._yscale) - scalingfactor;
+   this._tHighLine.y2 = this._height - ((this._tHigh-this._ymin) / this._yscale) - scalingfactor;
+   this._tLowLine.y1 = this._height - ((this._tLow-this._ymin) / this._yscale) - scalingfactor;
+   this._tLowLine.y2 = this._height - ((this._tLow-this._ymin) / this._yscale) - scalingfactor;
    
     
    for (var index = 0; index < this._vals.length; index++) {
@@ -98,7 +103,7 @@ export default class Graph {
      //console.log("SGV" + index + ": " + v[index].sgv + " TIME: " + v[index].date);
      //this._vals[index].cx = this._width - ((v[index].date-this._xmin) / this._xscale);
 
-     this._vals[index].cy = this._height - ((v[index]-this._ymin) / this._yscale) - 20;
+     this._vals[index].cy = this._height - ((v[index]-this._ymin) / this._yscale) - scalingfactor;
  
      if (v[index] <= this._tLow) {
           this._vals[index].style.fill = "red";

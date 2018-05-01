@@ -1,6 +1,7 @@
 import clock from "clock";
 import document from "document";
 import userActivity from "user-activity";
+import { me as device } from "device";
 import { HeartRateSensor } from "heart-rate";
 import { locale } from "user-settings";
 import { preferences } from "user-settings";
@@ -9,6 +10,7 @@ import * as fs from "fs";
 import * as util from "../common/utils";
 import Graph from "graph.js";
 
+if (!device.screen) device.screen = { width: 348, height: 250 };
 
 //Define screen change stuff and display stuff
 let MainScreen = document.getElementById("MainScreen");
@@ -393,9 +395,15 @@ function updategraph(data) {
     let docGraph = document.getElementById("docGraph");
     let myGraph = new Graph(docGraph);
     var testvalues = points.map(function(o) { return o; }).filter(isFinite);
-    var datavalues = points.map(function(val) { return val == null ? 0 : val;});
-    myGraph.setSize(348,200);
-    myGraph.setPosition(0,25);
+    var datavalues = points.map(function(val) { return val == null ? -60 : val;});
+
+    if (device.screen.width === 300) {
+      myGraph.setSize(280,200);
+      myGraph.setPosition(0,30);      
+    } else {
+      myGraph.setSize(348,200);
+      myGraph.setPosition(0,25);
+    }
     myGraph.setHiLo(prefHighTarget, prefLowTarget);
     
     let minval = Math.min.apply(null,testvalues);
