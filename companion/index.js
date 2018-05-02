@@ -3,21 +3,22 @@ import * as messaging from "messaging";
 import { me } from "companion"; 
 
 //let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
-let bgDataType = "mg";
-let sendSettings = true;
+var bgDataType = "mg";
+var sendSettings = true;
 
 var bgDataUnits = "mg";
 var bgHighLevel = 0;
 var bgLowLevel = 0;
 var bgTargetTop = 0;
 var bgTargetBottom = 0;
-let bgTrend = "Flat";
+var bgTrend = "Flat";
 
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 var currentTimestamp = Math.round(new Date().getTime()/1000);
 var lastTimestamp = 0;
 var dataUrl;
 var settingsUrl;
+var lastSettingsUpdate = 0;
 
 messaging.peerSocket.onopen = () => {
   console.log("Companion Socket Open");
@@ -69,48 +70,55 @@ const dataPoll = () => {
   return true;
 };
 
-const settingsPoll = () => {
-  settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
-  if (dataUrl == "" || dataUrl == null) {
-    dataUrl = "http://127.0.0.1:17580/status.json";
-  }
-  console.log('Open Settings API CONNECTION');
-  console.log(settingsUrl);
-  if (settingsUrl) {
-    fetch(settingsUrl, {
-      method: 'GET',
-      mode: 'cors',
-      headers: new Headers({
-        "Content-Type": 'application/json; charset=utf-8',
-      }),
-    })
-      .then(response => {
- //       console.log('Get Settings From Phone');
-        response.text().then(statusreply => {
-          console.log("fetched settings from API");
-          let returnval = buildSettings(statusreply);
-        })
-          .catch(responseParsingError => {
-            console.log('Response parsing error in settings!');
-            console.log(responseParsingError.name);
-            console.log(responseParsingError.message);
-            console.log(responseParsingError.toString());
-            console.log(responseParsingError.stack);
-          });
-      }).catch(fetchError => {
-        console.log('Fetch error in settings!');
-        console.log(fetchError.name);
-        console.log(fetchError.message);
-        console.log(fetchError.toString());
-        console.log(fetchError.stack);
-      });
+const settingsPoll = (callback) => {
+  if ((lastSettingsUpdate+3600) <= (Date.now()/1000)) {
+    lastSettingsUpdate = Date.now()/1000;
+    
+    settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
+    if (dataUrl == "" || dataUrl == null) {
+      dataUrl = "http://127.0.0.1:17580/status.json";
+    }
+    console.log('Open Settings API CONNECTION');
+    console.log(settingsUrl);
+    if (settingsUrl) {
+      fetch(settingsUrl, {
+        method: 'GET',
+        mode: 'cors',
+        headers: new Headers({
+          "Content-Type": 'application/json; charset=utf-8',
+        }),
+      })
+        .then(response => {
+   //       console.log('Get Settings From Phone');
+          response.text().then(statusreply => {
+            console.log("fetched settings from API");
+            let returnval = buildSettings(statusreply, callback);
+          })
+            .catch(responseParsingError => {
+              console.log('Response parsing error in settings!');
+              console.log(responseParsingError.name);
+              console.log(responseParsingError.message);
+              console.log(responseParsingError.toString());
+              console.log(responseParsingError.stack);
+            });
+        }).catch(fetchError => {
+          console.log('Fetch error in settings!');
+          console.log(fetchError.name);
+          console.log(fetchError.message);
+          console.log(fetchError.toString());
+          console.log(fetchError.stack);
+        });
+    } else {
+      console.log("no url stored in app settings to use to get settings.");
+    }
   } else {
-    console.log("no url stored in app settings to use to get settings.");
+    callback();
   }
+
   return true;
 };
 
-function buildSettings(settings) {
+function buildSettings(settings, callback) {
   // Need to setup High line, Low Line, Units.
   var obj = JSON.parse(settings);
 //  console.log(JSON.stringify(obj));
@@ -132,6 +140,7 @@ function buildSettings(settings) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
   }
+  callback();
   return true;
 }
 
@@ -211,10 +220,9 @@ function restoreSettings() {
 function processDisplayData () {
   if (sendSettings) {
 //    console.log("Grabbing Settings.");
-    var value = settingsPoll();
+    var value = settingsPoll(dataPoll);
 //    sendSettings = false;
   } 
-  var value2 = dataPoll()
   
 }
 
