@@ -99,8 +99,8 @@ let prefLowLevel = 70;
 let prefHighTarget = 200;
 let prefLowTarget = 70;
 var d = new Date();
-var currSeconds = Math.round(Date.now()/1000);
 // Initialize so the face thinks it doesn't need to update for 5 seconds or so just to make sure everything is properly loaded.
+var currSeconds = Math.round(Date.now()/1000);
 var lastReadingTimestamp = currSeconds-295;
 
 
@@ -199,13 +199,7 @@ function updateClock() {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
   }
-  // Code to update the polling status for BG values, runs every 15 seconds.
-  let timeCheck =(Math.round(Date.now()/1000 -  lastReadingTimestamp)/5);
-  if ( timeCheck === parseInt(timeCheck, 10))  {
-//    console.log("Checking last poll time: " + timeCheck);
-    let checkTime = timeCheck*5;
-    updateBGPollingStatus(checkTime);
-  }
+ 
 }
 
 // Update the clock every tick event
@@ -224,7 +218,6 @@ updateClock();
 
 function applyBgTheme(foreground) {
   //Add Theme settings for Main screen BG color, and anything else we add as customizable.
-  console.log("Called applyBgTheme!");
   myCurrentBG.style.fill = foreground;
   myBGUnits.style.fill = foreground;
   myBGPollCounterLabel1.style.fill = foreground;
@@ -329,6 +322,7 @@ function updategraph(data) {
     myGraph.setPosition(0,25);
   }
   myGraph.setHiLo(prefHighTarget, prefLowTarget);
+  console.log("Hi/Lo: " + prefHighTarget + "/" + prefLowTarget);
   
   let minval = Math.min.apply(null,testvalues);  
   let maxval = Math.max.apply(null,testvalues);
@@ -359,12 +353,13 @@ function updategraph(data) {
   myGraph.update(datavalues);
 }
 
-function updateBGPollingStatus(timeCheck) {
+function updateBGPollingStatus() {
   //  console.log("Called Polling Status Update: " + timeCheck);
-    var newMissedCounter = parseInt((timeCheck / 60), 10);
+  let timeCheck = Math.round(Date.now()/1000 -  lastReadingTimestamp);
+  var newMissedCounter = parseInt((timeCheck / 60), 10);
     myMissedBGPollCounter.text = newMissedCounter;
     // If it's been > 5 min since last update ask for data.
-    if (timeCheck >= 310) {
+    if (timeCheck >= 320) {
       requestData();
     }
   }
@@ -400,11 +395,34 @@ function requestData() {
   var messageContent = {"RequestType" : "Settings" };
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
+    console.log("Sent request to companion.");
   } else {
     console.log("companion - no connection");
     me.wakeInterval = 2000;
     setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
     me.wakeInterval = undefined;
+  }
+}
+
+messaging.peerSocket.onmessage = function(evt) {
+  // console.log(JSON.stringify(evt));
+  if (evt.data.hasOwnProperty("settings")) {
+   // console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
+    updateSettings(evt.data)
+  } else if (evt.data.hasOwnProperty("bgdata")) {
+  //  console.log("Triggered watch data update: " + JSON.stringify(evt.data));
+    updategraph(evt.data);
+  } else if (evt.data.hasOwnProperty("bgDisplayColor")) {
+   // console.log("Triggered watch bgtheme update: " + JSON.stringify(evt.data));
+    var newcolor = evt.data.bgDisplayColor;
+    defaultBGColor = evt.data.bgDisplayColor;
+  //  console.log("bgtheme color: " + newcolor);
+    applyBgTheme(evt.data.bgDisplayColor);
+  } else if (evt.data.hasOwnProperty("theme")) {
+   // console.log("Triggered a theme update." + JSON.stringify(evt));
+    applyTheme(evt.data.theme.background, evt.data.theme.foreground);
+    let json_theme = {"backg": evt.data.theme.background, "foreg": evt.data.theme.foreground};
+    fs.writeFileSync("theme.txt", json_theme, "json");
   }
 }
 
@@ -470,31 +488,10 @@ btnRight.onclick = function(evt) {
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 //
-// Message Handling
+// Do I need data? functions.
 //
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-messaging.peerSocket.onmessage = function(evt) {
-  // console.log(JSON.stringify(evt));
-  if (evt.data.hasOwnProperty("settings")) {
-   // console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
-    updateSettings(evt.data)
-  } else if (evt.data.hasOwnProperty("bgdata")) {
-  //  console.log("Triggered watch data update: " + JSON.stringify(evt.data));
-    updategraph(evt.data);
-  } else if (evt.data.hasOwnProperty("bgDisplayColor")) {
-   // console.log("Triggered watch bgtheme update: " + JSON.stringify(evt.data));
-    var newcolor = evt.data.bgDisplayColor;
-    defaultBGColor = evt.data.bgDisplayColor;
-  //  console.log("bgtheme color: " + newcolor);
-    applyBgTheme(evt.data.bgDisplayColor);
-  } else if (evt.data.hasOwnProperty("theme")) {
-   // console.log("Triggered a theme update." + JSON.stringify(evt));
-    applyTheme(evt.data.theme.background, evt.data.theme.foreground);
-    let json_theme = {"backg": evt.data.theme.background, "foreg": evt.data.theme.foreground};
-    fs.writeFileSync("theme.txt", json_theme, "json");
-  }
-}
+setInterval(updateBGPollingStatus, 5000);
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 //
