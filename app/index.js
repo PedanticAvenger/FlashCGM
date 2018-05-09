@@ -8,22 +8,16 @@ import { preferences } from "user-settings";
 import * as messaging from "messaging";
 import * as fs from "fs";
 import * as util from "../common/utils";
+import { vibration } from "haptics";
 import Graph from "graph.js";
 
 if (!device.screen) device.screen = { width: 348, height: 250 };
 
-//Define screen change stuff and display stuff
-let MainScreen = document.getElementById("MainScreen");
-let GraphScreen= document.getElementById("GraphScreen");
-let scale1 = document.getElementById("scale1");
-let scale2 = document.getElementById("scale2");
-let scale3 = document.getElementById("scale3");
-let scale4 = document.getElementById("scale4");
-let scale5 = document.getElementById("scale5");
-let button1 = document.getElementById("button1");
-let button2 = document.getElementById("button2");
-let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{2191}","FortyFiveUp":"\u{2197}","FortyFiveDown":"\u{2198}","SingleDown":"\u{2193}","DoubleDown":"\u{2193}\u{2193}","None":"-","NOT COMPUTABLE":"-","RATE OUT OF RANGE":"-"};
-
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// Clock/Sensor related defines
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 // Update the clock every minute
 clock.granularity = "seconds";
@@ -52,27 +46,6 @@ const elevationGoal = userActivity.goals.elevationGain;
 let myClock = document.getElementById("myLabel");
 let myDate = document.getElementById("myDate");
 
-//Inserted for main screen CGM Data
-let myCurrentBG = document.getElementById("myCurrentBG");
-let myBGUnits = document.getElementById("myBGUnits");
-let myBGUpdateRing = document.getElementById("myBGUpdateRing");
-let myBGUpdateRingBkgnd = document.getElementById("myBGUpdateRingBkgnd");
-let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
-let myBGTrend = document.getElementById("myBGTrend");
-let bgCount = 24;
-let docGraph = document.getElementById("docGraph");
-let myGraph = new Graph(docGraph);
-let prefBgUnits = "mg";
-
-// The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
-let prefHighLevel = 200;
-let prefLowLevel = 70;
-let prefHighTarget = 200;
-let prefLowTarget = 70;
-var d = new Date();
-var currSeconds = Math.round(d.getTime()/1000);
-var lastReadingTimestamp = currSeconds*1000;
-
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
 let dailystairs = document.getElementById("myStairs");
@@ -86,6 +59,57 @@ let otherData = document.getElementById("otherData");
 let upperLine = document.getElementById("upperLine");
 let bottomLine = document.getElementById("bottomLine");
 
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// CGM Functionality related defines
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+//Define screen change stuff and display stuff
+let MainScreen = document.getElementById("MainScreen");
+let GraphScreen= document.getElementById("GraphScreen");
+let scale1 = document.getElementById("scale1");
+let scale2 = document.getElementById("scale2");
+let scale3 = document.getElementById("scale3");
+let scale4 = document.getElementById("scale4");
+let scale5 = document.getElementById("scale5");
+let button1 = document.getElementById("button1");
+let button2 = document.getElementById("button2");
+let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{2191}","FortyFiveUp":"\u{2197}","FortyFiveDown":"\u{2198}","SingleDown":"\u{2193}","DoubleDown":"\u{2193}\u{2193}","None":"-","NOT COMPUTABLE":"-","RATE OUT OF RANGE":"-"};
+
+//Inserted for main screen CGM Data
+let myCurrentBG = document.getElementById("myCurrentBG");
+let myBGUnits = document.getElementById("myBGUnits");
+let myBGPollCounterLabel1 = document.getElementById("myBGPollCounterLabel1");
+let myBGPollCounterLabel2 = document.getElementById("myBGPollCounterLabel2");
+let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
+let myBGTrend = document.getElementById("myBGTrend");
+let bgCount = 24;
+let docGraph = document.getElementById("docGraph");
+let myGraph = new Graph(docGraph);
+let prefBgUnits = "mg";
+let defaultBGColor = "grey";
+let reminderTimer = 0;
+let showAlertModal = true;
+
+// The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
+let prefHighLevel = 200;
+let prefLowLevel = 70;
+let prefHighTarget = 200;
+let prefLowTarget = 70;
+var d = new Date();
+// Initialize so the face thinks it doesn't need to update for 5 seconds or so just to make sure everything is properly loaded.
+var currSeconds = Math.round(Date.now()/1000);
+var lastReadingTimestamp = currSeconds-295;
+
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// Clock/Sensor related functions
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 function applyTheme(background, foreground) {
   //Add Theme settings for Main screen color, and anything else we add as customizable.
 //  console.log("Called applyTheme!");
@@ -97,38 +121,6 @@ function applyTheme(background, foreground) {
   myDate.style.fill = foreground;
   upperLine.style.fill = foreground;
   bottomLine.style.fill = foreground;
-}
-
-function applyBgTheme(foreground) {
-  //Add Theme settings for Main screen BG color, and anything else we add as customizable.
-  console.log("Called applyBgTheme!");
-  myCurrentBG.style.fill = foreground;
-  myBGUnits.style.fill = foreground;
-}
-function mmol( bg ) {
-  let mmolBG = myNamespace.round( (bg / 18.0182), 1 ).toFixed(1);
-  return mmolBG;
-}
-
-//functions for screen switching
-function showMainScreen() {
-  console.log("Show main screen");
-  MainScreen.style.display = "inline";
-  GraphScreen.style.display = "none";
-}
-
-function showGraphScreen() {
-  console.log("Show graph screen");
-  MainScreen.style.display = "none";
-  GraphScreen.style.display = "inline";
-}
-
-button1.onclick = function() {
-  showGraphScreen();
-}
-
-button2.onclick = function () {
-  showMainScreen();
 }
 
 function updateStats() {
@@ -207,128 +199,7 @@ function updateClock() {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
   }
-  let timeCheck =(Math.round(Date.now()/1000 -  lastReadingTimestamp)/15);
-//  console.log("Time Check: " + timeCheck)
-  if ( timeCheck === parseInt(timeCheck, 10))  {
-//    console.log("Checking last poll time: " + timeCheck);
-    let checkTime = timeCheck*15;
-    updateBGPollingStatus(checkTime);
-  }
-}
-
-
-
-function updateBGTrend(Trend) {
-  let newFill = "#008600";
-  
-//  console.log('In Trend update - ' + Trend);
-  if (Trend === "DoubleUp" || Trend === "DoubleDown") {
-    newFill = "#FF0000";
-  } else if (Trend === "SingleUp" || Trend === "FortyFiveUp" || Trend === "Flat" || Trend === "FortyFiveDown" || Trend === "SingleDown") {
-    newFill = "#008600";
-  } 
-//    console.log("Fill: " + newFill);
-    myBGTrend.style.fill = newFill;
-//    console.log("Content: " + newDirection);
-    myBGTrend.text = arrowIcon[Trend];
-}
-
-function updateBGPollingStatus(timeCheck) {
-  /* Ok, we should be looking at the timestamp of the last polled datapoint.
-  There may be issues if we are grabbing data from nightscout rather than the paired phone but
-  it should really be at most a minute out in a scenario like parent has watch and following child
-  with child phone updating nightscout.
-  */
-  //This angle updates in 72 degree increments per minute to fill ring in 5 min.
-  
-  var sweepAngleBase = 90;
-  var newSweepAngle = 0;
-  var newArcFill = "#7CFC00";
-  var newArcBackgroundFill = "#333344";
-  var newMissedCounter = 0;
-//  console.log("Called Polling Status Update: " + timeCheck);
-  
-  if (0 <= timeCheck && timeCheck < 60) {
-    newSweepAngle = 0;
-  }else if (60 <= timeCheck && timeCheck < 120) {
-    newSweepAngle = sweepAngleBase*1;
-  }else if (120 <= timeCheck && timeCheck < 180) {
-    newSweepAngle = sweepAngleBase*2;
-    newArcFill = "#7CFC00";
-  }else if (180 <= timeCheck && timeCheck < 240) {
-    newSweepAngle = sweepAngleBase*3;
-    newArcFill = "#7CFC00";
-  }else if (240 <= timeCheck && timeCheck < 300) {
-    newSweepAngle = sweepAngleBase*4;
-    newArcFill = "#7CFC00";
-  }else if (300 <= timeCheck && timeCheck < 360) {
-    newSweepAngle = sweepAngleBase*0;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;        
-  }else if (360 <= timeCheck && timeCheck < 420) {
-    newSweepAngle = sweepAngleBase*1;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;    
-  }else if (420 <= timeCheck && timeCheck < 480) {
-    newSweepAngle = sweepAngleBase*2;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;    
-  }else if (480 <= timeCheck && timeCheck < 540) {
-    newSweepAngle = sweepAngleBase*3;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;    
-  }else if (540 <= timeCheck && timeCheck < 600) {
-    newSweepAngle = sweepAngleBase*4;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;    
-  }else if (600 <= timeCheck && timeCheck < 660) {
-    newSweepAngle = sweepAngleBase*0;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;
-  }else if (660 <= timeCheck && timeCheck < 720) {
-    newSweepAngle = sweepAngleBase*1;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;
-  }else if (720 <= timeCheck && timeCheck < 780) {
-    newSweepAngle = sweepAngleBase*2;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;    
-  }else if (780 <= timeCheck && timeCheck < 840) {
-    newSweepAngle = sweepAngleBase*3;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;  
-  }else if (840 <= timeCheck && timeCheck < 900) {
-    newSweepAngle = sweepAngleBase*4;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;  
-  }else if (900 <= timeCheck) {
-    newSweepAngle = sweepAngleBase*0;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#fc0000";
-    newMissedCounter = Math.floor(timeCheck / 300);  
-  }
-
-//  console.log("New Sweep Angle: " + newSweepAngle);
-  myBGUpdateRing.sweepAngle = newSweepAngle;
-//  console.log("New Arc Color: " + newArcFill);
-  myBGUpdateRing.style.fill = newArcFill;
-//  console.log("New fill Color: " + newArcBackgroundFill);
-  myBGUpdateRingBkgnd.style.fill = newArcBackgroundFill;
-//  console.log("New counter: " + newMissedCounter);
-  myMissedBGPollCounter.text = newMissedCounter;
-  /* myBGUpdateArc.fill should be green for the first poll, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)   myBGUpdateArcBackground.fill should be grey for the first poll, green for the second, yellow for the third then just red or set sweep angle to 0
-  I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
-  */
+ 
 }
 
 // Update the clock every tick event
@@ -338,6 +209,179 @@ clock.ontick = () => updateClock();
 applyTheme(backgdcol, foregdcol);
 updateClock();
 
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// CGM related functions
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+function applyBgTheme(foreground) {
+  //Add Theme settings for Main screen BG color, and anything else we add as customizable.
+  myCurrentBG.style.fill = foreground;
+  myBGUnits.style.fill = foreground;
+  myBGPollCounterLabel1.style.fill = foreground;
+  myBGPollCounterLabel2.style.fill = foreground;
+  myMissedBGPollCounter.style.fill = foreground;
+}
+
+function mmol( bg ) {
+  let mmolBG = myNamespace.round( (bg / 18.0182), 2 );
+  let mmolBG2 = parseFloat(Math.round(mmolBG * 100) / 100).toFixed(1);
+  return mmolBG2;
+}
+
+//functions for screen switching to/from graph
+function showMainScreen() {
+  console.log("Show main screen");
+  MainScreen.style.display = "inline";
+  GraphScreen.style.display = "none";
+}
+
+function showGraphScreen() {
+  console.log("Show graph screen");
+  MainScreen.style.display = "none";
+  GraphScreen.style.display = "inline";
+}
+
+button1.onclick = function() {
+  showGraphScreen();
+}
+
+button2.onclick = function () {
+  showMainScreen();
+}
+
+function updategraph(data) {
+  var points = data.bgdata.graphData;
+  var trend = data.bgdata.currentTrend;
+  var lastPollTime = data.bgdata.lastPollTime;
+  lastReadingTimestamp = data.bgdata.lastPollTime;
+
+  // Check to see if we have a reading or a missed reading and update display appropriately
+  // Also triger an alert if we are outside of target range.
+  if (points[23] != undefined) {
+    if(prefBgUnits === "mg") {
+      myCurrentBG.text = points[23];
+      myCurrentBG.style.fill = defaultBGColor;
+      if ((points[23] >= prefHighTarget) && (reminderTimer <= Math.round(Date.now()/1000))) {
+        let message = points[23];
+        startVibration("nudge", 3000, message);
+      }
+      if ((points[23] <= prefLowTarget) && (reminderTimer <= Math.round(Date.now()/1000)))  {
+        let message = points[23];
+        startVibration("nudge", 3000, message);
+      }
+    } else if (prefBgUnits === "mmol") {
+      myCurrentBG.text = mmol(points[23]);
+      myCurrentBG.style.fill = defaultBGColor;
+      if ((points[23] >= prefHighTarget) && (reminderTimer <= Math.round(Date.now()/1000))) {
+        let message = mmol(points[23]);
+        startVibration("nudge", 3000, message);
+      }
+      if ((points[23] <= prefLowTarget) && (reminderTimer <= Math.round(Date.now()/1000)))  {
+        let message = mmol(points[23]);
+        startVibration("nudge", 3000, message);
+      }
+    }
+
+  } else if (points[23] == undefined) {
+    function findValid(element) {
+     return element != undefined;
+    } 
+    if(prefBgUnits === "mg") {
+      myCurrentBG.text = points[points.findIndex(findValid)];
+      myCurrentBG.style.fill = "grey";
+    } else if (prefBgUnits === "mmol") {
+      myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
+      myCurrentBG.style.fill = "grey";
+    }
+  }
+
+  // Update the trend arrow based on the data poll
+  let newFill = "#008600";
+  if (trend === "DoubleUp" || trend === "DoubleDown") {
+    newFill = "#FF0000";
+  } else if (trend === "SingleUp" || trend === "FortyFiveUp" || trend === "Flat" || trend === "FortyFiveDown" || trend === "SingleDown") {
+    newFill = "#008600";
+  } 
+  myBGTrend.style.fill = newFill;
+  myBGTrend.text = arrowIcon[trend];
+
+  //Setup for the graphing function library, do some device checks, etc. to get the right display.
+  let docGraph = document.getElementById("docGraph");
+  let myGraph = new Graph(docGraph);
+  var testvalues = points.map(function(o) { return o; }).filter(isFinite);
+  var datavalues = points.map(function(val) { return val == null ? -60 : val;});
+
+  if (device.screen.width === 300) {
+    myGraph.setSize(300,172);
+    myGraph.setPosition(0,64);      
+  } else {
+    myGraph.setSize(348,200);
+    myGraph.setPosition(0,25);
+  }
+  myGraph.setHiLo(prefHighTarget, prefLowTarget);
+  console.log("Hi/Lo: " + prefHighTarget + "/" + prefLowTarget);
+  
+  let minval = Math.min.apply(null,testvalues);  
+  let maxval = Math.max.apply(null,testvalues);
+
+  // Adding some scaling to ensure that we have at least 3 mmol/L (54 mg/dL) range on the graph to keep it looking smoother.
+  while ((maxval - minval) <= 54) {
+    if (maxval <= 400) {maxval = maxval + 18;}
+    if (minval >= 40) {minval = minval - 18;}
+  }
+  myGraph.setYRange(minval, maxval);
+
+  // Update Y axis labels
+  if (prefBgUnits == "mmol") {
+    maxval = mmol(maxval);
+    minval = mmol(minval);
+    scale1.text = maxval;
+    scale2.text = (maxval-(maxval-minval) * 0.25).toFixed(1);
+    scale3.text = (maxval-(maxval-minval) * 0.5).toFixed(1);
+    scale4.text = (maxval-(maxval-minval) * 0.75).toFixed(1);
+    scale5.text = minval;
+  } else {
+    scale1.text = maxval;
+    scale2.text = Math.round(maxval-(maxval-minval) * 0.25);
+    scale3.text = Math.round(maxval-(maxval-minval) * 0.5);
+    scale4.text = Math.round(maxval-(maxval-minval) * 0.25);
+    scale5.text = minval;
+  }
+  myGraph.update(datavalues);
+}
+
+function updateBGPollingStatus() {
+  //  console.log("Called Polling Status Update: " + timeCheck);
+  let timeCheck = Math.round(Date.now()/1000 -  lastReadingTimestamp);
+  var newMissedCounter = parseInt((timeCheck / 60), 10);
+    myMissedBGPollCounter.text = newMissedCounter;
+    // If it's been > 5 min since last update ask for data.
+    if (timeCheck >= 320) {
+      requestData();
+    }
+  }
+
+function updateSettings(settings) {
+  //  console.log("Whatsettings:" + JSON.stringify(settings));
+    prefBgUnits = settings.settings.bgDataUnits;
+    prefHighTarget = settings.settings.bgTargetTop;
+    prefLowTarget = settings.settings.bgTargetBottom;
+    prefHighLevel = settings.settings.bgHighLevel;
+    prefLowLevel = settings.settings.bgLowLevel;
+    defaultBGColor = settings.settings.bgColor;
+    applyBgTheme(defaultBGColor);
+    myBGUnits.text = prefBgUnits;
+  }
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// Messaging related functions/events
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 messaging.peerSocket.onopen = () => {
   console.log("App Socket Open");
 }
@@ -346,96 +390,20 @@ messaging.peerSocket.close = () => {
   console.log("App Socket Closed");
 }
 
-
-function updategraph(data) {
-  //  console.log("Variable Type: " + typeof messageData);
-    /*
-      Before recode this only built the graph points.
-      Target for re-write is to rebuild the graph, set the current BG on main face, along with trend and set the variable for the last-poll timestamp.  Updating that will be handled in the clock update code as it runs constantly anyway.
-    */
-    var points = data.bgdata.graphData;
-    var trend = data.bgdata.currentTrend;
-    var lastPollTime = data.bgdata.lastPollTime;
-    lastReadingTimestamp = data.bgdata.lastPollTime;
-  
-    if (points[23] != undefined) {
-      if(prefBgUnits === "mg") {
-        myCurrentBG.text = points[23];
-        myCurrentBG.style.fill = "orangered";
-      } else if (prefBgUnits === "mmol") {
-        myCurrentBG.text = mmol(points[23]);
-        myCurrentBG.style.fill = "orangered";
-      }
-    } else if (points[23] == undefined) {
-      function findValid(element) {
-       return element != undefined;
-      } 
-      if(prefBgUnits === "mg") {
-        myCurrentBG.text = points[points.findIndex(findValid)];
-        myCurrentBG.style.fill = "grey";
-      } else if (prefBgUnits === "mmol") {
-        myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
-        myCurrentBG.style.fill = "grey";
-      }
-    }
-    updateBGTrend(trend);
-    console.log("High/Low: " + prefHighLevel + "/" + prefLowLevel);
-    console.log("High/Low Target: " + prefHighTarget + "/" + prefLowTarget);
-
-    let docGraph = document.getElementById("docGraph");
-    let myGraph = new Graph(docGraph);
-    var testvalues = points.map(function(o) { return o; }).filter(isFinite);
-    var datavalues = points.map(function(val) { return val == null ? -60 : val;});
-
-    if (device.screen.width === 300) {
-      myGraph.setSize(300,172);
-      myGraph.setPosition(0,64);      
-    } else {
-      myGraph.setSize(348,200);
-      myGraph.setPosition(0,25);
-    }
-    myGraph.setHiLo(prefHighTarget, prefLowTarget);
-    
-    let minval = Math.min.apply(null,testvalues);
-//    minval = minval > 36 ? 36 : minval;
-    
-    let maxval = Math.max.apply(null,testvalues);
-//    maxval = maxval < 280 ? 280 : maxval;  
-  
-    myGraph.setYRange(minval, maxval);
-  
-    // Update Y axis labels
-    if (prefBgUnits == "mmol") {
-      maxval = mmol(maxval);
-      minval = mmol(minval);
-      scale1.text = maxval;
-      scale2.text = (maxval-(maxval-minval) * 0.25).toFixed(1);
-      scale3.text = (maxval-(maxval-minval) * 0.5).toFixed(1);
-      scale4.text = (maxval-(maxval-minval) * 0.75).toFixed(1);
-      scale5.text = minval;
-    } else {
-      scale1.text = maxval;
-      scale2.text = Math.round(maxval-(maxval-minval) * 0.25);
-      scale3.text = Math.round(maxval-(maxval-minval) * 0.5);
-      scale4.text = Math.round(maxval-(maxval-minval) * 0.25);
-      scale5.text = minval;
-    }
-    myGraph.update(datavalues);
-
+function requestData() {
+  console.log("Asking for a data update from companion.");
+  var messageContent = {"RequestType" : "Settings" };
+  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    messaging.peerSocket.send(messageContent);
+    console.log("Sent request to companion.");
+  } else {
+    console.log("companion - no connection");
+    me.wakeInterval = 2000;
+    setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
+    me.wakeInterval = undefined;
+  }
 }
 
-function updateSettings(settings) {
-//  console.log("Whatsettings:" + JSON.stringify(settings));
-  prefBgUnits = settings.settings.bgDataUnits;
-  prefHighTarget = settings.settings.bgTargetTop;
-  prefLowTarget = settings.settings.bgTargetBottom;
-  prefHighLevel = settings.settings.bgHighLevel;
-  prefLowLevel = settings.settings.bgLowLevel;
-
-  myBGUnits.text = prefBgUnits;
-}
-
-// Listen for the onmessage event
 messaging.peerSocket.onmessage = function(evt) {
   // console.log(JSON.stringify(evt));
   if (evt.data.hasOwnProperty("settings")) {
@@ -447,6 +415,7 @@ messaging.peerSocket.onmessage = function(evt) {
   } else if (evt.data.hasOwnProperty("bgDisplayColor")) {
    // console.log("Triggered watch bgtheme update: " + JSON.stringify(evt.data));
     var newcolor = evt.data.bgDisplayColor;
+    defaultBGColor = evt.data.bgDisplayColor;
   //  console.log("bgtheme color: " + newcolor);
     applyBgTheme(evt.data.bgDisplayColor);
   } else if (evt.data.hasOwnProperty("theme")) {
@@ -457,7 +426,78 @@ messaging.peerSocket.onmessage = function(evt) {
   }
 }
 
-// Polyfill for shortcomings.
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// Vibration handling
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+let vibrationTimeout; 
+
+function startVibration(type, length, message) {
+  if(showAlertModal){
+    showAlert(message) 
+    vibration.start(type);
+    if(length){
+       vibrationTimeout = setTimeout(function(){ startVibration(type, length, message) }, length);
+    }
+  }
+  
+}
+
+function stopVibration() {
+  vibration.stop();
+  clearTimeout(vibrationTimeout);
+}
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// Alert Handling
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+let myPopup = document.getElementById("popup");
+let btnLeft = myPopup.getElementById("btnLeft");
+let btnRight = myPopup.getElementById("btnRight");
+let alertHeader = document.getElementById("alertHeader");
+
+
+function showAlert(message) {
+  console.log('ALERT BG')
+  console.log(message)
+    alertHeader.text = message
+    myPopup.style.display = "inline";
+ 
+}
+
+btnLeft.onclick = function(evt) {
+  console.log("Mute");
+  reminderTimer = (Math.round(Date.now()/1000) + 1800); 
+  myPopup.style.display = "none";
+  stopVibration()
+   showAlertModal = false;
+}
+
+btnRight.onclick = function(evt) {
+  console.log("Snooze");
+  reminderTimer = (Math.round(Date.now()/1000) + 900); 
+  myPopup.style.display = "none";
+  stopVibration()
+   showAlertModal = false;
+} 
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// Do I need data? functions.
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+setInterval(updateBGPollingStatus, 5000);
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// Polyfills and generic functions.
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 // https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
 if (!Array.prototype.findIndex) {
@@ -482,10 +522,10 @@ if (!Array.prototype.findIndex) {
       var thisArg = arguments[1];
 
       // 5. Let k be 0.
-      var k = 0;
+      var k = len-1;
 
       // 6. Repeat, while k < len
-      while (k < len) {
+      while (k >= 0) {
         // a. Let Pk be ! ToString(k).
         // b. Let kValue be ? Get(O, Pk).
         // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
@@ -494,8 +534,8 @@ if (!Array.prototype.findIndex) {
         if (predicate.call(thisArg, kValue, k, o)) {
           return k;
         }
-        // e. Increase k by 1.
-        k++;
+        // e. Decrease k by 1.
+        k--;
       }
 
       // 7. Return -1.

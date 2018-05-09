@@ -68,12 +68,32 @@
 }
 
 #myMissedBGPollCounter {
-  font-size: 28;
+  font-size: 30;
+  font-family: System-Regular;
+  text-length: 80;
+  text-anchor: middle;
+  x: 250;
+  y: 110;
+  fill: orangered;
+}
+
+#myBGPollCounterLabel1 {
+  font-size: 13;
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
   x: 250;
   y: 125;
+  fill: orangered;
+}
+
+#myBGPollCounterLabel2 {
+  font-size: 13;
+  font-family: System-Regular;
+  text-length: 80;
+  text-anchor: middle;
+  x: 250;
+  y: 135;
   fill: orangered;
 }
 

@@ -1,7 +1,9 @@
 MIT License
 
 Copyright (c) 2017 Fitbit, Inc, Sammy Barkowski
-CGM component integration Copyright (c) 2018 Raymond Richmond
+API Fetching base code and Vibe/Alert code Copyright (c) 2018 rytiggy
+CGM component integration code Copyright (c) 2018 Raymond Richmond
+CGM Graphing component code Copyright (c) 2018 NiVZ
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
