@@ -55,8 +55,8 @@ let myDate = document.getElementById("myDate");
 //Inserted for main screen CGM Data
 let myCurrentBG = document.getElementById("myCurrentBG");
 let myBGUnits = document.getElementById("myBGUnits");
-let myBGUpdateRing = document.getElementById("myBGUpdateRing");
-let myBGUpdateRingBkgnd = document.getElementById("myBGUpdateRingBkgnd");
+let myBGPollCounterLabel1 = document.getElementById("myBGPollCounterLabel1");
+let myBGPollCounterLabel2 = document.getElementById("myBGPollCounterLabel2");
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrend = document.getElementById("myBGTrend");
 let bgCount = 24;
@@ -70,8 +70,9 @@ let prefLowLevel = 70;
 let prefHighTarget = 200;
 let prefLowTarget = 70;
 var d = new Date();
-var currSeconds = Math.round(d.getTime()/1000);
-var lastReadingTimestamp = currSeconds*1000;
+var currSeconds = Math.round(Date.now()/1000);
+// Initialize so the face thinks it doesn't need to update for 5 seconds or so just to make sure everything is properly loaded.
+var lastReadingTimestamp = currSeconds-295;
 
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
@@ -104,10 +105,15 @@ function applyBgTheme(foreground) {
   console.log("Called applyBgTheme!");
   myCurrentBG.style.fill = foreground;
   myBGUnits.style.fill = foreground;
+  myBGPollCounterLabel1.style.fill = foreground;
+  myBGPollCounterLabel2.style.fill = foreground;
+  myMissedBGPollCounter.style.fill = foreground;
 }
+
 function mmol( bg ) {
-  let mmolBG = myNamespace.round( (bg / 18.0182), 1 ).toFixed(1);
-  return mmolBG;
+  let mmolBG = myNamespace.round( (bg / 18.0182), 2 );
+  let mmolBG2 = parseFloat(Math.round(mmolBG * 100) / 100).toFixed(1);
+  return mmolBG2;
 }
 
 //functions for screen switching
@@ -207,11 +213,11 @@ function updateClock() {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
   }
-  let timeCheck =(Math.round(Date.now()/1000 -  lastReadingTimestamp)/15);
-//  console.log("Time Check: " + timeCheck)
+  // Code to update the polling status for BG values, runs every 15 seconds.
+  let timeCheck =(Math.round(Date.now()/1000 -  lastReadingTimestamp)/5);
   if ( timeCheck === parseInt(timeCheck, 10))  {
 //    console.log("Checking last poll time: " + timeCheck);
-    let checkTime = timeCheck*15;
+    let checkTime = timeCheck*5;
     updateBGPollingStatus(checkTime);
   }
 }
@@ -234,101 +240,14 @@ function updateBGTrend(Trend) {
 }
 
 function updateBGPollingStatus(timeCheck) {
-  /* Ok, we should be looking at the timestamp of the last polled datapoint.
-  There may be issues if we are grabbing data from nightscout rather than the paired phone but
-  it should really be at most a minute out in a scenario like parent has watch and following child
-  with child phone updating nightscout.
-  */
-  //This angle updates in 72 degree increments per minute to fill ring in 5 min.
-  
-  var sweepAngleBase = 90;
-  var newSweepAngle = 0;
-  var newArcFill = "#7CFC00";
-  var newArcBackgroundFill = "#333344";
-  var newMissedCounter = 0;
 //  console.log("Called Polling Status Update: " + timeCheck);
   
-  if (0 <= timeCheck && timeCheck < 60) {
-    newSweepAngle = 0;
-  }else if (60 <= timeCheck && timeCheck < 120) {
-    newSweepAngle = sweepAngleBase*1;
-  }else if (120 <= timeCheck && timeCheck < 180) {
-    newSweepAngle = sweepAngleBase*2;
-    newArcFill = "#7CFC00";
-  }else if (180 <= timeCheck && timeCheck < 240) {
-    newSweepAngle = sweepAngleBase*3;
-    newArcFill = "#7CFC00";
-  }else if (240 <= timeCheck && timeCheck < 300) {
-    newSweepAngle = sweepAngleBase*4;
-    newArcFill = "#7CFC00";
-  }else if (300 <= timeCheck && timeCheck < 360) {
-    newSweepAngle = sweepAngleBase*0;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;        
-  }else if (360 <= timeCheck && timeCheck < 420) {
-    newSweepAngle = sweepAngleBase*1;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;    
-  }else if (420 <= timeCheck && timeCheck < 480) {
-    newSweepAngle = sweepAngleBase*2;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;    
-  }else if (480 <= timeCheck && timeCheck < 540) {
-    newSweepAngle = sweepAngleBase*3;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;    
-  }else if (540 <= timeCheck && timeCheck < 600) {
-    newSweepAngle = sweepAngleBase*4;
-    newArcFill = "#ffff00";
-    newArcBackgroundFill = "#7CFC00";
-    newMissedCounter = 1;    
-  }else if (600 <= timeCheck && timeCheck < 660) {
-    newSweepAngle = sweepAngleBase*0;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;
-  }else if (660 <= timeCheck && timeCheck < 720) {
-    newSweepAngle = sweepAngleBase*1;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;
-  }else if (720 <= timeCheck && timeCheck < 780) {
-    newSweepAngle = sweepAngleBase*2;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;    
-  }else if (780 <= timeCheck && timeCheck < 840) {
-    newSweepAngle = sweepAngleBase*3;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;  
-  }else if (840 <= timeCheck && timeCheck < 900) {
-    newSweepAngle = sweepAngleBase*4;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#ffff00";
-    newMissedCounter = 2;  
-  }else if (900 <= timeCheck) {
-    newSweepAngle = sweepAngleBase*0;
-    newArcFill = "#fc0000";
-    newArcBackgroundFill = "#fc0000";
-    newMissedCounter = Math.floor(timeCheck / 300);  
-  }
-
-//  console.log("New Sweep Angle: " + newSweepAngle);
-  myBGUpdateRing.sweepAngle = newSweepAngle;
-//  console.log("New Arc Color: " + newArcFill);
-  myBGUpdateRing.style.fill = newArcFill;
-//  console.log("New fill Color: " + newArcBackgroundFill);
-  myBGUpdateRingBkgnd.style.fill = newArcBackgroundFill;
-//  console.log("New counter: " + newMissedCounter);
+  var newMissedCounter = parseInt((timeCheck / 60), 10);
   myMissedBGPollCounter.text = newMissedCounter;
-  /* myBGUpdateArc.fill should be green for the first poll, yellow for the second, red for the third or more (leave it a solid red ring after 3 min and indicate numerically in the middle of the ring how many poll windows have been missed.)   myBGUpdateArcBackground.fill should be grey for the first poll, green for the second, yellow for the third then just red or set sweep angle to 0
-  I wonder if we should just calculate this based on 5 minute increments from last good poll or of we can find this as a value readable in the XDrip or Nightscout API endpoints?
-  */
+  // If it's been > 5 min since last update ask for data.
+  if (timeCheck >= 320) {
+    requestData();
+  }
 }
 
 // Update the clock every tick event
@@ -401,6 +320,11 @@ function updategraph(data) {
     
     let maxval = Math.max.apply(null,testvalues);
 //    maxval = maxval < 280 ? 280 : maxval;  
+    // Adding some scaling to ensure that we have at least 3mmol/L range on the graph to keep it looking smoother.
+    while ((maxval - minval) <= 54) {
+      if (maxval <= 400) {maxval = maxval + 18;}
+      if (minval >= 40) {minval = minval - 18;}
+    }
   
     myGraph.setYRange(minval, maxval);
   
@@ -433,6 +357,19 @@ function updateSettings(settings) {
   prefLowLevel = settings.settings.bgLowLevel;
 
   myBGUnits.text = prefBgUnits;
+}
+
+function requestData() {
+  console.log("Asking for a data update from companion.");
+  var messageContent = {"RequestType" : "Settings" };
+  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    messaging.peerSocket.send(messageContent);
+  } else {
+    console.log("companion - no connection");
+    me.wakeInterval = 2000;
+    setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
+    me.wakeInterval = undefined;
+  }
 }
 
 // Listen for the onmessage event
@@ -482,10 +419,10 @@ if (!Array.prototype.findIndex) {
       var thisArg = arguments[1];
 
       // 5. Let k be 0.
-      var k = 0;
+      var k = len-1;
 
       // 6. Repeat, while k < len
-      while (k < len) {
+      while (k >= 0) {
         // a. Let Pk be ! ToString(k).
         // b. Let kValue be ? Get(O, Pk).
         // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
@@ -494,8 +431,8 @@ if (!Array.prototype.findIndex) {
         if (predicate.call(thisArg, kValue, k, o)) {
           return k;
         }
-        // e. Increase k by 1.
-        k++;
+        // e. Decrease k by 1.
+        k--;
       }
 
       // 7. Return -1.

@@ -72,11 +72,9 @@ const dataPoll = () => {
 
 const settingsPoll = (callback) => {
   if ((lastSettingsUpdate+3600) <= (Date.now()/1000)) {
-    lastSettingsUpdate = Date.now()/1000;
-    
     settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
-    if (dataUrl == "" || dataUrl == null) {
-      dataUrl = "http://127.0.0.1:17580/status.json";
+    if (settingsUrl == "" || settingsUrl == null) {
+      settingsUrl = "http://127.0.0.1:17580/status.json";
     }
     console.log('Open Settings API CONNECTION');
     console.log(settingsUrl);
@@ -92,6 +90,7 @@ const settingsPoll = (callback) => {
    //       console.log('Get Settings From Phone');
           response.text().then(statusreply => {
             console.log("fetched settings from API");
+            lastSettingsUpdate = Date.now()/1000;
             let returnval = buildSettings(statusreply, callback);
           })
             .catch(responseParsingError => {
@@ -127,6 +126,8 @@ function buildSettings(settings, callback) {
   bgTargetTop = obj.settings.thresholds.bgTargetTop;
   bgTargetBottom = obj.settings.thresholds.bgTargetBottom;
   bgDataUnits = obj.settings.units;
+  var bgColor = settingsStorage.getItem("bgDisplayColor");
+  bgColor = bgColor.replace(/"/g,"");
   settingsStorage.setItem("unitsType", JSON.stringify(bgDataUnits));
   
   const messageContent = {"settings": {
@@ -134,11 +135,17 @@ function buildSettings(settings, callback) {
       "bgTargetTop" : bgTargetTop,
       "bgTargetBottom" : bgTargetBottom,
       "bgHighLevel" : bgHighLevel,
-      "bgLowLevel" : bgLowLevel
+      "bgLowLevel" : bgLowLevel,
+      "bgColor" : bgColor
     },
-}; // end of messageContent
+  }; // end of messageContent
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
+  } else {
+    console.log("companion - no connection");
+    me.wakeInterval = 2000;
+    setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
+    me.wakeInterval = undefined;
   }
   callback();
   return true;
@@ -190,6 +197,19 @@ function buildGraphData(data) {
   console.log(JSON.stringify(messageContent));
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
+  } else {
+    console.log("companion - no connection");
+    me.wakeInterval = 2000;
+    setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
+    me.wakeInterval = undefined;
+  }
+  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    messaging.peerSocket.send(messageContent);
+  } else {
+    console.log("companion - no connection");
+    me.wakeInterval = 2000;
+    setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
+    me.wakeInterval = undefined;
   }
   return true;
 }
@@ -216,34 +236,6 @@ function restoreSettings() {
       }
   }
 }
-
-function processDisplayData () {
-  if (sendSettings) {
-//    console.log("Grabbing Settings.");
-    var value = settingsPoll(dataPoll);
-//    sendSettings = false;
-  } 
-  
-}
-
-async function initialSetup() {
-  if (settingsStorage.length === 0) {
-    var defaultDataSourceURL = "http://127.0.0.1:17580/sgv.json?count=24&brief_mode=Y";
-    var defaultSettingsURL = "http://127.0.0.1:17580/status.json";
-    var defaultUnitsType = "mg/dl";
-    var defaultTheme = {background: "#f8fcf8", foreground: "#707070"};
-    var defaultbgColorTheme = "orangered";
-    
-    settingsStorage.setItem("theme", JSON.stringify(defaultTheme));
-    settingsStorage.setItem("bgDisplayColor", JSON.stringify(defaultbgColorTheme));
-    settingsStorage.setItem("dataSourceURL", JSON.stringify(defaultDataSourceURL));
-    settingsStorage.setItem("settingsSourceURL", JSON.stringify(defaultSettingsURL));
-    settingsStorage.setItem("unitsType", JSON.stringify(defaultUnitsType));
-
-  }
-  processDisplayData();
-}
-
 
 settingsStorage.onchange = function(evt) {
   restoreSettings();
@@ -281,9 +273,18 @@ settingsStorage.onchange = function(evt) {
   }
 }
 
+messaging.peerSocket.onmessage = function(evt) {
+  console.log(JSON.stringify(evt.data));
+  if (evt.data.hasOwnProperty("RequestType")) {
+   if (evt.data.RequestType === "Settings" ) {
+     settingsPoll(dataPoll);
+   }
+  }  
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-initialSetup();
-setInterval(processDisplayData, 75000); // Run every 2.5 min.
+// var value = settingsPoll(dataPoll);
+//setInterval(processDisplayData, 75000); // Run every 2.5 min.

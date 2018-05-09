@@ -1,8 +1,8 @@
 {
   "fitbit": {
-    "appUUID": "62eabe67-8b1e-4d30-bd1f-79cf2dcffb1d",
+    "appUUID": "a18fd61d-68ca-4028-af26-7ff531757715",
     "appType": "clockface",
-    "appDisplayName": "XDripFlashRing",
+    "appDisplayName": "FlashCGM",
     "iconFile": "resources/icon.png",
     "wipeColor": "#f44336",
     "requestedPermissions": [
@@ -18,7 +18,7 @@
     ],
     "i18n": {
       "en": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "de": {
         "name": "XDripFlashRing"
