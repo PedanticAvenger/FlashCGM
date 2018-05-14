@@ -82,26 +82,32 @@ let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{
 let myCurrentBG = document.getElementById("myCurrentBG");
 let myBGUnits = document.getElementById("myBGUnits");
 let myBGPollCounterLabel1 = document.getElementById("myBGPollCounterLabel1");
-let myBGPollCounterLabel2 = document.getElementById("myBGPollCounterLabel2");
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrend = document.getElementById("myBGTrend");
 let bgCount = 24;
 let docGraph = document.getElementById("docGraph");
 let myGraph = new Graph(docGraph);
-let prefBgUnits = "mg";
+let prefBgUnits = "unset";
 let defaultBGColor = "grey";
 let reminderTimer = 0;
 let showAlertModal = true;
+myBGUnits.text = prefBgUnits;  
+myCurrentBG.style.fill = "grey";
+myBGUnits.style.fill = "grey";
+myBGPollCounterLabel1.style.fill = "grey";
+myMissedBGPollCounter.style.fill = "grey";
+let vibrationTimeout; 
 
 // The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
-let prefHighLevel = 200;
-let prefLowLevel = 70;
+let prefHighLevel = 260;
+let prefLowLevel = 55;
 let prefHighTarget = 200;
-let prefLowTarget = 70;
+let prefLowTarget = 80;
 var d = new Date();
 // Initialize so the face thinks it doesn't need to update for 5 seconds or so just to make sure everything is properly loaded.
 var currSeconds = Math.round(Date.now()/1000);
 var lastReadingTimestamp = currSeconds-295;
+var lastSettingsUpdate = 0;
 
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -216,15 +222,6 @@ updateClock();
 //
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-function applyBgTheme(foreground) {
-  //Add Theme settings for Main screen BG color, and anything else we add as customizable.
-  myCurrentBG.style.fill = foreground;
-  myBGUnits.style.fill = foreground;
-  myBGPollCounterLabel1.style.fill = foreground;
-  myBGPollCounterLabel2.style.fill = foreground;
-  myMissedBGPollCounter.style.fill = foreground;
-}
-
 function mmol( bg ) {
   let mmolBG = myNamespace.round( (bg / 18.0182), 2 );
   let mmolBG2 = parseFloat(Math.round(mmolBG * 100) / 100).toFixed(1);
@@ -252,6 +249,38 @@ button2.onclick = function () {
   showMainScreen();
 }
 
+function setBGColor(bgValue) {
+  console.log("Low to High: " + prefLowLevel + "/" + prefLowTarget + "/" + prefHighTarget + "/" + prefHighLevel);
+  if (bgValue <= prefLowTarget) {
+    myCurrentBG.style.fill = "red";
+    myBGUnits.style.fill = "red";
+    myBGPollCounterLabel1.style.fill = "red";
+    myMissedBGPollCounter.style.fill = "red";
+    if (bgValue <= prefLowLevel) {
+      myCurrentBG.style.fill = "magenta";
+      myBGUnits.style.fill = "magenta";
+      myBGPollCounterLabel1.style.fill = "magenta";
+      myMissedBGPollCounter.style.fill = "magenta";
+    }
+  } else if ((bgValue > prefLowTarget) && (bgValue <= prefHighTarget)) {
+    myCurrentBG.style.fill = "fb-green";
+    myBGUnits.style.fill = "fb-green";
+    myBGPollCounterLabel1.style.fill = "fb-green";
+    myMissedBGPollCounter.style.fill = "fb-green"; 
+  } else if (bgValue > prefHighTarget) {
+    myCurrentBG.style.fill = "yellow";
+    myBGUnits.style.fill = "yellow";
+    myBGPollCounterLabel1.style.fill = "yellow";
+    myMissedBGPollCounter.style.fill = "yellow";  
+    if (bgValue >= prefHighLevel) {
+      myCurrentBG.style.fill = "red";
+      myBGUnits.style.fill = "red";
+      myBGPollCounterLabel1.style.fill = "red";
+      myMissedBGPollCounter.style.fill = "red";
+    }
+  }
+}
+
 function updategraph(data) {
   var points = data.bgdata.graphData;
   var trend = data.bgdata.currentTrend;
@@ -261,35 +290,34 @@ function updategraph(data) {
   // Check to see if we have a reading or a missed reading and update display appropriately
   // Also triger an alert if we are outside of target range.
   if (points[23] != undefined) {
-    if(prefBgUnits === "mg") {
+    setBGColor(points[23]);
+    if(prefBgUnits === "mg/dl") {
       myCurrentBG.text = points[23];
-      myCurrentBG.style.fill = defaultBGColor;
       if ((points[23] >= prefHighTarget) && (reminderTimer <= Math.round(Date.now()/1000))) {
         let message = points[23];
-        startVibration("nudge", 3000, message);
+        startAlertProcess(message);
       }
       if ((points[23] <= prefLowTarget) && (reminderTimer <= Math.round(Date.now()/1000)))  {
         let message = points[23];
-        startVibration("nudge", 3000, message);
+        startAlertProcess(message);
       }
     } else if (prefBgUnits === "mmol") {
       myCurrentBG.text = mmol(points[23]);
-      myCurrentBG.style.fill = defaultBGColor;
       if ((points[23] >= prefHighTarget) && (reminderTimer <= Math.round(Date.now()/1000))) {
         let message = mmol(points[23]);
-        startVibration("nudge", 3000, message);
+        startAlertProcess(message);
       }
       if ((points[23] <= prefLowTarget) && (reminderTimer <= Math.round(Date.now()/1000)))  {
         let message = mmol(points[23]);
-        startVibration("nudge", 3000, message);
+        startAlertProcess(message);
       }
     }
 
   } else if (points[23] == undefined) {
     function findValid(element) {
      return element != undefined;
-    } 
-    if(prefBgUnits === "mg") {
+    }     
+    if(prefBgUnits === "mg/dl") {
       myCurrentBG.text = points[points.findIndex(findValid)];
       myCurrentBG.style.fill = "grey";
     } else if (prefBgUnits === "mmol") {
@@ -302,9 +330,11 @@ function updategraph(data) {
   let newFill = "#008600";
   if (trend === "DoubleUp" || trend === "DoubleDown") {
     newFill = "#FF0000";
-  } else if (trend === "SingleUp" || trend === "FortyFiveUp" || trend === "Flat" || trend === "FortyFiveDown" || trend === "SingleDown") {
-    newFill = "#008600";
-  } 
+  } else if (trend === "FortyFiveUp" || trend === "Flat" || trend === "FortyFiveDown") {
+    newFill = "fb-green";
+  } else if (trend === "SingleUp" || trend === "SingleDown") {
+    newFill = "fb-yellow"
+  }
   myBGTrend.style.fill = newFill;
   myBGTrend.text = arrowIcon[trend];
 
@@ -321,13 +351,13 @@ function updategraph(data) {
     myGraph.setSize(348,200);
     myGraph.setPosition(0,25);
   }
-  myGraph.setHiLo(prefHighTarget, prefLowTarget);
+  myGraph.setHiLo(prefHighTarget, prefLowTarget, prefHighLevel, prefLowLevel);
   console.log("Hi/Lo: " + prefHighTarget + "/" + prefLowTarget);
   
   let minval = Math.min.apply(null,testvalues);  
   let maxval = Math.max.apply(null,testvalues);
 
-  // Adding some scaling to ensure that we have at least 3 mmol/L (54 mg/dL) range on the graph to keep it looking smoother.
+  // Adding some scaling to ensure that we have at least 3 mmol/L (54/dL) range on the graph to keep it looking smoother.
   while ((maxval - minval) <= 54) {
     if (maxval <= 400) {maxval = maxval + 18;}
     if (minval >= 40) {minval = minval - 18;}
@@ -359,21 +389,25 @@ function updateBGPollingStatus() {
   var newMissedCounter = parseInt((timeCheck / 60), 10);
     myMissedBGPollCounter.text = newMissedCounter;
     // If it's been > 5 min since last update ask for data.
-    if (timeCheck >= 320) {
-      requestData();
-    }
+  if (lastSettingsUpdate < (Date.now()/1000 - 3600)) {
+    requestData("Settings");
+  }
+  if (timeCheck >= 320 && lastSettingsUpdate != 0) {
+    requestData("Data");
+  }
+    
   }
 
-function updateSettings(settings) {
+function updateSettings(data) {
   //  console.log("Whatsettings:" + JSON.stringify(settings));
-    prefBgUnits = settings.settings.bgDataUnits;
-    prefHighTarget = settings.settings.bgTargetTop;
-    prefLowTarget = settings.settings.bgTargetBottom;
-    prefHighLevel = settings.settings.bgHighLevel;
-    prefLowLevel = settings.settings.bgLowLevel;
-    defaultBGColor = settings.settings.bgColor;
-    applyBgTheme(defaultBGColor);
+    prefBgUnits = data.settings.bgDataUnits;
+    prefHighTarget = data.settings.bgTargetTop;
+    prefLowTarget = data.settings.bgTargetBottom;
+    prefHighLevel = data.settings.bgHighLevel;
+    prefLowLevel = data.settings.bgLowLevel;
+    defaultBGColor = data.settings.bgColor;
     myBGUnits.text = prefBgUnits;
+    lastSettingsUpdate = Date.now()/1000;
   }
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -390,9 +424,9 @@ messaging.peerSocket.close = () => {
   console.log("App Socket Closed");
 }
 
-function requestData() {
+function requestData(DataType) {
   console.log("Asking for a data update from companion.");
-  var messageContent = {"RequestType" : "Settings" };
+  var messageContent = {"RequestType" : DataType };
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
     console.log("Sent request to companion.");
@@ -432,22 +466,19 @@ messaging.peerSocket.onmessage = function(evt) {
 //
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-let vibrationTimeout; 
+function startAlertProcess(message) {
+  showAlert(message);
+  startVibration("ping");
+  vibrationTimeout = setTimeout(function(){ startVibration("ping"); console.log("triggered vibe by setTimeout"); }, 10000);
+}
 
-function startVibration(type, length, message) {
-  if(showAlertModal){
-    showAlert(message) 
-    vibration.start(type);
-    if(length){
-       vibrationTimeout = setTimeout(function(){ startVibration(type, length, message) }, length);
-    }
-  }
-  
+function startVibration(type) {
+  vibration.start(type);
 }
 
 function stopVibration() {
-  vibration.stop();
   clearTimeout(vibrationTimeout);
+  vibration.stop();
 }
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -465,25 +496,27 @@ let alertHeader = document.getElementById("alertHeader");
 function showAlert(message) {
   console.log('ALERT BG')
   console.log(message)
-    alertHeader.text = message
-    myPopup.style.display = "inline";
+  alertHeader.text = message
+  myPopup.style.display = "inline";
  
 }
 
 btnLeft.onclick = function(evt) {
-  console.log("Mute");
-  reminderTimer = (Math.round(Date.now()/1000) + 1800); 
+  console.log("Snooze 4hr");
+  reminderTimer = (Math.round(Date.now()/1000) + 14400); 
+  console.log("Sleep until: " + reminderTimer); 
+  console.log("Now: " + Math.round(Date.now()/1000));
+  stopVibration();
   myPopup.style.display = "none";
-  stopVibration()
-   showAlertModal = false;
 }
 
 btnRight.onclick = function(evt) {
-  console.log("Snooze");
-  reminderTimer = (Math.round(Date.now()/1000) + 900); 
+  console.log("Snooze 30min");
+  reminderTimer = (Math.round(Date.now()/1000) + 1800); 
+  console.log("Sleep until: " + reminderTimer); 
+  console.log("Now: " + Math.round(Date.now()/1000));
+  stopVibration();
   myPopup.style.display = "none";
-  stopVibration()
-   showAlertModal = false;
 } 
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

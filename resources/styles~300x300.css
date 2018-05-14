@@ -63,8 +63,8 @@
   text-length: 30;
   text-anchor: middle;
   x: 90%;
-  y: 45%;
-  fill: green;
+  y: 55%;
+  fill: grey;
 }
 
 #myMissedBGPollCounter {
@@ -72,38 +72,18 @@
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 65%+15;
+  x: 71%;
   y: 46%;
   fill: orangered;
 }
 
 #myBGPollCounterLabel1 {
-  font-size: 13;
+  font-size: 15;
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 65%+15;
-  y: 50%;
-  fill: orangered;
-}
-
-#myBGPollCounterLabel2 {
-  font-size: 13;
-  font-family: System-Regular;
-  text-length: 80;
-  text-anchor: middle;
-  x: 65%+15;
-  y: 50%+10;
-  fill: orangered;
-}
-
-#myBGTrend {
-  font-size: 80;
-  font-family: Fabrikat;
-  text-length: 80;
-  text-anchor: middle;
-  x: 87%;
-  y: 55%;
+  x: 71%;
+  y: 50%+5;
   fill: orangered;
 }
 

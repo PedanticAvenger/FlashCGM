@@ -8,10 +8,9 @@
   <text id="myBGUnits" />
   /* Ok, changing this to an arc of 180 degrees with a white indicator arc on top and ability to change color.
   Thinking green for flat and slight rise/drop, yellow for up and down, red for double up and down */
-  <text id="myBGPollCounterLabel1" >min. since</text>
-  <text id="myBGPollCounterLabel2" >update</text>
+  <text id="myBGPollCounterLabel1" >min ago</text>
   <text id="myMissedBGPollCounter" /> 
-  <text id="myBGTrend">?</text> 
+  <text id="myBGTrend">x</text> 
   <rect id="button1" pointer-events="all" x="60%" y="0" width="40%" height="57%" opacity="0" />
 /* Modify the width of the upperLine and bottomLine to fit with BG display.  I don't remember what it was but am sure this could be further improved */
   <line id="upperLine" x1="10%" y1="40%" x2="50%" y2="40%" fill="#333333" stroke-width="1" />
@@ -24,7 +23,7 @@
   <text id="myStairs" />
   <image x="62.5%-10" y="66%" width="20" height="30" href="purepulse-calorie.png" />
   <text id="myCals" />
-  <image x="87.5%-15" y="67%" width="30" height="30" href="Twemoji.png" />
+  <image x="87.5%-15" y="66%" width="30" height="30" href="Twemoji.png" />
   <text id="myHR" />
 /*  Changed width here to get rid of the gradient on the BG stuff, was 348 px. */
   <gradientRect id="clockShade" width="60%" height="40%"

@@ -22,7 +22,9 @@ export default class Graph {
    
    this._tHigh = 162;
    this._tLow = 72;
-   
+   this._aHigh = 260;
+   this._aLow = 55;
+
    this._tHighLine = this._id.getElementById("tHigh");
    this._tLowLine = this._id.getElementById("tLow");
    
@@ -74,9 +76,11 @@ export default class Graph {
     this._bg.style.fill = c;
   }
  
-  setHiLo(h,l){
-    this._tHigh = h;
-    this._tLow = l;
+  setHiLo(th,tl,ah,al){
+    this._tHigh = th;
+    this._tLow = tl;
+    this._aHigh = ah;
+    this._aLow = al;
   }
   
   
@@ -106,11 +110,17 @@ export default class Graph {
      this._vals[index].cy = this._height - ((v[index]-this._ymin) / this._yscale) - scalingfactor;
  
      if (v[index] <= this._tLow) {
-          this._vals[index].style.fill = "red";
+       this._vals[index].style.fill = "red";
+       if (v[index] <= this._aLow) {
+        this._vals[index].style.fill = "magenta";
+       }
      } else if ((this._tLow < v[index]) && (v[index] <= this._tHigh)) {
-          this._vals[index].style.fill = "green"; 
+       this._vals[index].style.fill = "fb-green"; 
      } else if (this._tHigh < v[index]) {
-          this._vals[index].style.fill = "yellow"; 
+       this._vals[index].style.fill = "yellow"; 
+       if (this.aHigh <= v[index]) {
+        this._vals[index].style.fill = "red";
+       }
      }
      //this._vals[index].cy = this._height - 20;
      //this._vals[index].r = this._pointsize;

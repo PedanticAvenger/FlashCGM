@@ -51,25 +51,13 @@ function mySettings(props) {
                }]
             }
           />
-      <Text>BG Display Color</Text>
-          <ColorSelect
-            settingsKey="bgDisplayColor"
-            colors={[
-              {color: 'orangered'},
-              {color: 'red'},
-              {color: 'yellow'},
-              {color: 'lime'},
-              {color: 'fuchsia'},
-              {color: 'cornflowerblue'}
-            ]}
-          />
         </Section>
         <Section
         title={<Text bold align="center">Data Source Settings</Text>}>
         <Text>
           See watch face github Wiki for URL Explanations.
           </Text>
-        <Text>https://github.com/raymond-richmond/FlashCGM/wiki</Text>
+        <Text>https://github.com/PedanticAvenger/FlashCGM/wiki</Text>
           <TextInput
           defaultValue="http://127.0.0.1:17580/status.json"
           settingsKey="settingsSourceURL"
