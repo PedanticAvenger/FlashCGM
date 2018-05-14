@@ -3,10 +3,10 @@ import * as messaging from "messaging";
 import { me } from "companion"; 
 
 //let bgDataType = JSON.parse(settingsStorage.getItem("dataType"));
-var bgDataType = "mg";
+var bgDataType = "mg/dl";
 var sendSettings = true;
 
-var bgDataUnits = "mg";
+var bgDataUnits = "mg/dl";
 var bgHighLevel = 0;
 var bgLowLevel = 0;
 var bgTargetTop = 0;
@@ -70,7 +70,7 @@ const dataPoll = () => {
   return true;
 };
 
-const settingsPoll = (callback) => {
+const settingsPoll = () => {
   if ((lastSettingsUpdate+3600) <= (Date.now()/1000)) {
     settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
     if (settingsUrl == "" || settingsUrl == null) {
@@ -91,7 +91,7 @@ const settingsPoll = (callback) => {
           response.text().then(statusreply => {
             console.log("fetched settings from API");
             lastSettingsUpdate = Date.now()/1000;
-            let returnval = buildSettings(statusreply, callback);
+            let returnval = buildSettings(statusreply);
           })
             .catch(responseParsingError => {
               console.log('Response parsing error in settings!');
@@ -111,13 +111,12 @@ const settingsPoll = (callback) => {
       console.log("no url stored in app settings to use to get settings.");
     }
   } else {
-    callback();
   }
 
   return true;
 };
 
-function buildSettings(settings, callback) {
+function buildSettings(settings) {
   // Need to setup High line, Low Line, Units.
   var obj = JSON.parse(settings);
 //  console.log(JSON.stringify(obj));
@@ -126,8 +125,6 @@ function buildSettings(settings, callback) {
   bgTargetTop = obj.settings.thresholds.bgTargetTop;
   bgTargetBottom = obj.settings.thresholds.bgTargetBottom;
   bgDataUnits = obj.settings.units;
-  var bgColor = settingsStorage.getItem("bgDisplayColor");
-  bgColor = bgColor.replace(/"/g,"");
   settingsStorage.setItem("unitsType", JSON.stringify(bgDataUnits));
   
   const messageContent = {"settings": {
@@ -135,8 +132,7 @@ function buildSettings(settings, callback) {
       "bgTargetTop" : bgTargetTop,
       "bgTargetBottom" : bgTargetBottom,
       "bgHighLevel" : bgHighLevel,
-      "bgLowLevel" : bgLowLevel,
-      "bgColor" : bgColor
+      "bgLowLevel" : bgLowLevel
     },
   }; // end of messageContent
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
@@ -147,7 +143,6 @@ function buildSettings(settings, callback) {
     setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
     me.wakeInterval = undefined;
   }
-  callback();
   return true;
 }
 
@@ -276,9 +271,12 @@ settingsStorage.onchange = function(evt) {
 messaging.peerSocket.onmessage = function(evt) {
   console.log(JSON.stringify(evt.data));
   if (evt.data.hasOwnProperty("RequestType")) {
-   if (evt.data.RequestType === "Settings" ) {
-     settingsPoll(dataPoll);
-   }
+  if (evt.data.RequestType === "Settings" ) {
+     settingsPoll();
+  }
+  if (evt.data.RequestType === "Data" ) {
+   dataPoll();
+  }
   }  
 }
 

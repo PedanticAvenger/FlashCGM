@@ -16,14 +16,14 @@
         </use>
 
         <!-- Left button -->
-        <use id="btnLeft" class="dialog-half-button-left" href="#square-button-neutral">
-           <set href="#text" attributeName="text-buffer" to="Snooze 30" />
+        <use id="btnLeft" class="dialog-half-button-left" href="#square-button-negative">
+           <set href="#text" attributeName="text-buffer" to="Snooze 4hr" />
           <set href="#text" attributeName="text-anchor" to="middle" />
         </use>
 
         <!-- Right button -->
-        <use id="btnRight" class="dialog-half-button-right" href="#square-button-negative">
-          <set href="#text" attributeName="text-buffer" to="Snooze 15" />
+        <use id="btnRight" class="dialog-half-button-right" href="#square-button-neutral">
+          <set href="#text" attributeName="text-buffer" to="Snooze 30m" />
           <set href="#text" attributeName="text-anchor" to="middle" />
         </use>
       </svg>
