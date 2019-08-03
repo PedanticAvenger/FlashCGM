@@ -21,32 +21,36 @@
         "name": "FlashCGM"
       },
       "de": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "es": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "fr": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "it": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "ja": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "ko": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "nl": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "sv": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       },
       "zh-cn": {
-        "name": "XDripFlashRing"
+        "name": "FlashCGM"
       }
     }
+  },
+  "devDependencies": {
+    "@fitbit/sdk": "~3.1.2",
+    "@fitbit/sdk-cli": "^1.6.3"
   }
 }
