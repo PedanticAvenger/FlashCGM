@@ -9,7 +9,7 @@ import * as messaging from "messaging";
 import * as fs from "fs";
 import * as util from "../common/utils";
 import { vibration } from "haptics";
-import Graph from "graph.js";
+import Graph from "./graph.js";
 
 if (!device.screen) device.screen = { width: 348, height: 250 };
 
@@ -450,8 +450,6 @@ messaging.peerSocket.onmessage = function(evt) {
    // console.log("Triggered watch bgtheme update: " + JSON.stringify(evt.data));
     var newcolor = evt.data.bgDisplayColor;
     defaultBGColor = evt.data.bgDisplayColor;
-  //  console.log("bgtheme color: " + newcolor);
-    applyBgTheme(evt.data.bgDisplayColor);
   } else if (evt.data.hasOwnProperty("theme")) {
    // console.log("Triggered a theme update." + JSON.stringify(evt));
     applyTheme(evt.data.theme.background, evt.data.theme.foreground);
