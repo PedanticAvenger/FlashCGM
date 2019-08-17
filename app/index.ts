@@ -1,6 +1,7 @@
 import clock from "clock";
 import document from "document";
-import userActivity from "user-activity";
+import { today } from "user-activity";
+import { goals } from "user-activity";
 import { me as device } from "device";
 import { HeartRateSensor } from "heart-rate";
 import { locale } from "user-settings";
@@ -10,8 +11,6 @@ import * as fs from "fs";
 import * as util from "../common/utils";
 import { vibration } from "haptics";
 import Graph from "./graph.js";
-
-if (!device.screen) device.screen = { width: 348, height: 250 };
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 //
@@ -25,39 +24,39 @@ const clockPref = preferences.clockDisplay;
 let lastValueTimestamp = Date.now();
 
 try {
-  let stats = fs.statSync("theme.txt");
-  let json_themeread = fs.readFileSync("theme.txt", "json");
+  //let stats = fs.statSync("theme.txt");
+  var json_themeread = JSON.parse(fs.readFileSync("theme.txt", "json"));
 } catch (err) {
-  let json_theme = {"backg": "#f8fcf8", "foreg": "#707070"};
+  var json_theme = {"backg": "#f8fcf8", "foreg": "#707070"};
   fs.writeFileSync("theme.txt", json_theme, "json");
-  let json_themeread = fs.readFileSync("theme.txt", "json");
+  var json_themeread = JSON.parse(fs.readFileSync("theme.txt", "json"));
 }
 
 let backgdcol = json_themeread.backg || "#f8fcf8";
 let foregdcol = json_themeread.foreg || "#707070";
 
 // Get Goals to reach
-const distanceGoal = userActivity.goals.distance;
-const caloriesGoal = userActivity.goals["calories"];
-const stepsGoal = userActivity.goals.steps;
-const elevationGoal = userActivity.goals.elevationGain;
+const distanceGoal = goals.distance;
+const caloriesGoal = goals["calories"];
+const stepsGoal = goals.steps;
+const elevationGoal = goals.elevationGain;
 
 // Get a handle on the <text> element
-let myClock = document.getElementById("myLabel");
-let myDate = document.getElementById("myDate");
+let myClock = document.getElementById("myLabel") as HTMLElement;
+let myDate = document.getElementById("myDate") as HTMLElement;
 
 //Normal Flashring handles below.
-let dailysteps = document.getElementById("mySteps");
-let dailystairs = document.getElementById("myStairs");
-let dailycals = document.getElementById("myCals");
-let currentheart = document.getElementById("myHR");
-let heartRing = document.getElementById("hrtArc");
-let stepRing = document.getElementById("stepsArc");
-let calRing = document.getElementById("calsArc");
-let heart = document.getElementById("myHR");
-let otherData = document.getElementById("otherData");
-let upperLine = document.getElementById("upperLine");
-let bottomLine = document.getElementById("bottomLine");
+let dailysteps = document.getElementById("mySteps") as HTMLElement;
+let dailystairs = document.getElementById("myStairs") as HTMLElement;
+let dailycals = document.getElementById("myCals") as HTMLElement;
+let currentheart = document.getElementById("myHR") as HTMLElement;
+let heartRing = document.getElementById("hrtArc") as ArcElement;
+let stepRing = document.getElementById("stepsArc") as ArcElement;
+let calRing = document.getElementById("calsArc") as ArcElement;
+let heart = document.getElementById("myHR") as HTMLElement;
+let otherData = document.getElementById("otherData") as HTMLElement;
+let upperLine = document.getElementById("upperLine") as HTMLElement;
+let bottomLine = document.getElementById("bottomLine") as HTMLElement;
 
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -67,8 +66,8 @@ let bottomLine = document.getElementById("bottomLine");
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 //Define screen change stuff and display stuff
-let MainScreen = document.getElementById("MainScreen");
-let GraphScreen= document.getElementById("GraphScreen");
+let MainScreen = document.getElementById("MainScreen") as HTMLElement;
+let GraphScreen= document.getElementById("GraphScreen") as HTMLElement;
 let scale1 = document.getElementById("scale1");
 let scale2 = document.getElementById("scale2");
 let scale3 = document.getElementById("scale3");
@@ -79,11 +78,11 @@ let button2 = document.getElementById("button2");
 let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{2191}","FortyFiveUp":"\u{2197}","FortyFiveDown":"\u{2198}","SingleDown":"\u{2193}","DoubleDown":"\u{2193}\u{2193}","None":"-","NOT COMPUTABLE":"-","RATE OUT OF RANGE":"-"};
 
 //Inserted for main screen CGM Data
-let myCurrentBG = document.getElementById("myCurrentBG");
-let myBGUnits = document.getElementById("myBGUnits");
-let myBGPollCounterLabel1 = document.getElementById("myBGPollCounterLabel1");
-let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
-let myBGTrend = document.getElementById("myBGTrend");
+let myCurrentBG = document.getElementById("myCurrentBG") as HTMLElement;
+let myBGUnits = document.getElementById("myBGUnits") as HTMLElement;
+let myBGPollCounterLabel1 = document.getElementById("myBGPollCounterLabel1") as HTMLElement;
+let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter") as HTMLElement;
+let myBGTrend = document.getElementById("myBGTrend") as HTMLElement;
 let bgCount = 24;
 let docGraph = document.getElementById("docGraph");
 let myGraph = new Graph(docGraph);
@@ -131,34 +130,40 @@ function applyTheme(background, foreground) {
 
 function updateStats() {
   const metricSteps = "steps";  // distance, calories, elevationGain, activeMinutes
-  const amountSteps = userActivity.today.adjusted[metricSteps] || 0;
+  const amountSteps = today.adjusted[metricSteps] || 0;
   const metricCals = "calories";  // distance, calories, elevationGain, activeMinutes
-  const amountCals = userActivity.today.adjusted[metricCals] || 0;
+  const amountCals = today.adjusted[metricCals] || 0;
   const metricElevation = "elevationGain";
-  const amountElevation = userActivity.today.adjusted[metricElevation] || 0
-  dailystairs.text = amountElevation;
+  const amountElevation = today.adjusted[metricElevation] || 0
+  dailystairs.text = amountElevation.toString();
   let stepString = util.thsdDot(amountSteps);
   let calString = util.thsdDot(amountCals);
   dailysteps.text = stepString;
   let stepAngle = Math.floor(360*(amountSteps/stepsGoal));
   if ( stepAngle > 360 ) {
     stepAngle = 360;
-    stepRing.fill="#58e078";
+    stepRing.style.fill="#58e078";
   }
   stepRing.sweepAngle = stepAngle;
   dailycals.text = calString;
   let calAngle = Math.floor(360*(amountCals/caloriesGoal));
   if ( calAngle > 360 ) {
     calAngle = 360;
-    calRing.fill="#58e078";
+    calRing.style.fill="#58e078";
   }
   calRing.sweepAngle = calAngle;
 }
 
-var hrm = new HeartRateSensor();
+if (HeartRateSensor) {
+  console.log("This device has a HeartRateSensor!");
+  var hrm = new HeartRateSensor();
+  hrm.start();
+} else {
+  console.log("This device does NOT have a HeartRateSensor!");
+}
 
 hrm.onreading = function () {
-  currentheart.text = ( hrm.heartRate > 0 ) ? hrm.heartRate : "--";
+  currentheart.text = (( hrm.heartRate > 0 ) ? hrm.heartRate : "--").toString();
   lastValueTimestamp = Date.now();
   let heartAngle = Math.floor(360*((hrm.heartRate-30)/170)); //heartrate lower than 30 should not occur and 200 schould be enough anyway
   if ( heartAngle > 360 ) {
@@ -167,8 +172,7 @@ hrm.onreading = function () {
     heartAngle = 0;
   }
   heartRing.sweepAngle = heartAngle;
-}
-hrm.start();
+};
 
 // Update the <text> element with the current time
 function updateClock() {
@@ -223,9 +227,9 @@ updateClock();
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 function mmol( bg ) {
-  let mmolBG = myNamespace.round( (bg / 18.0182), 2 );
-  let mmolBG2 = parseFloat(Math.round(mmolBG * 100) / 100).toFixed(1);
-  return mmolBG2;
+  let mmolBG = myNamespace.round( (bg / 18.0182), 2 ).toFixed(1);
+  //let mmolBG2 = parseFloat((Math.round(mmolBG * 100))/100).toFixed(1);
+  return mmolBG;
 }
 
 //functions for screen switching to/from graph
@@ -281,6 +285,10 @@ function setBGColor(bgValue) {
   }
 }
 
+function findValid(element) {
+  return element != undefined;
+ } 
+
 function updategraph(data) {
   var points = data.bgdata.graphData;
   var trend = data.bgdata.currentTrend;
@@ -314,9 +322,7 @@ function updategraph(data) {
     }
 
   } else if (points[23] == undefined) {
-    function findValid(element) {
-     return element != undefined;
-    }     
+    findValid(points);
     if(prefBgUnits === "mg/dl") {
       myCurrentBG.text = points[points.findIndex(findValid)];
       myCurrentBG.style.fill = "grey";
@@ -375,9 +381,9 @@ function updategraph(data) {
     scale5.text = minval;
   } else {
     scale1.text = maxval;
-    scale2.text = Math.round(maxval-(maxval-minval) * 0.25);
-    scale3.text = Math.round(maxval-(maxval-minval) * 0.5);
-    scale4.text = Math.round(maxval-(maxval-minval) * 0.25);
+    scale2.text = Math.round(maxval-(maxval-minval) * 0.25).toString();
+    scale3.text = Math.round(maxval-(maxval-minval) * 0.5).toString();
+    scale4.text = Math.round(maxval-(maxval-minval) * 0.25).toString();
     scale5.text = minval;
   }
   myGraph.update(datavalues);
@@ -386,8 +392,8 @@ function updategraph(data) {
 function updateBGPollingStatus() {
   //  console.log("Called Polling Status Update: " + timeCheck);
   let timeCheck = Math.round(Date.now()/1000 -  lastReadingTimestamp);
-  var newMissedCounter = parseInt((timeCheck / 60), 10);
-    myMissedBGPollCounter.text = newMissedCounter;
+  var newMissedCounter = parseInt((timeCheck / 60).toString(), 10);
+    myMissedBGPollCounter.text = newMissedCounter.toString();
     // If it's been > 5 min since last update ask for data.
   if (lastSettingsUpdate < (Date.now()/1000 - 3600)) {
     requestData("Settings");
@@ -420,7 +426,7 @@ messaging.peerSocket.onopen = () => {
   console.log("App Socket Open");
 }
 
-messaging.peerSocket.close = () => {
+messaging.peerSocket.onclose = () => {
   console.log("App Socket Closed");
 }
 
@@ -432,9 +438,7 @@ function requestData(DataType) {
     console.log("Sent request to companion.");
   } else {
     console.log("companion - no connection");
-    me.wakeInterval = 2000;
     setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
-    me.wakeInterval = undefined;
   }
 }
 
@@ -485,10 +489,10 @@ function stopVibration() {
 //
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-let myPopup = document.getElementById("popup");
+let myPopup = document.getElementById("popup") as HTMLElement;
 let btnLeft = myPopup.getElementById("btnLeft");
 let btnRight = myPopup.getElementById("btnRight");
-let alertHeader = document.getElementById("alertHeader");
+let alertHeader = document.getElementById("alertHeader") as HTMLElement;
 
 
 function showAlert(message) {
@@ -576,7 +580,11 @@ if (!Array.prototype.findIndex) {
 }
 
 //Add a rounding function that displays BG values more "nicely".
-var myNamespace = {};
+interface myNamespaceType {
+  round: Function;
+};
+
+var myNamespace = {} as myNamespaceType;
 
 myNamespace.round = function(number, precision) {
     var factor = Math.pow(10, precision);
@@ -584,3 +592,13 @@ myNamespace.round = function(number, precision) {
     var roundedTempNumber = Math.round(tempNumber);
     return roundedTempNumber / factor;
 };
+
+//Nice suggestion on catching undefined elements and throwing an error you can work with.
+export const getElementById = (id: string, root: ElementSearch = document) => {
+  const element = root.getElementById(id);
+  if (!element) {
+      throw Error(`Element #${id} not found`);
+  }
+
+  return element;
+}
