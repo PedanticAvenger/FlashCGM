@@ -1,26 +1,15 @@
 import clock from "clock";
 import document from "document";
-import { today } from "user-activity";
-import { goals } from "user-activity";
+import { today, goals } from "user-activity";
 import { me as device } from "device";
 import { HeartRateSensor } from "heart-rate";
-import { locale } from "user-settings";
-import { preferences } from "user-settings";
+import { locale, preferences } from "user-settings";
+import { vibration } from "haptics";
 import * as messaging from "messaging";
 import * as fs from "fs";
 import * as util from "../common/utils";
-import { vibration } from "haptics";
-import Graph from "./graph.js";
-
-//Nice suggestion from @Sergius on catching undefined elements and throwing an error you can work with.
-export const getElementById = (id: string, root: ElementSearch = document) => {
-  const element = root.getElementById(id);
-  if (!element) {
-      throw Error(`Element #${id} not found`);
-  }
-
-  return element;
-}
+import { getElementById, mmol } from "../common/funcs";
+import Graph from "../common/graph";
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 //
@@ -236,11 +225,6 @@ updateClock();
 //
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-function mmol( bg ) {
-  let mmolBG = myNamespace.round( (bg / 18.0182), 2 ).toFixed(1);
-  //let mmolBG2 = parseFloat((Math.round(mmolBG * 100))/100).toFixed(1);
-  return mmolBG;
-}
 
 //functions for screen switching to/from graph
 function showMainScreen() {
@@ -602,4 +586,3 @@ myNamespace.round = function(number, precision) {
     var roundedTempNumber = Math.round(tempNumber);
     return roundedTempNumber / factor;
 };
-

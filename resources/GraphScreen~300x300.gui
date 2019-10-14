@@ -2,12 +2,12 @@
     <use href="#graph" id="docGraph" x="0" y="0" width="88%" height="58%" />
     <text id="scale1" class="scale" x="100%" y="21%+6"></text>
     <text id="scale1tick" class="scaletick" x="88%" y="21%">_</text>  
-    <text id="scale2" class="scale" x="100%" y="35.5%+6"></text>
-    <text id="scale2tick" class="scaletick" x="88%" y="35.5%">_</text>  
+    <text id="scale2" class="scale" x="100%" y="35%+6"></text>
+    <text id="scale2tick" class="scaletick" x="88%" y="35%">_</text>  
     <text id="scale3" class="scale" x="100%" y="50%+6"></text>
     <text id="scale3tick" class="scaletick" x="88%" y="50%">_</text>  
-    <text id="scale4" class="scale" x="100%" y="64.5%+6"></text>
-    <text id="scale4tick" class="scaletick" x="88%" y="64.5%">_</text>  
+    <text id="scale4" class="scale" x="100%" y="64%+6"></text>
+    <text id="scale4tick" class="scaletick" x="88%" y="64%">_</text>  
     <text id="scale5" class="scale" x="100%" y="79%+6"></text>
     <text id="scale5tick" class="scaletick" x="88%" y="79%">_</text>
     <rect id="button2" pointer-events="all" x="0" y="0" width="100%" height="100%" opacity="0" />
