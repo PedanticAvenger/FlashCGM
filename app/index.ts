@@ -12,16 +12,6 @@ import * as util from "../common/utils";
 import { vibration } from "haptics";
 import Graph from "./graph.js";
 
-//Nice suggestion from @Sergius on catching undefined elements and throwing an error you can work with.
-export const getElementById = (id: string, root: ElementSearch = document) => {
-  const element = root.getElementById(id);
-  if (!element) {
-      throw Error(`Element #${id} not found`);
-  }
-
-  return element;
-}
-
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 //
 // Clock/Sensor related defines
@@ -53,21 +43,21 @@ const stepsGoal = goals.steps;
 const elevationGoal = goals.elevationGain;
 
 // Get a handle on the <text> element
-let myClock = getElementById("myLabel", document) as HTMLElement;
-let myDate = getElementById("myDate", document) as HTMLElement;
+let myClock = document.getElementById("myLabel") as HTMLElement;
+let myDate = document.getElementById("myDate") as HTMLElement;
 
 //Normal Flashring handles below.
-var dailysteps = getElementById("mySteps", document) as HTMLElement;
-var dailystairs = getElementById("myStairs", document) as HTMLElement;
-var dailycals = getElementById("myCals", document) as HTMLElement;
-var currentheart = getElementById("myHR  ", document) as HTMLElement;
-let heartRing = getElementById("hrtArc", document) as ArcElement;
-let stepRing = getElementById("stepsArc", document) as ArcElement;
-let calRing = getElementById("calsArc", document) as ArcElement;
-let heart = getElementById("myHR", document) as HTMLElement;
-let otherData = getElementById("otherData", document) as HTMLElement;
-let upperLine = getElementById("upperLine", document) as HTMLElement;
-let bottomLine = getElementById("bottomLine", document) as HTMLElement;
+var dailysteps = document.getElementById("mySteps") as HTMLElement;
+var dailystairs = document.getElementById("myStairs") as HTMLElement;
+var dailycals = document.getElementById("myCals") as HTMLElement;
+var currentheart = document.getElementById("myHR") as HTMLElement;
+let heartRing = document.getElementById("hrtArc") as ArcElement;
+let stepRing = document.getElementById("stepsArc") as ArcElement;
+let calRing = document.getElementById("calsArc") as ArcElement;
+let heart = document.getElementById("myHR") as HTMLElement;
+let otherData = document.getElementById("otherData") as HTMLElement;
+let upperLine = document.getElementById("upperLine") as HTMLElement;
+let bottomLine = document.getElementById("bottomLine") as HTMLElement;
 
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -77,24 +67,26 @@ let bottomLine = getElementById("bottomLine", document) as HTMLElement;
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 //Define screen change stuff and display stuff
-let MainScreen = getElementById("MainScreen", document) as HTMLElement;
-let GraphScreen= getElementById("GraphScreen", document) as HTMLElement;
-var scale1 = getElementById("scale1", document) as HTMLElement;
-var scale2 = getElementById("scale2", document) as HTMLElement;
-var scale3 = getElementById("scale3", document) as HTMLElement;
-var scale4 = getElementById("scale4", document) as HTMLElement;
-var scale5 = getElementById("scale5", document) as HTMLElement;
-let button1 = getElementById("button1", document) as HTMLElement;
-let button2 = getElementById("button2", document) as HTMLElement;
+let MainScreen = document.getElementById("MainScreen") as HTMLElement;
+let GraphScreen= document.getElementById("GraphScreen") as HTMLElement;
+var scale1 = document.getElementById("scale1") as HTMLElement;
+var scale2 = document.getElementById("scale2") as HTMLElement;
+var scale3 = document.getElementById("scale3") as HTMLElement;
+var scale4 = document.getElementById("scale4") as HTMLElement;
+var scale5 = document.getElementById("scale5") as HTMLElement;
+let button1 = document.getElementById("button1") as HTMLElement;
+let button2 = document.getElementById("button2") as HTMLElement;
 let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{2191}","FortyFiveUp":"\u{2197}","FortyFiveDown":"\u{2198}","SingleDown":"\u{2193}","DoubleDown":"\u{2193}\u{2193}","None":"-","NOT COMPUTABLE":"-","RATE OUT OF RANGE":"-"};
 
 //Inserted for main screen CGM Data
-let myCurrentBG = getElementById("myCurrentBG", document) as HTMLElement;
-let myBGUnits = getElementById("myBGUnits", document) as HTMLElement;
-let myBGPollCounterLabel1 = getElementById("myBGPollCounterLabel1", document) as HTMLElement;
-let myMissedBGPollCounter = getElementById("myMissedBGPollCounter", document) as HTMLElement;
-let myBGTrend = getElementById("myBGTrend", document) as HTMLElement;
+let myCurrentBG = document.getElementById("myCurrentBG") as HTMLElement;
+let myBGUnits = document.getElementById("myBGUnits") as HTMLElement;
+let myBGPollCounterLabel1 = document.getElementById("myBGPollCounterLabel1") as HTMLElement;
+let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter") as HTMLElement;
+let myBGTrend = document.getElementById("myBGTrend") as HTMLElement;
 let bgCount = 24;
+let docGraph = document.getElementById("docGraph");
+let myGraph = new Graph(docGraph);
 let prefBgUnits = "unset";
 let defaultBGColor = "grey";
 let reminderTimer = 0;
@@ -355,7 +347,7 @@ function updategraph(data) {
   myBGTrend.text = arrowIcon[trend];
 
   //Setup for the graphing function library, do some device checks, etc. to get the right display.
-  let docGraph = getElementById("docGraph", document);
+  let docGraph = document.getElementById("docGraph");
   let myGraph = new Graph(docGraph);
   var testvalues = points.map(function(o) { return o; }).filter(isFinite);
   var datavalues = points.map(function(val) { return val == null ? -60 : val;});
@@ -499,10 +491,10 @@ function stopVibration() {
 //
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-let myPopup = getElementById("popup", document) as HTMLElement;
+let myPopup = document.getElementById("popup") as HTMLElement;
 let btnLeft = myPopup.getElementById("btnLeft");
 let btnRight = myPopup.getElementById("btnRight");
-let alertHeader = getElementById("alertHeader", document) as HTMLElement;
+let alertHeader = document.getElementById("alertHeader") as HTMLElement;
 
 
 function showAlert(message) {
@@ -603,3 +595,12 @@ myNamespace.round = function(number, precision) {
     return roundedTempNumber / factor;
 };
 
+//Nice suggestion on catching undefined elements and throwing an error you can work with.
+export const getElementById = (id: string, root: ElementSearch = document) => {
+  const element = root.getElementById(id);
+  if (!element) {
+      throw Error(`Element #${id} not found`);
+  }
+
+  return element;
+}

@@ -1,4 +1,4 @@
-//import { me as device } from "device";
+import { me as device } from "device";
 
 // Screen dimension fallback for older firmware
 if (!device.screen) device.screen = { width: 348, height: 250 };
