@@ -22,15 +22,14 @@ import Graph from "./graph.js";
 clock.granularity = "seconds";
 const clockPref = preferences.clockDisplay;
 let lastValueTimestamp = Date.now();
-let json_themeread;
 
 try {
   //let stats = fs.statSync("theme.txt");
-   json_themeread = JSON.parse(fs.readFileSync("theme.txt", "json"));
+  var json_themeread = JSON.parse(fs.readFileSync("theme.txt", "json"));
 } catch (err) {
   var json_theme = {"backg": "#f8fcf8", "foreg": "#707070"};
   fs.writeFileSync("theme.txt", json_theme, "json");
-  json_themeread = JSON.parse(fs.readFileSync("theme.txt", "json"));
+  var json_themeread = JSON.parse(fs.readFileSync("theme.txt", "json"));
 }
 
 let backgdcol = json_themeread.backg || "#f8fcf8";
@@ -47,10 +46,10 @@ let myClock = document.getElementById("myLabel") as HTMLElement;
 let myDate = document.getElementById("myDate") as HTMLElement;
 
 //Normal Flashring handles below.
-var dailysteps = document.getElementById("mySteps") as HTMLElement;
-var dailystairs = document.getElementById("myStairs") as HTMLElement;
-var dailycals = document.getElementById("myCals") as HTMLElement;
-var currentheart = document.getElementById("myHR") as HTMLElement;
+let dailysteps = document.getElementById("mySteps") as HTMLElement;
+let dailystairs = document.getElementById("myStairs") as HTMLElement;
+let dailycals = document.getElementById("myCals") as HTMLElement;
+let currentheart = document.getElementById("myHR") as HTMLElement;
 let heartRing = document.getElementById("hrtArc") as ArcElement;
 let stepRing = document.getElementById("stepsArc") as ArcElement;
 let calRing = document.getElementById("calsArc") as ArcElement;
@@ -69,13 +68,13 @@ let bottomLine = document.getElementById("bottomLine") as HTMLElement;
 //Define screen change stuff and display stuff
 let MainScreen = document.getElementById("MainScreen") as HTMLElement;
 let GraphScreen= document.getElementById("GraphScreen") as HTMLElement;
-var scale1 = document.getElementById("scale1") as HTMLElement;
-var scale2 = document.getElementById("scale2") as HTMLElement;
-var scale3 = document.getElementById("scale3") as HTMLElement;
-var scale4 = document.getElementById("scale4") as HTMLElement;
-var scale5 = document.getElementById("scale5") as HTMLElement;
-let button1 = document.getElementById("button1") as HTMLElement;
-let button2 = document.getElementById("button2") as HTMLElement;
+let scale1 = document.getElementById("scale1");
+let scale2 = document.getElementById("scale2");
+let scale3 = document.getElementById("scale3");
+let scale4 = document.getElementById("scale4");
+let scale5 = document.getElementById("scale5");
+let button1 = document.getElementById("button1");
+let button2 = document.getElementById("button2");
 let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{2191}","FortyFiveUp":"\u{2197}","FortyFiveDown":"\u{2198}","SingleDown":"\u{2193}","DoubleDown":"\u{2193}\u{2193}","None":"-","NOT COMPUTABLE":"-","RATE OUT OF RANGE":"-"};
 
 //Inserted for main screen CGM Data
@@ -91,13 +90,12 @@ let prefBgUnits = "unset";
 let defaultBGColor = "grey";
 let reminderTimer = 0;
 let showAlertModal = true;
-let vibrationTimeout; 
-
 myBGUnits.text = prefBgUnits;  
 myCurrentBG.style.fill = "grey";
 myBGUnits.style.fill = "grey";
 myBGPollCounterLabel1.style.fill = "grey";
 myMissedBGPollCounter.style.fill = "grey";
+let vibrationTimeout; 
 
 // The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
 let prefHighLevel = 260;
