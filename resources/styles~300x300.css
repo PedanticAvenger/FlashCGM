@@ -92,18 +92,8 @@
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 12%;
+  x: 20%;
   y: 90%;
-  fill: #f8fcf8;
-}
-
-#myStairs {
-  font-size: 28;
-  font-family: System-Regular;
-  text-length: 30;
-  text-anchor: middle;
-  x: 37%;
-  y: 70%;
   fill: #f8fcf8;
 }
 
@@ -112,7 +102,7 @@
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 62%;
+  x: 50%;
   y: 90%;
   fill: #f8fcf8;
 }
@@ -122,7 +112,7 @@
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 87%;
+  x: 80%;
   y: 90%;
   fill: #f8fcf8;
 }

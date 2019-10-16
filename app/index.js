@@ -48,7 +48,6 @@ let myDate = document.getElementById("myDate");
 
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
-let dailystairs = document.getElementById("myStairs");
 let dailycals = document.getElementById("myCals");
 let currentheart = document.getElementById("myHR");
 let heartRing = document.getElementById("hrtArc");
@@ -121,7 +120,6 @@ function applyTheme(background, foreground) {
 //  console.log("Called applyTheme!");
   myClock.style.fill = background;
   dailysteps.style.fill = background;
-  dailystairs.style.fill = background;
   dailycals.style.fill = background;
   heart.style.fill = background;
   myDate.style.fill = foreground;
@@ -134,9 +132,6 @@ function updateStats() {
   const amountSteps = userActivity.today.adjusted[metricSteps] || 0;
   const metricCals = "calories";  // distance, calories, elevationGain, activeMinutes
   const amountCals = userActivity.today.adjusted[metricCals] || 0;
-  const metricElevation = "elevationGain";
-  const amountElevation = userActivity.today.adjusted[metricElevation] || 0
-  dailystairs.text = amountElevation;
   let stepString = util.thsdDot(amountSteps);
   let calString = util.thsdDot(amountCals);
   dailysteps.text = stepString;
@@ -316,13 +311,12 @@ function updategraph(data) {
   } else if (points[23] == undefined) {
     function findValid(element) {
      return element != undefined;
-    }     
+    } 
+    myCurrentBG.style.fill = "grey";    
     if(prefBgUnits === "mg/dl") {
       myCurrentBG.text = points[points.findIndex(findValid)];
-      myCurrentBG.style.fill = "grey";
     } else if (prefBgUnits === "mmol") {
       myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
-      myCurrentBG.style.fill = "grey";
     }
   }
 

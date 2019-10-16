@@ -1,6 +1,6 @@
 {
   "fitbit": {
-    "appUUID": "a18fd61d-68ca-4028-af26-7ff531757715",
+    "appUUID": "9ac615a3-2bf8-40bc-a16d-a3862a9d93a3",
     "appType": "clockface",
     "appDisplayName": "FlashCGM",
     "iconFile": "resources/icon.png",
@@ -13,8 +13,6 @@
       "run_background"
     ],
     "buildTargets": [
-      "higgs",
-      "meson",
       "gemini"
     ],
     "i18n": {
