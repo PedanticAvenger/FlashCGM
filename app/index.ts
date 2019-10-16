@@ -1,31 +1,17 @@
 import clock from "clock";
 import document from "document";
-import { today } from "user-activity";
-import { goals } from "user-activity";
+import { today, goals } from "user-activity";
 import { me as device } from "device";
 import { HeartRateSensor } from "heart-rate";
-import { locale } from "user-settings";
-import { preferences } from "user-settings";
+import { locale, preferences } from "user-settings";
 import * as messaging from "messaging";
-import * as fs from "fs";
-import * as util from "../common/utils";
 import { vibration } from "haptics";
-import Graph from "./graph.js";
-
-//Nice suggestion from @Sergius on catching undefined elements and throwing an error you can work with.
-export const getElementById = (id: string, root: ElementSearch = document) => {
-  const element = root.getElementById(id);
-  if (!element) {
-      throw Error(`Element #${id} not found`);
-  }
-
-  return element;
-}
+import * as fs from "fs";
+import {thsdDot, zeroPad, weekday, formatHour, getElementById} from "../common/utils";
+import Graph from "../common/graph";
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-//
 // Clock/Sensor related defines
-//
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 // Update the clock every minute
@@ -60,12 +46,10 @@ let myDate = getElementById("myDate", document) as HTMLElement;
 var dailysteps = getElementById("mySteps", document) as HTMLElement;
 var dailystairs = getElementById("myStairs", document) as HTMLElement;
 var dailycals = getElementById("myCals", document) as HTMLElement;
-var currentheart = getElementById("myHR  ", document) as HTMLElement;
+var currentheart = getElementById("myHR", document) as HTMLElement;
 let heartRing = getElementById("hrtArc", document) as ArcElement;
 let stepRing = getElementById("stepsArc", document) as ArcElement;
 let calRing = getElementById("calsArc", document) as ArcElement;
-let heart = getElementById("myHR", document) as HTMLElement;
-let otherData = getElementById("otherData", document) as HTMLElement;
 let upperLine = getElementById("upperLine", document) as HTMLElement;
 let bottomLine = getElementById("bottomLine", document) as HTMLElement;
 
@@ -96,7 +80,7 @@ let myMissedBGPollCounter = getElementById("myMissedBGPollCounter", document) as
 let myBGTrend = getElementById("myBGTrend", document) as HTMLElement;
 let bgCount = 24;
 let prefBgUnits = "unset";
-let defaultBGColor = "grey";
+var defaultBGColor = "grey";
 let reminderTimer = 0;
 let showAlertModal = true;
 let vibrationTimeout; 
@@ -132,7 +116,7 @@ function applyTheme(background, foreground) {
   dailysteps.style.fill = background;
   dailystairs.style.fill = background;
   dailycals.style.fill = background;
-  heart.style.fill = background;
+  currentheart.style.fill = background;
   myDate.style.fill = foreground;
   upperLine.style.fill = foreground;
   bottomLine.style.fill = foreground;
@@ -146,8 +130,8 @@ function updateStats() {
   const metricElevation = "elevationGain";
   const amountElevation = today.adjusted[metricElevation] || 0
   dailystairs.text = amountElevation.toString();
-  let stepString = util.thsdDot(amountSteps);
-  let calString = util.thsdDot(amountCals);
+  let stepString = thsdDot(amountSteps);
+  let calString = thsdDot(amountCals);
   dailysteps.text = stepString;
   let stepAngle = Math.floor(360*(amountSteps/stepsGoal));
   if ( stepAngle > 360 ) {
@@ -188,15 +172,15 @@ hrm.onreading = function () {
 function updateClock() {
   let lang = locale.language;
   let today = new Date();
-  let day = util.zeroPad(today.getDate());
+  let day = zeroPad(today.getDate());
   let wday = today.getDay();
-  let month = util.zeroPad(today.getMonth()+1);
+  let month = zeroPad(today.getMonth()+1);
   let year = today.getFullYear();
   //  let hours = util.zeroPad(util.formatHour(today.getHours(), clockPref));
-  let hours = util.formatHour(today.getHours(), clockPref);
-  let mins = util.zeroPad(today.getMinutes());
+  let hours = formatHour(today.getHours(), clockPref);
+  let mins = zeroPad(today.getMinutes());
   let prefix = lang.substring(0,2);
-  if ( typeof util.weekday[prefix] === 'undefined' ) {
+  if ( typeof weekday[prefix] === 'undefined' ) {
     prefix = 'en';
   }
   let divide = "/";
@@ -212,7 +196,7 @@ function updateClock() {
     datestring = year + divide + month + divide + day;
   }
   myClock.text = `${hours}:${mins}`;
-  myDate.text = `${util.weekday[prefix][wday]}, ${datestring}`;
+  myDate.text = `${weekday[prefix][wday]}, ${datestring}`;
 
   updateStats();
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
@@ -508,7 +492,7 @@ let alertHeader = getElementById("alertHeader", document) as HTMLElement;
 function showAlert(message) {
   console.log('ALERT BG')
   console.log(message)
-  alertHeader.text = message
+  alertHeader.text = message;
   myPopup.style.display = "inline";
  
 }
@@ -602,4 +586,3 @@ myNamespace.round = function(number, precision) {
     var roundedTempNumber = Math.round(tempNumber);
     return roundedTempNumber / factor;
 };
-

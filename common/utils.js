@@ -1,3 +1,13 @@
+//Nice suggestion from @Sergius on catching undefined elements and throwing an error you can work with.
+export const getElementById = (id: string, root: ElementSearch = document) => {
+  const element = root.getElementById(id);
+  if (!element) {
+      throw Error(`Element #${id} not found`);f
+  }
+
+  return element;
+}
+
 // Add zero in front of numbers < 10
 export function zeroPad(i) {
   if (i < 10) {
