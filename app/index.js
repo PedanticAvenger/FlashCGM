@@ -101,8 +101,6 @@ let vibrationTimeout;
 // The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
 let prefHighLevel = 260;
 let prefLowLevel = 55;
-let prefHighTarget = 200;
-let prefLowTarget = 80;
 var d = new Date();
 // Initialize so the face thinks it doesn't need to update for 5 seconds or so just to make sure everything is properly loaded.
 var currSeconds = Math.round(Date.now()/1000);
@@ -250,8 +248,8 @@ button2.onclick = function () {
 }
 
 function setBGColor(bgValue) {
-  console.log("Low to High: " + prefLowLevel + "/" + prefLowTarget + "/" + prefHighTarget + "/" + prefHighLevel);
-  if (bgValue <= prefLowTarget) {
+  console.log("Low to High: " + prefLowLevel + "/" + prefHighLevel);
+  if (bgValue <= prefLowLevel) {
     myCurrentBG.style.fill = "red";
     myBGUnits.style.fill = "red";
     myBGPollCounterLabel1.style.fill = "red";
@@ -262,17 +260,17 @@ function setBGColor(bgValue) {
       myBGPollCounterLabel1.style.fill = "magenta";
       myMissedBGPollCounter.style.fill = "magenta";
     }
-  } else if ((bgValue > prefLowTarget) && (bgValue <= prefHighTarget)) {
+  } else if ((bgValue > prefLowLevel) && (bgValue <= prefHighLevel)) {
     myCurrentBG.style.fill = "fb-green";
     myBGUnits.style.fill = "fb-green";
     myBGPollCounterLabel1.style.fill = "fb-green";
     myMissedBGPollCounter.style.fill = "fb-green"; 
-  } else if (bgValue > prefHighTarget) {
+  } else if (bgValue > prefHighLevel) {
     myCurrentBG.style.fill = "yellow";
     myBGUnits.style.fill = "yellow";
     myBGPollCounterLabel1.style.fill = "yellow";
     myMissedBGPollCounter.style.fill = "yellow";  
-    if (bgValue >= prefHighLevel) {
+    if (bgValue >= (prefHighLevel+36)) {
       myCurrentBG.style.fill = "red";
       myBGUnits.style.fill = "red";
       myBGPollCounterLabel1.style.fill = "red";
@@ -293,21 +291,21 @@ function updategraph(data) {
     setBGColor(points[23]);
     if(prefBgUnits === "mg/dl") {
       myCurrentBG.text = points[23];
-      if ((points[23] >= prefHighTarget) && (reminderTimer <= Math.round(Date.now()/1000))) {
+      if ((points[23] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
         let message = points[23];
         startAlertProcess(message);
       }
-      if ((points[23] <= prefLowTarget) && (reminderTimer <= Math.round(Date.now()/1000)))  {
+      if ((points[23] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
         let message = points[23];
         startAlertProcess(message);
       }
     } else if (prefBgUnits === "mmol") {
       myCurrentBG.text = mmol(points[23]);
-      if ((points[23] >= prefHighTarget) && (reminderTimer <= Math.round(Date.now()/1000))) {
+      if ((points[23] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
         let message = mmol(points[23]);
         startAlertProcess(message);
       }
-      if ((points[23] <= prefLowTarget) && (reminderTimer <= Math.round(Date.now()/1000)))  {
+      if ((points[23] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
         let message = mmol(points[23]);
         startAlertProcess(message);
       }
@@ -351,8 +349,8 @@ function updategraph(data) {
     myGraph.setSize(348,200);
     myGraph.setPosition(0,25);
   }
-  myGraph.setHiLo(prefHighTarget, prefLowTarget, prefHighLevel, prefLowLevel);
-  console.log("Hi/Lo: " + prefHighTarget + "/" + prefLowTarget);
+  myGraph.setHiLo(prefHighLevel, prefLowLevel);
+  console.log("Hi/Lo: " + prefHighLevel + "/" + prefLowLevel);
   
   let minval = Math.min.apply(null,testvalues);  
   let maxval = Math.max.apply(null,testvalues);
@@ -401,8 +399,6 @@ function updateBGPollingStatus() {
 function updateSettings(data) {
   //  console.log("Whatsettings:" + JSON.stringify(settings));
     prefBgUnits = data.settings.bgDataUnits;
-    prefHighTarget = data.settings.bgTargetTop;
-    prefLowTarget = data.settings.bgTargetBottom;
     prefHighLevel = data.settings.bgHighLevel;
     prefLowLevel = data.settings.bgLowLevel;
     defaultBGColor = data.settings.bgColor;

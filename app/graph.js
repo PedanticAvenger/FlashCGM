@@ -20,8 +20,6 @@ export default class Graph {
       
    this._vals = this._id.getElementsByClassName("gval");
    
-   this._tHigh = 162;
-   this._tLow = 72;
    this._aHigh = 260;
    this._aLow = 55;
 
@@ -76,9 +74,7 @@ export default class Graph {
     this._bg.style.fill = c;
   }
  
-  setHiLo(th,tl,ah,al){
-    this._tHigh = th;
-    this._tLow = tl;
+  setHiLo(ah,al){
     this._aHigh = ah;
     this._aLow = al;
   }
@@ -92,12 +88,12 @@ export default class Graph {
     if (device.screen.width === 300) {
       scalingfactor = -3;     
     } else {
-      scalingfactor= -3;
+      scalingfactor = -3;
     }
-   this._tHighLine.y1 = this._height - ((this._tHigh-this._ymin) / this._yscale) - scalingfactor;
-   this._tHighLine.y2 = this._height - ((this._tHigh-this._ymin) / this._yscale) - scalingfactor;
-   this._tLowLine.y1 = this._height - ((this._tLow-this._ymin) / this._yscale) - scalingfactor;
-   this._tLowLine.y2 = this._height - ((this._tLow-this._ymin) / this._yscale) - scalingfactor;
+   this._tHighLine.y1 = this._height - ((this._aHigh-this._ymin) / this._yscale) - scalingfactor;
+   this._tHighLine.y2 = this._height - ((this._aHigh-this._ymin) / this._yscale) - scalingfactor;
+   this._tLowLine.y1 = this._height - ((this._aLow-this._ymin) / this._yscale) - scalingfactor;
+   this._tLowLine.y2 = this._height - ((this._aLow-this._ymin) / this._yscale) - scalingfactor;
    
     
    for (var index = 0; index < this._vals.length; index++) {
@@ -109,16 +105,13 @@ export default class Graph {
 
      this._vals[index].cy = this._height - ((v[index]-this._ymin) / this._yscale) - scalingfactor;
  
-     if (v[index] <= this._tLow) {
-       this._vals[index].style.fill = "red";
-       if (v[index] <= this._aLow) {
-        this._vals[index].style.fill = "magenta";
-       }
-     } else if ((this._tLow < v[index]) && (v[index] <= this._tHigh)) {
+     if (v[index] <= this._aLow) {
+       this._vals[index].style.fill = "red"
+     } else if ((this._aLow < v[index]) && (v[index] <= this._aHigh)) {
        this._vals[index].style.fill = "fb-green"; 
-     } else if (this._tHigh < v[index]) {
+     } else if (this._aHigh < v[index]) {
        this._vals[index].style.fill = "yellow"; 
-       if (this.aHigh <= v[index]) {
+       if ((this.aHigh+36) <= v[index]) {
         this._vals[index].style.fill = "red";
        }
      }

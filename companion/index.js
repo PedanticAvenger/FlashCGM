@@ -120,17 +120,16 @@ function buildSettings(settings) {
   // Need to setup High line, Low Line, Units.
   var obj = JSON.parse(settings);
 //  console.log(JSON.stringify(obj));
-  bgHighLevel = obj.settings.thresholds.bgHigh;
-  bgLowLevel = obj.settings.thresholds.bgLow;
   bgTargetTop = obj.settings.thresholds.bgTargetTop;
   bgTargetBottom = obj.settings.thresholds.bgTargetBottom;
+// These next two lines are being deprecated, setting as clone to avoid code breaking elsewhere initially.
+  bgHighLevel = bgTargetTop;
+  bgLowLevel = bgTargetBottom;
   bgDataUnits = obj.settings.units;
   settingsStorage.setItem("unitsType", JSON.stringify(bgDataUnits));
   
   const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
-      "bgTargetTop" : bgTargetTop,
-      "bgTargetBottom" : bgTargetBottom,
       "bgHighLevel" : bgHighLevel,
       "bgLowLevel" : bgLowLevel
     },
