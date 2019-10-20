@@ -46,7 +46,7 @@ export default class Graph {
    this._xmin = xmin;
    this._xmax = xmax;
    this._xscale = (xmax-xmin)/this._width;
-   //console.log("XSCALE: " + this._xscale);
+   console.log("XSCALE: " + this._xscale);
    
  }
   
@@ -98,10 +98,11 @@ export default class Graph {
     
    for (var index = 0; index < this._vals.length; index++) {
    
-     //console.log(`V${index}: ${v[index].sgv}`);
+    //console.log(`V${index}: ${v[index].sgv}`);
      
-     //console.log("SGV" + index + ": " + v[index].sgv + " TIME: " + v[index].date);
-     //this._vals[index].cx = this._width - ((v[index].date-this._xmin) / this._xscale);
+    // console.log("SGV" + index + ": " + v[index].sgv + " TIME: " + v[index].date);
+    //Commented out as I have a fixed view of between 2 and 4 hours, currently 4 hr so x positions fixed. 
+    //this._vals[index].cx = this._width - ((v[index]-this._xmin) / this._xscale);
 
      this._vals[index].cy = this._height - ((v[index]-this._ymin) / this._yscale) - scalingfactor;
  
@@ -110,13 +111,12 @@ export default class Graph {
      } else if ((this._aLow < v[index]) && (v[index] <= this._aHigh)) {
        this._vals[index].style.fill = "fb-green"; 
      } else if (this._aHigh < v[index]) {
-       this._vals[index].style.fill = "yellow"; 
+     this._vals[index].style.fill = "yellow"; 
        if ((this.aHigh+36) <= v[index]) {
         this._vals[index].style.fill = "red";
        }
      }
      //this._vals[index].cy = this._height - 20;
-     //this._vals[index].r = this._pointsize;
    }
    
  }

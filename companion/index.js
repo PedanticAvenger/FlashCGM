@@ -31,8 +31,9 @@ messaging.peerSocket.close = () => {
 const dataPoll = () => {
   dataUrl = JSON.parse(settingsStorage.getItem("dataSourceURL")).name;
   if (dataUrl == "" || dataUrl == null) {
-    dataUrl = "http://127.0.0.1:17580/sgv.json?count=24&brief_mode=Y";
+    dataUrl = "http://127.0.0.1:17580/sgv.json";
   }
+  dataUrl = dataUrl + "?count=48&brief_mode=Y";
   console.log('Open Data API CONNECTION');
   console.log(dataUrl);
   if(dataUrl) {
@@ -71,7 +72,7 @@ const dataPoll = () => {
 };
 
 const settingsPoll = () => {
-  if ((lastSettingsUpdate+3600) <= (Date.now()/1000)) {
+  if ((lastSettingsUpdate+4800) <= (Date.now()/1000)) {
     settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
     if (settingsUrl == "" || settingsUrl == null) {
       settingsUrl = "http://127.0.0.1:17580/status.json";
@@ -120,11 +121,8 @@ function buildSettings(settings) {
   // Need to setup High line, Low Line, Units.
   var obj = JSON.parse(settings);
 //  console.log(JSON.stringify(obj));
-  bgTargetTop = obj.settings.thresholds.bgTargetTop;
-  bgTargetBottom = obj.settings.thresholds.bgTargetBottom;
-// These next two lines are being deprecated, setting as clone to avoid code breaking elsewhere initially.
-  bgHighLevel = bgTargetTop;
-  bgLowLevel = bgTargetBottom;
+  bgHighLevel = obj.settings.thresholds.bgHigh;
+  bgLowLevel = obj.settings.thresholds.bgLow;
   bgDataUnits = obj.settings.units;
   settingsStorage.setItem("unitsType", JSON.stringify(bgDataUnits));
   
@@ -161,14 +159,14 @@ function buildGraphData(data) {
   let index = 0;
   let validTimeStamp = false;
 //  console.log(JSON.stringify(obj));
-  for (graphpointindex = 0; graphpointindex < 24; graphpointindex++) {
+  for (graphpointindex = 0; graphpointindex < 48; graphpointindex++) {
     if (index < obj.length) {
-      while (((runningTimestamp - obj[index].date) >= 305000) && (graphpointindex < 24)) {
+      while (((runningTimestamp - obj[index].date) >= 305000) && (graphpointindex < 48)) {
         points[graphpointindex] = undefined;
         runningTimestamp = runningTimestamp - 300000;
         graphpointindex++;
       }
-      if(graphpointindex < 24) {
+      if(graphpointindex < 48) {
         points[graphpointindex] = obj[index].sgv;
        runningTimestamp = obj[index].date;
       }

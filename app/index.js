@@ -84,7 +84,7 @@ let myBGUnits = document.getElementById("myBGUnits");
 let myBGPollCounterLabel1 = document.getElementById("myBGPollCounterLabel1");
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
 let myBGTrend = document.getElementById("myBGTrend");
-let bgCount = 24;
+let bgCount = 48;
 let docGraph = document.getElementById("docGraph");
 let myGraph = new Graph(docGraph);
 let prefBgUnits = "unset";
@@ -287,31 +287,31 @@ function updategraph(data) {
 
   // Check to see if we have a reading or a missed reading and update display appropriately
   // Also triger an alert if we are outside of target range.
-  if (points[23] != undefined) {
-    setBGColor(points[23]);
+  if (points[47] != undefined) {
+    setBGColor(points[47]);
     if(prefBgUnits === "mg/dl") {
-      myCurrentBG.text = points[23];
-      if ((points[23] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
-        let message = points[23];
+      myCurrentBG.text = points[47];
+      if ((points[47] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
+        let message = points[47];
         startAlertProcess(message);
       }
-      if ((points[23] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
-        let message = points[23];
+      if ((points[47] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
+        let message = points[47];
         startAlertProcess(message);
       }
     } else if (prefBgUnits === "mmol") {
-      myCurrentBG.text = mmol(points[23]);
-      if ((points[23] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
-        let message = mmol(points[23]);
+      myCurrentBG.text = mmol(points[47]);
+      if ((points[47] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
+        let message = mmol(points[47]);
         startAlertProcess(message);
       }
-      if ((points[23] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
-        let message = mmol(points[23]);
+      if ((points[47] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
+        let message = mmol(points[47]);
         startAlertProcess(message);
       }
     }
 
-  } else if (points[23] == undefined) {
+  } else if (points[47] == undefined) {
     function findValid(element) {
      return element != undefined;
     }     
@@ -361,7 +361,7 @@ function updategraph(data) {
     if (minval >= 40) {minval = minval - 18;}
   }
   myGraph.setYRange(minval, maxval);
-
+  myGraph.setXRange(0, 48);
   // Update Y axis labels
   if (prefBgUnits == "mmol") {
     maxval = mmol(maxval);
@@ -378,6 +378,7 @@ function updategraph(data) {
     scale4.text = Math.round(maxval-(maxval-minval) * 0.25);
     scale5.text = minval;
   }
+  console.log("GraphValues: "+ datavalues);
   myGraph.update(datavalues);
 }
 

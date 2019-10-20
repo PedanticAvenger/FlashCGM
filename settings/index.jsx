@@ -51,22 +51,47 @@ function mySettings(props) {
                }]
             }
           />
+        <Select
+            label="Date Format"
+            settingsKey="dateFormat"
+            options={[
+               {
+                 name: "Day of Week, Day/Month/Year",
+                 value: {
+                   Format: "DMY"
+                 }
+               },
+               {
+                 name: "Year/Month/Day - Day of Week",
+                 value: {
+                   Format: "YMD"
+                 }
+               },
+               {
+                 name: "Day of Week, Month/Day/Year",
+                 value: {
+                   Format: "MDY"
+                 }
+               }
+            ]}
+          />
         </Section>
         <Section
         title={<Text bold align="center">Data Source Settings</Text>}>
         <Text>
-          See watch face github Wiki for URL Explanations.
+          See watch face github Wiki for URL Explanations.  
+          Leave both fields blank to work with XDrip+ but other data sources MUST be specified.
           </Text>
         <Text>https://github.com/PedanticAvenger/FlashCGM/wiki</Text>
           <TextInput
-          defaultValue="http://127.0.0.1:17580/status.json"
+          placeholder="URL to the status.json on your data source."
           settingsKey="settingsSourceURL"
           label="Settings API URL"
         />
         <TextInput
           settingsKey="dataSourceURL"
           label="Data API URL"
-          defaultValue="http://127.0.0.1:17580/sgv.json?count=24"
+          placeholder="URL to the sgv.json on your data source."
         />
       </Section>
 
