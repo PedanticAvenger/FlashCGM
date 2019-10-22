@@ -126,6 +126,8 @@ function buildSettings(settings) {
   bgLowLevel = obj.settings.thresholds.bgLow;
   bgDataUnits = obj.settings.units;
   settingsStorage.setItem("unitsType", JSON.stringify(bgDataUnits));
+  var dF = JSON.parse(settingsStorage.getItem("dateFormat")).values;
+  console.log("DateFormat: " + JSON.stringify(dF[0]));
   const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
       "bgHighLevel" : bgHighLevel,
@@ -250,10 +252,10 @@ settingsStorage.onchange = function(evt) {
   if (evt.key==="dateFormat") {
     if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
       var data = JSON.parse(evt.newValue);
-      console.log("field:" + data["values"][0].value.dateFormat);
+      console.log("field:" + data["values"][0].value);
       //settingsStorage.getItem("dateFormat") //.replace(/^"(.*)"$/, '$1')
       var messageContent = {
-        "dateFormat" : data["values"][0].value.dateFormat
+        "dateFormat" : data["values"][0].value
        };
       messaging.peerSocket.send(messageContent);
       console.log("Sent DateFormat to watch:" + JSON.stringify(messageContent));
