@@ -12,7 +12,6 @@ var bgLowLevel = 0;
 var bgTargetTop = 0;
 var bgTargetBottom = 0;
 var bgTrend = "Flat";
-var dateFormat;
 
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 var currentTimestamp = Math.round(new Date().getTime()/1000);
@@ -20,6 +19,7 @@ var lastTimestamp = 0;
 var dataUrl;
 var settingsUrl;
 var lastSettingsUpdate = 0;
+var dateFormat = JSON.stringify(settingsStorage.getItem("dateFormat"));
 
 messaging.peerSocket.onopen = () => {
   console.log("Companion Socket Open");
@@ -126,7 +126,6 @@ function buildSettings(settings) {
   bgLowLevel = obj.settings.thresholds.bgLow;
   bgDataUnits = obj.settings.units;
   settingsStorage.setItem("unitsType", JSON.stringify(bgDataUnits));
-  
   const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
       "bgHighLevel" : bgHighLevel,

@@ -3,7 +3,7 @@
 /*
   Add the BG stuff to the display
  */
-  <line id="upperVert" x1="60%" y1="4%" x2="60%" y2="57%" fill="#333333" stroke-width="2" />
+  <line id="upperVert" x1="60%" y1="4%" x2="60%" y2="60%" fill="#333333" stroke-width="2" />
   <text id="myCurrentBG" />
   <text id="myBGUnits" />
   /* Ok, changing this to an arc of 180 degrees with a white indicator arc on top and ability to change color.
@@ -13,17 +13,17 @@
   <text id="myBGTrend">x</text> 
   <rect id="button1" pointer-events="all" x="60%" y="0" width="40%" height="57%" opacity="0" />
 /* Modify the width of the upperLine and bottomLine to fit with BG display.  I don't remember what it was but am sure this could be further improved */
-  <line id="upperLine" x1="10%" y1="40%" x2="50%" y2="40%" fill="#333333" stroke-width="1" />
+  <line id="upperLine" x1="10%" y1="44%" x2="50%" y2="44%" fill="#333333" stroke-width="1" />
   <text id="myDate" />
-  <line id="bottomLine" x1="4%" y1="57%" x2="96%" y2="57%" fill="#333333" stroke-width="1" />
+  <line id="bottomLine" x1="4%" y1="60%" x2="96%" y2="60%" fill="#333333" stroke-width="1" />
 
-  <image x="12%-15" y="67%" width="30" height="30" href="footsteps-silhouette.png" />
+  <image x="12%-15" y="69%" width="30" height="30" href="footsteps-silhouette.png" />
   <text id="mySteps" />
-  <image x="37%-12" y="75%" width="25" height="25" href="stairs.png" />
+  <image x="37%-12" y="77%" width="25" height="25" href="stairs.png" />
   <text id="myStairs" />
-  <image x="62%-10" y="66%" width="20" height="30" href="purepulse-calorie.png" />
+  <image x="62%-10" y="68%" width="20" height="30" href="purepulse-calorie.png" />
   <text id="myCals" />
-  <image x="87%-15" y="67%" width="30" height="30" href="Twemoji.png" />
+  <image x="87%-15" y="69%" width="30" height="30" href="Twemoji.png" />
   <text id="myHR" />
 /*  Changed width here to get rid of the gradient on the BG stuff, was 348 px. */
   <gradientRect id="clockShade" width="60%" height="40%"
@@ -37,12 +37,12 @@
                 gradient-opacity1="0"
                 gradient-opacity2="0.8"
   />
-  <arc x="12%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
-  <arc x="62%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
-  <arc x="87%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc x="12%-25" y="64%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc x="62%-25" y="64%"  width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc x="87%-25" y="64%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
 
-  <arc id="stepsArc" x="12%-25" y="62%" width="50" height="50" fill="#4edcfb" arc-width="2" start-angle="0" sweep-angle="0" />
-  <arc id="calsArc" x="62%-25" y="62%" width="50" height="50" fill="#ff882c" arc-width="2" start-angle="0" sweep-angle="0" />
-  <arc id="hrtArc" x="87%-25" y="62%" width="50" height="50" fill="#c00000" arc-width="2" start-angle="0" sweep-angle="0" />
+  <arc id="stepsArc" x="12%-25" y="64%" width="50" height="50" fill="#4edcfb" arc-width="2" start-angle="0" sweep-angle="0" />
+  <arc id="calsArc" x="62%-25" y="64%" width="50" height="50" fill="#ff882c" arc-width="2" start-angle="0" sweep-angle="0" />
+  <arc id="hrtArc" x="87%-25" y="64%" width="50" height="50" fill="#c00000" arc-width="2" start-angle="0" sweep-angle="0" />
 
 </svg>

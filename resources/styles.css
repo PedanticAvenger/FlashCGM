@@ -9,7 +9,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 30%;
-  y: 0%+80;
+  y: 40%;
   fill: #f8fcf8;
 }
 
@@ -19,7 +19,7 @@
   text-length: 40;
   text-anchor: middle;
   x: 30%;
-  y: 51%;
+  y: 56%;
   fill: #707070;
 }
 
@@ -28,9 +28,9 @@
   font-size: 70;
   font-family: Seville-Bold-Condensed;
   text-length: 20;
-  text-anchor: start;
-  x: 63%;
-  y: 25%;
+  text-anchor: middle;
+  x: 80%;
+  y: 30%;
   fill: orangered;
 }
 
@@ -41,7 +41,7 @@
   text-length: 20;
   text-anchor: start;
   x: 83%;
-  y: 20%+30;
+  y: 40%;
   fill: orangered;
 }
 
@@ -52,7 +52,7 @@
   text-length: 20;
   text-anchor: start;
   x: 63%;
-  y: 30%+50;
+  y: 57%;
   fill: orangered;
 }
 
@@ -63,7 +63,7 @@
   text-length: 30;
   text-anchor: middle;
   x: 315;
-  y: 135;
+  y: 58%;
   fill: grey;
 }
 
@@ -73,7 +73,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 250;
-  y: 110;
+  y: 50%;
   fill: orangered;
 }
 
@@ -83,7 +83,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 250;
-  y: 130;
+  y: 56%;
   fill: orangered;
 }
 
@@ -93,7 +93,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 12%;
-  y: 94%;
+  y: 96%;
   fill: #f8fcf8;
 }
 
@@ -103,7 +103,7 @@
   text-length: 30;
   text-anchor: middle;
   x: 37%;
-  y: 70%;
+  y: 75%;
   fill: #f8fcf8;
 }
 
@@ -114,7 +114,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 62%;
-  y: 94%;
+  y: 96%;
   fill: #f8fcf8;
 }
 
@@ -124,7 +124,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 87%;
-  y: 94%;
+  y: 96%;
   fill: #f8fcf8;
 }
 
