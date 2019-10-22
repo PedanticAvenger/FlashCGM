@@ -58,19 +58,19 @@ function mySettings(props) {
                {
                  name: "Day of Week, Day/Month/Year",
                  value: {
-                   Format: "DMY"
+                   dateFormat: "DMY"
                  }
                },
                {
                  name: "Year/Month/Day - Day of Week",
                  value: {
-                   Format: "YMD"
+                  dateFormat: "YMD"
                  }
                },
                {
                  name: "Day of Week, Month/Day/Year",
                  value: {
-                   Format: "MDY"
+                  dateFormat: "MDY"
                  }
                }
             ]}

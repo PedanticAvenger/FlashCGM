@@ -12,6 +12,7 @@ var bgLowLevel = 0;
 var bgTargetTop = 0;
 var bgTargetBottom = 0;
 var bgTrend = "Flat";
+var dateFormat;
 
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 var currentTimestamp = Math.round(new Date().getTime()/1000);
@@ -247,15 +248,16 @@ settingsStorage.onchange = function(evt) {
       me.wakeInterval = undefined;
     }
   }
-  if (evt.key==="bgDisplayColor") {
+  if (evt.key==="dateFormat") {
     if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-      var bgDisplayColor = settingsStorage.getItem("bgDisplayColor").replace(/^"(.*)"$/, '$1')
+      var data = JSON.parse(evt.newValue);
+      console.log("field:" + data["values"][0].value.dateFormat);
+      //settingsStorage.getItem("dateFormat") //.replace(/^"(.*)"$/, '$1')
       var messageContent = {
-        "bgDisplayColor" : bgDisplayColor
-          
+        "dateFormat" : data["values"][0].value.dateFormat
        };
       messaging.peerSocket.send(messageContent);
-//      console.log("Sent bgTheme to watch:" + JSON.stringify(messageContent));
+      console.log("Sent DateFormat to watch:" + JSON.stringify(messageContent));
     } else {
       console.log("companion - no connection");
       me.wakeInterval = 2000;

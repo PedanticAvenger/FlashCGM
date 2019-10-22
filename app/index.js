@@ -45,6 +45,7 @@ const elevationGoal = userActivity.goals.elevationGain;
 // Get a handle on the <text> element
 let myClock = document.getElementById("myLabel");
 let myDate = document.getElementById("myDate");
+var dateFormat;
 
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
@@ -190,13 +191,31 @@ function updateClock() {
     divide = "-"
   }
   let datestring = day + divide + month + divide + year;
-  if ( lang == "en-US" ) {
-    datestring = month + divide + day + divide + year;
-  } else if ( prefix == "zh" || prefix == "ja" || prefix == "ko") {
-    datestring = year + divide + month + divide + day;
-  }
   myClock.text = `${hours}:${mins}`;
-  myDate.text = `${util.weekday[prefix][wday]}, ${datestring}`;
+  if (dateFormat === 'YMD') {
+    datestring = year + divide + month + divide + day;
+    myDate.text =  `${datestring} - ${util.weekday[prefix][wday]}`;
+  }
+  else if (dateFormat === 'MDY') {
+    var namemonth = new Array();
+    namemonth[0] = "Jan";
+    namemonth[1] = "Feb";
+    namemonth[2] = "Mar";
+    namemonth[3] = "Apr";
+    namemonth[4] = "May";
+    namemonth[5] = "Jun";
+    namemonth[6] = "Jul";
+    namemonth[7] = "Aug";
+    namemonth[8] = "Sep";
+    namemonth[9] = "Oct";
+    namemonth[10] = "Nov";
+    namemonth[11] = "Dec";
+    month = namemonth[today.getMonth()];
+    datestring = month + "-" + day + "-" + year;
+    myDate.text =  `${util.weekday[prefix][wday]}, ${datestring}`;
+  }
+  else {myDate.text = `${util.weekday[prefix][wday]}, ${datestring}`;}
+  
 
   updateStats();
   if ( (Date.now() - lastValueTimestamp)/1000 > 5 ) {
@@ -443,10 +462,12 @@ messaging.peerSocket.onmessage = function(evt) {
   } else if (evt.data.hasOwnProperty("bgdata")) {
   //  console.log("Triggered watch data update: " + JSON.stringify(evt.data));
     updategraph(evt.data);
-  } else if (evt.data.hasOwnProperty("bgDisplayColor")) {
-   // console.log("Triggered watch bgtheme update: " + JSON.stringify(evt.data));
-    var newcolor = evt.data.bgDisplayColor;
-    defaultBGColor = evt.data.bgDisplayColor;
+  } else if (evt.data.hasOwnProperty("dateFormat")) {
+   console.log("Triggered watch dateFormat update: " + JSON.stringify(evt.data));
+    var newcolor = evt.data.dateFormat;
+    dateFormat = evt.data.dateFormat;
+    console.log("New date format is: " + dateFormat );
+    updateClock();
   } else if (evt.data.hasOwnProperty("theme")) {
    // console.log("Triggered a theme update." + JSON.stringify(evt));
     applyTheme(evt.data.theme.background, evt.data.theme.foreground);
