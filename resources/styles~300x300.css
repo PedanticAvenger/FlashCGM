@@ -3,13 +3,13 @@
 }
 
 #myLabel {
-  font-size: 70;
+  font-size: 68;
   font-weight: bold;
   font-family: Colfax-Medium;
-  text-length: 80;
+  text-length: 78;
   text-anchor: middle;
   x: 30%;
-  y: 0%+80;
+  y: 33%;
   fill: #f8fcf8;
 }
 

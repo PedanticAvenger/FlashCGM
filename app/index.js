@@ -117,7 +117,7 @@ var lastSettingsUpdate = 0;
 
 function applyTheme(background, foreground) {
   //Add Theme settings for Main screen color, and anything else we add as customizable.
-//  console.log("Called applyTheme!");
+// console.log("Called applyTheme!");
   myClock.style.fill = background;
   dailysteps.style.fill = background;
   dailystairs.style.fill = background;
@@ -247,13 +247,13 @@ function mmol( bg ) {
 
 //functions for screen switching to/from graph
 function showMainScreen() {
-  console.log("Show main screen");
+  // console.log("Show main screen");
   MainScreen.style.display = "inline";
   GraphScreen.style.display = "none";
 }
 
 function showGraphScreen() {
-  console.log("Show graph screen");
+  // console.log("Show graph screen");
   MainScreen.style.display = "none";
   GraphScreen.style.display = "inline";
 }
@@ -267,7 +267,7 @@ button2.onclick = function () {
 }
 
 function setBGColor(bgValue) {
-  console.log("Low to High: " + prefLowLevel + "/" + prefHighLevel);
+  // console.log("Low to High: " + prefLowLevel + "/" + prefHighLevel);
   if (bgValue <= prefLowLevel) {
     myCurrentBG.style.fill = "red";
     myBGUnits.style.fill = "red";
@@ -369,7 +369,7 @@ function updategraph(data) {
     myGraph.setPosition(0,25);
   }
   myGraph.setHiLo(prefHighLevel, prefLowLevel);
-  console.log("Hi/Lo: " + prefHighLevel + "/" + prefLowLevel);
+  // console.log("Hi/Lo: " + prefHighLevel + "/" + prefLowLevel);
   
   let minval = Math.min.apply(null,testvalues);  
   let maxval = Math.max.apply(null,testvalues);
@@ -397,12 +397,12 @@ function updategraph(data) {
     scale4.text = Math.round(maxval-(maxval-minval) * 0.25);
     scale5.text = minval;
   }
-  console.log("GraphValues: "+ datavalues);
+  // console.log("GraphValues: "+ datavalues);
   myGraph.update(datavalues);
 }
 
 function updateBGPollingStatus() {
-  //  console.log("Called Polling Status Update: " + timeCheck);
+  // console.log("Called Polling Status Update: " + timeCheck);
   let timeCheck = Math.round(Date.now()/1000 -  lastReadingTimestamp);
   var newMissedCounter = parseInt((timeCheck / 60), 10);
     myMissedBGPollCounter.text = newMissedCounter;
@@ -417,13 +417,14 @@ function updateBGPollingStatus() {
   }
 
 function updateSettings(data) {
-  //  console.log("Whatsettings:" + JSON.stringify(settings));
+    // console.log("Whatsettings:" + JSON.stringify(data));
     prefBgUnits = data.settings.bgDataUnits;
     prefHighLevel = data.settings.bgHighLevel;
     prefLowLevel = data.settings.bgLowLevel;
-    defaultBGColor = data.settings.bgColor;
+    dateFormat = data.settings.dateFormat;
     myBGUnits.text = prefBgUnits;
     lastSettingsUpdate = Date.now()/1000;
+    updateClock();
   }
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -433,21 +434,21 @@ function updateSettings(data) {
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 messaging.peerSocket.onopen = () => {
-  console.log("App Socket Open");
+  // console.log("App Socket Open");
 }
 
 messaging.peerSocket.close = () => {
-  console.log("App Socket Closed");
+  // console.log("App Socket Closed");
 }
 
 function requestData(DataType) {
-  console.log("Asking for a data update from companion.");
+  // console.log("Asking for a data update from companion.");
   var messageContent = {"RequestType" : DataType };
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
-    console.log("Sent request to companion.");
+    // console.log("Sent request to companion.");
   } else {
-    console.log("companion - no connection");
+    // console.log("companion - no connection");
     me.wakeInterval = 2000;
     setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
     me.wakeInterval = undefined;
@@ -460,13 +461,13 @@ messaging.peerSocket.onmessage = function(evt) {
    // console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
     updateSettings(evt.data)
   } else if (evt.data.hasOwnProperty("bgdata")) {
-  //  console.log("Triggered watch data update: " + JSON.stringify(evt.data));
+  // console.log("Triggered watch data update: " + JSON.stringify(evt.data));
     updategraph(evt.data);
   } else if (evt.data.hasOwnProperty("dateFormat")) {
-   console.log("Triggered watch dateFormat update: " + JSON.stringify(evt.data));
+   // console.log("Triggered watch dateFormat update: " + JSON.stringify(evt.data));
     var newcolor = evt.data.dateFormat;
     dateFormat = evt.data.dateFormat;
-    console.log("New date format is: " + dateFormat );
+    // console.log("New date format is: " + dateFormat );
     updateClock();
   } else if (evt.data.hasOwnProperty("theme")) {
    // console.log("Triggered a theme update." + JSON.stringify(evt));
@@ -485,7 +486,9 @@ messaging.peerSocket.onmessage = function(evt) {
 function startAlertProcess(message) {
   showAlert(message);
   startVibration("ping");
-  vibrationTimeout = setTimeout(function(){ startVibration("ping"); console.log("triggered vibe by setTimeout"); }, 10000);
+  vibrationTimeout = setTimeout(function(){ startVibration("ping"); 
+    // console.log("triggered vibe by setTimeout"); 
+    }, 10000);
 }
 
 function startVibration(type) {
@@ -510,27 +513,27 @@ let alertHeader = document.getElementById("alertHeader");
 
 
 function showAlert(message) {
-  console.log('ALERT BG')
-  console.log(message)
+  // console.log('ALERT BG')
+  // console.log(message)
   alertHeader.text = message
   myPopup.style.display = "inline";
  
 }
 
 btnLeft.onclick = function(evt) {
-  console.log("Snooze 4hr");
+  // console.log("Snooze 4hr");
   reminderTimer = (Math.round(Date.now()/1000) + 14400); 
-  console.log("Sleep until: " + reminderTimer); 
-  console.log("Now: " + Math.round(Date.now()/1000));
+  // console.log("Sleep until: " + reminderTimer); 
+  // console.log("Now: " + Math.round(Date.now()/1000));
   stopVibration();
   myPopup.style.display = "none";
 }
 
 btnRight.onclick = function(evt) {
-  console.log("Snooze 30min");
+  // console.log("Snooze 30min");
   reminderTimer = (Math.round(Date.now()/1000) + 1800); 
-  console.log("Sleep until: " + reminderTimer); 
-  console.log("Now: " + Math.round(Date.now()/1000));
+  // console.log("Sleep until: " + reminderTimer); 
+  // console.log("Now: " + Math.round(Date.now()/1000));
   stopVibration();
   myPopup.style.display = "none";
 } 

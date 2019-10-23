@@ -46,7 +46,7 @@ export default class Graph {
    this._xmin = xmin;
    this._xmax = xmax;
    this._xscale = (xmax-xmin)/this._width;
-   console.log("XSCALE: " + this._xscale);
+   // console.log("XSCALE: " + this._xscale);
    
  }
   
@@ -55,9 +55,9 @@ export default class Graph {
    this._ymin = ymin-1;
    this._ymax = ymax+1; 
    this._yscale = (ymax-ymin)/this._height;
-   console.log("YMIN: "+ ymin);
-   console.log("YMAX: "+ ymax);
-   console.log("YSCALE: " + this._yscale);
+   // console.log("YMIN: "+ ymin);
+   // console.log("YMAX: "+ ymax);
+   // console.log("YSCALE: " + this._yscale);
    
  } 
 
@@ -82,7 +82,7 @@ export default class Graph {
   
   update(v){
      
-   console.log("Updating Graph...");
+   // console.log("Updating Graph...");
     var scalingfactor = 0;
    //this._bg.style.fill = this._bgcolor;
     if (device.screen.width === 300) {
@@ -98,7 +98,7 @@ export default class Graph {
     
    for (var index = 0; index < this._vals.length; index++) {
    
-    //console.log(`V${index}: ${v[index].sgv}`);
+    // console.log(`V${index}: ${v[index].sgv}`);
      
     // console.log("SGV" + index + ": " + v[index].sgv + " TIME: " + v[index].date);
     //Commented out as I have a fixed view of between 2 and 4 hours, currently 4 hr so x positions fixed. 
