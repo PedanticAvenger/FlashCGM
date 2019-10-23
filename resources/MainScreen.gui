@@ -1,4 +1,7 @@
 <svg id="MainScreen" class="background">
+  <rect class="battery" id="batteryBar" />
+  <image class="batteryBorder" href="images/battery.png" fill="white" />
+  <text class="battery" text-anchor="start" id="batteryPercent">100</text>
   <text id="myLabel" />
 /*
   Add the BG stuff to the display
@@ -17,13 +20,13 @@
   <text id="myDate" />
   <line id="bottomLine" x1="4%" y1="60%" x2="96%" y2="60%" fill="#333333" stroke-width="1" />
 
-  <image x="12%-15" y="69%" width="30" height="30" href="footsteps-silhouette.png" />
+  <image x="12%-15" y="69%" width="30" height="30" href="images/footsteps-silhouette.png" />
   <text id="mySteps" />
-  <image x="37%-12" y="77%" width="25" height="25" href="stairs.png" />
+  <image x="37%-12" y="77%" width="25" height="25" href="images/stairs.png" />
   <text id="myStairs" />
-  <image x="62%-10" y="68%" width="20" height="30" href="purepulse-calorie.png" />
+  <image x="62%-10" y="68%" width="20" height="30" href="images/purepulse-calorie.png" />
   <text id="myCals" />
-  <image x="87%-15" y="69%" width="30" height="30" href="Twemoji.png" />
+  <image x="87%-15" y="69%" width="30" height="30" href="images/Twemoji.png" />
   <text id="myHR" />
 /*  Changed width here to get rid of the gradient on the BG stuff, was 348 px. */
   <gradientRect id="clockShade" width="60%" height="40%"

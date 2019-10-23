@@ -1,3 +1,31 @@
+/*
+MIT License
+
+Copyright (c) 2017 Fitbit, Inc, Sammy Barkowski
+API Fetching base code and Vibe/Alert code Copyright (c) 2018 rytiggy
+CGM component integration code Copyright (c) 2018 PedanticAvenger
+CGM Graphing component code Copyright (c) 2018 NiVZ
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+
 import clock from "clock";
 import document from "document";
 import userActivity from "user-activity";
@@ -9,7 +37,8 @@ import * as messaging from "messaging";
 import * as fs from "fs";
 import * as util from "../common/utils";
 import { vibration } from "haptics";
-import Graph from "./graph.js";
+import Graph from "../common/graph";
+import BatteryStats from "../common/batteryinfo";
 
 if (!device.screen) device.screen = { width: 348, height: 250 };
 
@@ -22,8 +51,8 @@ if (!device.screen) device.screen = { width: 348, height: 250 };
 // Update the clock every minute
 clock.granularity = "seconds";
 const clockPref = preferences.clockDisplay;
+const batteryStats = new BatteryStats();
 let lastValueTimestamp = Date.now();
-
 try {
   let stats = fs.statSync("theme.txt");
   let json_themeread = fs.readFileSync("theme.txt", "json");
@@ -45,6 +74,11 @@ const elevationGoal = userActivity.goals.elevationGain;
 // Get a handle on the <text> element
 let myClock = document.getElementById("myLabel");
 let myDate = document.getElementById("myDate");
+var batteryitems = document.getElementsByClassName('battery');
+for(var i = 0; i < batteryitems.length; i++) {
+  batteryitems[i].style.fill = foregdcol;
+}
+let myBattery = document.getElementById('batteryBar');
 var dateFormat;
 
 //Normal Flashring handles below.
@@ -485,8 +519,8 @@ messaging.peerSocket.onmessage = function(evt) {
 
 function startAlertProcess(message) {
   showAlert(message);
-  startVibration("ping");
-  vibrationTimeout = setTimeout(function(){ startVibration("ping"); 
+  startVibration("ring");
+  vibrationTimeout = setTimeout(function(){ startVibration("ring"); 
     // console.log("triggered vibe by setTimeout"); 
     }, 10000);
 }

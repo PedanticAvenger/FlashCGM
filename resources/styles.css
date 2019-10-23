@@ -135,6 +135,26 @@
   text-length: 65;
 }
 
+#batteryBar {
+  width: 30;
+  height: 17;
+  fill: white;
+  x: 3%;
+  y: 4%;
+}
+
+#batteryPercent {
+  font-size: 25;
+  x:13%;
+  y:11%;
+}
+
+.batteryBorder {
+  width: 32;
+  height: 32;
+  x: 3%;
+  y: 1%;
+}
 .scale{
   font-family: System-Light;
   font-size: 18;
