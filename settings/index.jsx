@@ -74,19 +74,36 @@ function mySettings(props) {
         title={<Text bold align="center">Data Source Settings</Text>}>
         <Text>
           See watch face github Wiki for URL Explanations.  
-          Leave both fields blank to work with XDrip+ but other data sources MUST be specified.
+          Leave field blank to work with XDrip+ but other data sources MUST be specified.
           </Text>
         <Text>https://github.com/PedanticAvenger/FlashCGM/wiki</Text>
-          <TextInput
-          placeholder="URL to the status.json on your data source."
-          settingsKey="settingsSourceURL"
-          label="Settings API URL"
-        />
         <TextInput
           settingsKey="dataSourceURL"
           label="Data API URL"
           placeholder="URL to the sgv.json on your data source."
         />
+      </Section>
+      <Section title={<Text bold align="center">Units and Alert Preferences</Text>}>
+        <Text>
+          Set your preferred BG Units and Low/High levels for watch to alert you. 
+          On Graph anything above your high level but below your high level plus 2mmol/L (36 mg/dL) will be yelow, above that will be red.
+        </Text>
+        <Select
+            label="Glucose Units"
+            settingsKey="bgDataUnits"
+            options={[
+               {
+                 name: "mmol/L",
+                 value: "mmol"
+               },
+               {
+                 name: "mg/dL",
+                 value: "mg/dl"
+               }
+            ]}
+          />
+          <TextInput label="High Threshold" settingsKey="bgHighLevel" />
+          <TextInput label="Low Threshold" settingsKey="bgLowLevel" />
       </Section>
 
     </Page>

@@ -198,11 +198,9 @@ function updateStats() {
   }
   else if (batteryStats.get().chargestatus== false ) {
     myBatteryLevel.text = batteryStats.get().level+"%";
-    myBattery.width = batteryStats.get().level/3;
+    myBattery.width = Math.min(batteryStats.get().level/3, 29);
     myBattery.fill = batteryStats.get().fill;
   }
-  myBattery.width = batteryStats.get().level/3;
-  myBattery.fill = batteryStats.get().fill;
 }
 
 var hrm = new HeartRateSensor();
@@ -511,12 +509,16 @@ messaging.peerSocket.onmessage = function(evt) {
   console.log("Triggered watch data update: " + JSON.stringify(evt.data));
     updategraph(evt.data);
   } else if (evt.data.hasOwnProperty("dateFormat")) {
-   // console.log("Triggered watch dateFormat update: " + JSON.stringify(evt.data));
-    var newcolor = evt.data.dateFormat;
-    dateFormat = evt.data.dateFormat;
-    // console.log("New date format is: " + dateFormat );
-    updateClock();
-  } else if (evt.data.hasOwnProperty("theme")) {
+    // console.log("Triggered watch dateFormat update: " + JSON.stringify(evt.data));
+     var newcolor = evt.data.dateFormat;
+     dateFormat = evt.data.dateFormat;
+     // console.log("New date format is: " + dateFormat );
+     updateClock();
+   } else if (evt.data.hasOwnProperty("bgDataUnits")) {
+    // console.log("Triggered watch dateFormat update: " + JSON.stringify(evt.data));
+     prefBgUnits = evt.data.bgDataUnits;
+     // console.log("New date format is: " + dateFormat );
+   } else if (evt.data.hasOwnProperty("theme")) {
    // console.log("Triggered a theme update." + JSON.stringify(evt));
     applyTheme(evt.data.theme.background, evt.data.theme.foreground);
     let json_theme = {"backg": evt.data.theme.background, "foreg": evt.data.theme.foreground};

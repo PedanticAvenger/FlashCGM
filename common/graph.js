@@ -88,7 +88,7 @@ export default class Graph {
     if (device.screen.width === 300) {
       scalingfactor = -3;     
     } else {
-      scalingfactor = -3;
+      scalingfactor = 0;
     }
    this._tHighLine.y1 = this._height - ((this._aHigh-this._ymin) / this._yscale) - scalingfactor;
    this._tHighLine.y2 = this._height - ((this._aHigh-this._ymin) / this._yscale) - scalingfactor;

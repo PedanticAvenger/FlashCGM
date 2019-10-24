@@ -72,63 +72,28 @@ const dataPoll = () => {
   return true;
 };
 
-const settingsPoll = () => {
-  if ((lastSettingsUpdate+4800) <= (Date.now()/1000)) {
-    settingsUrl = JSON.parse(settingsStorage.getItem("settingsSourceURL")).name;
-    if (settingsUrl == "" || settingsUrl == null) {
-      settingsUrl = "http://127.0.0.1:17580/status.json";
-    }
-    // console.log('Open Settings API CONNECTION');
-    // console.log(settingsUrl);
-    if (settingsUrl) {
-      fetch(settingsUrl, {
-        method: 'GET',
-        mode: 'cors',
-        headers: new Headers({
-          "Content-Type": 'application/json; charset=utf-8',
-        }),
-      })
-        .then(response => {
-   // console.log('Get Settings From Phone');
-          response.text().then(statusreply => {
-            // console.log("fetched settings from API");
-            lastSettingsUpdate = Date.now()/1000;
-            let returnval = buildSettings(statusreply);
-          })
-            .catch(responseParsingError => {
-              // console.log('Response parsing error in settings!');
-              // console.log(responseParsingError.name);
-              // console.log(responseParsingError.message);
-              // console.log(responseParsingError.toString());
-              // console.log(responseParsingError.stack);
-            });
-        }).catch(fetchError => {
-          // console.log('Fetch error in settings!');
-          // console.log(fetchError.name);
-          // console.log(fetchError.message);
-          // console.log(fetchError.toString());
-          // console.log(fetchError.stack);
-        });
-    } else {
-      // console.log("no url stored in app settings to use to get settings.");
-    }
-  } else {
-  }
-
-  return true;
-};
-
-function buildSettings(settings) {
+function buildSettings() {
   // Need to setup High line, Low Line, Units.
-  var obj = JSON.parse(settings);
-// console.log(JSON.stringify(obj));
-  bgHighLevel = obj.settings.thresholds.bgHigh;
-  bgLowLevel = obj.settings.thresholds.bgLow;
-  bgDataUnits = obj.settings.units;
-  settingsStorage.setItem("unitsType", JSON.stringify(bgDataUnits));
+  console.log("buildSettings() called");
+
   var dF = JSON.parse(settingsStorage.getItem("dateFormat")).values;
   dateFormat = JSON.stringify(dF[0].value).replace(/^"(.*)"$/, '$1');
-  // console.log("DateFormat: " + JSON.stringify(dF[0].value.dateFormat));
+  console.log("DateFormat: " + dateFormat);
+  
+  var Units = JSON.parse(settingsStorage.getItem("bgDataUnits")).values;
+  bgDataUnits = JSON.stringify(Units[0].value).replace(/^"(.*)"$/, '$1');
+  console.log("bgDataUnits: " + bgDataUnits);
+ 
+  var Low = JSON.parse(settingsStorage.getItem("bgLowLevel")).name;
+  bgLowLevel = JSON.stringify(Low).replace(/^"(.*)"$/, '$1');
+  if (bgDataUnits === "mmol") { bgLowLevel = bgLowLevel*18; }
+  console.log("bgLowLevel: " + bgLowLevel);
+ 
+  var High = JSON.parse(settingsStorage.getItem("bgHighLevel")).name;
+  bgHighLevel = JSON.stringify(High).replace(/^"(.*)"$/, '$1');
+  if (bgDataUnits === "mmol") { bgHighLevel = bgHighLevel*18; }
+  console.log("bgHighLevel: " + bgHighLevel);
+ 
   const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
       "bgHighLevel" : bgHighLevel,
@@ -137,9 +102,10 @@ function buildSettings(settings) {
     },
   }; // end of messageContent
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    console.log("companion - sending settings");
     messaging.peerSocket.send(messageContent);
   } else {
-    // console.log("companion - no connection");
+    console.log("companion - no connection");
     me.wakeInterval = 2000;
     setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
     me.wakeInterval = undefined;
@@ -266,9 +232,11 @@ messaging.peerSocket.onmessage = function(evt) {
   // console.log(JSON.stringify(evt.data));
   if (evt.data.hasOwnProperty("RequestType")) {
   if (evt.data.RequestType === "Settings" ) {
-     settingsPoll();
+    console.log("I've been asked for settings."); 
+    buildSettings();
   }
   if (evt.data.RequestType === "Data" ) {
+    console.log("I've been asked for data.");
    dataPoll();
   }
   }  

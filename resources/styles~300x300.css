@@ -92,7 +92,7 @@
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 12%;
+  x: 13%;
   y: 90%;
   fill: #f8fcf8;
 }
@@ -134,19 +134,19 @@
   text-length: 65;
 }
 
-.battery {
-  fill: white;
-}
 #batteryBar {
-  width: 30;
+  width: 28;
   height: 17;
+  fill: white;
   x: 3%;
-  y: 4%;
+  y: 4%-1;
 }
 
 #batteryPercent {
-  x:13%;
-  y:11%;
+  text-length: 10;
+  font-size: 18;
+  x:15%;
+  y:8%;
 }
 
 .batteryBorder {
@@ -155,6 +155,7 @@
   x: 3%;
   y: 1%;
 }
+
 
 #graph-data-range {
   font-family: System-Light;
