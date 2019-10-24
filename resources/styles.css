@@ -144,9 +144,10 @@
 }
 
 #batteryPercent {
-  font-size: 25;
+  text-length: 10;
+  font-size: 18;
   x:13%;
-  y:11%;
+  y:10%;
 }
 
 .batteryBorder {

@@ -1,7 +1,7 @@
 <svg id="MainScreen" class="background">
   <rect class="battery" id="batteryBar" />
   <image class="batteryBorder" href="images/battery.png" fill="white" />
-  <text class="battery" text-anchor="start" id="batteryPercent">100</text>
+  <text class="battery" text-anchor="start" id="batteryPercent">xx</text>
   <text id="myLabel" />
 /*
   Add the BG stuff to the display

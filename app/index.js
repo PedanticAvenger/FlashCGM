@@ -29,14 +29,14 @@ SOFTWARE.
 import clock from "clock";
 import document from "document";
 import userActivity from "user-activity";
-import { me as device } from "device";
+import device from "device";
 import { HeartRateSensor } from "heart-rate";
 import { locale } from "user-settings";
 import { preferences } from "user-settings";
 import * as messaging from "messaging";
 import * as fs from "fs";
 import * as util from "../common/utils";
-import { vibration } from "haptics";
+import * as alerts from "../common/alerts";
 import Graph from "../common/graph";
 import BatteryStats from "../common/batteryinfo";
 
@@ -79,6 +79,7 @@ for(var i = 0; i < batteryitems.length; i++) {
   batteryitems[i].style.fill = foregdcol;
 }
 let myBattery = document.getElementById('batteryBar');
+let myBatteryLevel = document.getElementById("batteryPercent")
 var dateFormat;
 
 //Normal Flashring handles below.
@@ -132,6 +133,11 @@ myBGUnits.style.fill = "grey";
 myBGPollCounterLabel1.style.fill = "grey";
 myMissedBGPollCounter.style.fill = "grey";
 let vibrationTimeout; 
+// Alert handles
+let myPopup = document.getElementById("popup");
+let btnLeft = myPopup.getElementById("btnLeft");
+let btnRight = myPopup.getElementById("btnRight");
+let alertHeader = document.getElementById("alertHeader");
 
 // The pref values below are completely arbitrary and should be discussed.  They get overwritten as soon as xdrip or nightscout is polled for settings.
 let prefHighLevel = 260;
@@ -186,6 +192,17 @@ function updateStats() {
     calRing.fill="#58e078";
   }
   calRing.sweepAngle = calAngle;
+  if (batteryStats.get().chargestatus== true ) {
+    myBatteryLevel.text = "Charging";
+    myBattery.width = 0;
+  }
+  else if (batteryStats.get().chargestatus== false ) {
+    myBatteryLevel.text = batteryStats.get().level+"%";
+    myBattery.width = batteryStats.get().level/3;
+    myBattery.fill = batteryStats.get().fill;
+  }
+  myBattery.width = batteryStats.get().level/3;
+  myBattery.fill = batteryStats.get().fill;
 }
 
 var hrm = new HeartRateSensor();
@@ -256,7 +273,7 @@ function updateClock() {
     currentheart.text = "--";
     heartRing.sweepAngle = 0;
   }
- 
+
 }
 
 // Update the clock every tick event
@@ -265,6 +282,8 @@ clock.ontick = () => updateClock();
 // Don't start with a blank screen
 applyTheme(backgdcol, foregdcol);
 updateClock();
+updateBGPollingStatus();
+
 
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -307,12 +326,6 @@ function setBGColor(bgValue) {
     myBGUnits.style.fill = "red";
     myBGPollCounterLabel1.style.fill = "red";
     myMissedBGPollCounter.style.fill = "red";
-    if (bgValue <= prefLowLevel) {
-      myCurrentBG.style.fill = "magenta";
-      myBGUnits.style.fill = "magenta";
-      myBGPollCounterLabel1.style.fill = "magenta";
-      myMissedBGPollCounter.style.fill = "magenta";
-    }
   } else if ((bgValue > prefLowLevel) && (bgValue <= prefHighLevel)) {
     myCurrentBG.style.fill = "fb-green";
     myBGUnits.style.fill = "fb-green";
@@ -346,28 +359,29 @@ function updategraph(data) {
       myCurrentBG.text = points[47];
       if ((points[47] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
         let message = points[47];
-        startAlertProcess(message);
+        console.log("Start High Alert");
+        alerts.startAlertProcess(message);
       }
       if ((points[47] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
         let message = points[47];
-        startAlertProcess(message);
-      }
+        console.log("Start Low Alert");
+        alerts.startAlertProcess(message);
+      } 
     } else if (prefBgUnits === "mmol") {
-      myCurrentBG.text = mmol(points[47]);
-      if ((points[47] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
-        let message = mmol(points[47]);
-        startAlertProcess(message);
+        myCurrentBG.text = mmol(points[47]);
+        if ((points[47] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now()/1000))) {
+          let message = mmol(points[47]);
+          console.log("Start High Alert");
+          alerts.startAlertProcess(message);
+        }
+        if ((points[47] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
+          let message = mmol(points[47]);
+          console.log("Start Low Alert");
+          alerts.startAlertProcess(message);
+        }
       }
-      if ((points[47] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now()/1000)))  {
-        let message = mmol(points[47]);
-        startAlertProcess(message);
-      }
-    }
-
   } else if (points[47] == undefined) {
-    function findValid(element) {
-     return element != undefined;
-    }     
+    function findValid(element) { return element != undefined; }     
     if(prefBgUnits === "mg/dl") {
       myCurrentBG.text = points[points.findIndex(findValid)];
       myCurrentBG.style.fill = "grey";
@@ -444,11 +458,10 @@ function updateBGPollingStatus() {
   if (lastSettingsUpdate < (Date.now()/1000 - 3600)) {
     requestData("Settings");
   }
-  if (timeCheck >= 320 && lastSettingsUpdate != 0) {
+  if (timeCheck >= 330 && lastSettingsUpdate != 0) {
     requestData("Data");
   }
-    
-  }
+}
 
 function updateSettings(data) {
     // console.log("Whatsettings:" + JSON.stringify(data));
@@ -476,26 +489,26 @@ messaging.peerSocket.close = () => {
 }
 
 function requestData(DataType) {
-  // console.log("Asking for a data update from companion.");
+ console.log("Asking for a " + DataType + " update from companion.");
   var messageContent = {"RequestType" : DataType };
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
     // console.log("Sent request to companion.");
   } else {
     // console.log("companion - no connection");
-    me.wakeInterval = 2000;
+    device.wakeInterval = 2000;
     setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
-    me.wakeInterval = undefined;
+    device.wakeInterval = undefined;
   }
 }
 
 messaging.peerSocket.onmessage = function(evt) {
   // console.log(JSON.stringify(evt));
   if (evt.data.hasOwnProperty("settings")) {
-   // console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
+    console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
     updateSettings(evt.data)
   } else if (evt.data.hasOwnProperty("bgdata")) {
-  // console.log("Triggered watch data update: " + JSON.stringify(evt.data));
+  console.log("Triggered watch data update: " + JSON.stringify(evt.data));
     updategraph(evt.data);
   } else if (evt.data.hasOwnProperty("dateFormat")) {
    // console.log("Triggered watch dateFormat update: " + JSON.stringify(evt.data));
@@ -511,73 +524,6 @@ messaging.peerSocket.onmessage = function(evt) {
   }
 }
 
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-//
-// Vibration handling
-//
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-function startAlertProcess(message) {
-  showAlert(message);
-  startVibration("ring");
-  vibrationTimeout = setTimeout(function(){ startVibration("ring"); 
-    // console.log("triggered vibe by setTimeout"); 
-    }, 10000);
-}
-
-function startVibration(type) {
-  vibration.start(type);
-}
-
-function stopVibration() {
-  clearTimeout(vibrationTimeout);
-  vibration.stop();
-}
-
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-//
-// Alert Handling
-//
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-let myPopup = document.getElementById("popup");
-let btnLeft = myPopup.getElementById("btnLeft");
-let btnRight = myPopup.getElementById("btnRight");
-let alertHeader = document.getElementById("alertHeader");
-
-
-function showAlert(message) {
-  // console.log('ALERT BG')
-  // console.log(message)
-  alertHeader.text = message
-  myPopup.style.display = "inline";
- 
-}
-
-btnLeft.onclick = function(evt) {
-  // console.log("Snooze 4hr");
-  reminderTimer = (Math.round(Date.now()/1000) + 14400); 
-  // console.log("Sleep until: " + reminderTimer); 
-  // console.log("Now: " + Math.round(Date.now()/1000));
-  stopVibration();
-  myPopup.style.display = "none";
-}
-
-btnRight.onclick = function(evt) {
-  // console.log("Snooze 30min");
-  reminderTimer = (Math.round(Date.now()/1000) + 1800); 
-  // console.log("Sleep until: " + reminderTimer); 
-  // console.log("Now: " + Math.round(Date.now()/1000));
-  stopVibration();
-  myPopup.style.display = "none";
-} 
-
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-//
-// Do I need data? functions.
-//
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-setInterval(updateBGPollingStatus, 5000);
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 //
@@ -639,3 +585,28 @@ myNamespace.round = function(number, precision) {
     var roundedTempNumber = Math.round(tempNumber);
     return roundedTempNumber / factor;
 };
+
+btnLeft.onclick = function(evt) {
+  // console.log("Snooze 4hr");
+  reminderTimer = (Math.round(Date.now()/1000) + 14400); 
+  // console.log("Sleep until: " + reminderTimer); 
+  // console.log("Now: " + Math.round(Date.now()/1000));
+  alerts.stopVibration();
+  myPopup.style.display = "none";
+}
+
+btnRight.onclick = function(evt) {
+  // console.log("Snooze 30min");
+  reminderTimer = (Math.round(Date.now()/1000) + 1800); 
+  // console.log("Sleep until: " + reminderTimer); 
+  // console.log("Now: " + Math.round(Date.now()/1000));
+  alerts.stopVibration();
+  myPopup.style.display = "none";
+} 
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+// Do I need data? functions.
+//
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+setInterval(updateBGPollingStatus, 10000);

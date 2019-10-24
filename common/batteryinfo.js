@@ -31,17 +31,17 @@ import { battery, charger} from "power";
 export default class batteryStats {
   get() {
       let level = Math.floor(battery.chargeLevel);
-      let chargestatus =  charger.connected;
-      let color = '#75bd78';
-      if(percent <= 30 && percent >= 15) {
-        color = 'orange';
-      } else if( percent <= 15) {
-        color = 'red';
+      let chargestatus =  battery.charging;
+      let fill = '#3ea843';
+      if(level <= 30 && level >= 15) {
+        fill = 'orange';
+      } else if( level <= 15) {
+        fill = 'red';
       }
       return {
           "chargestatus": chargestatus,
           "level": level,
-          "color": color,
+          "fill": fill,
         
       }
   }

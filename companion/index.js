@@ -199,14 +199,6 @@ function buildGraphData(data) {
     setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
     me.wakeInterval = undefined;
   }
-  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-    messaging.peerSocket.send(messageContent);
-  } else {
-    // console.log("companion - no connection");
-    me.wakeInterval = 2000;
-    setTimeout(function(){messaging.peerSocket.send(messageContent);}, 2500);
-    me.wakeInterval = undefined;
-  }
   return true;
 }
 
