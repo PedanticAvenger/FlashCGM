@@ -12,8 +12,12 @@ Current Watch Face Status:
 Screens currently look as follows. Tap the upper right box of main display to get to graph, anywhere on graph to get back to main.
 Currently deciding if I will submit this as-is to fitbit or add high/low vibe alerts first. everything works everywhere except grabbing target BG high/low values from xDrip+ as they are not included in the status.json endpoint yet.  Once they are this will just work.
 
-Ionic Main: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Ionic-Main-May1-2018.png">
-Ionic Graph: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Ionic-Graph-May1-2018.png">
-
-Versa Main: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Versa-Main-May1-2018.png">
-Versa Graph: <img align="middle" src="https://github.com/raymond-richmond/XDrip-Flashring/blob/master/resources/Versa-Graph-May1-2018.png">
+Ionic Main: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-Ionic-Main.png">
+Ionic Graph: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-Ionic-Graph.png">
+Ionic Alert: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-Ionic-Alert.png">
+Versa Main: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-Versa-Main.png">
+Versa Graph: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-Versa-Graph.png">
+Versa Alert: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-Versa-Alert.png">
+Versa Lite Main: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-VLite-Main.png">
+Versa Lite Graph: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-VLite-Graph.png">
+Versa Lite Alert: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/resources/FlashCGM-VLite-Alert.png">
