@@ -20,13 +20,13 @@
   <text id="myDate" />
   <line id="bottomLine" x1="4%" y1="57%" x2="96%" y2="57%" fill="#333333" stroke-width="1" />
 
-  <image x="12%-15" y="65%" width="30" height="30" href="images/footsteps-silhouette.png" />
+  <image id="stepsimage" x="12%-15" y="65%" width="30" height="30" href="images/footsteps-silhouette.png" />
   <text id="mySteps" />
-  <image x="37%-12" y="74%" width="25" height="25" href="images/stairs.png" />
+  <image id="stairsimage" x="37%-12" y="74%" width="25" height="25" href="images/stairs.png" />
   <text id="myStairs" />
-  <image x="62%-10" y="65%" width="20" height="30" href="images/purepulse-calorie.png" />
+  <image id="calorieimage" x="62%-10" y="65%" width="20" height="30" href="images/purepulse-calorie.png" />
   <text id="myCals" />
-  <image x="87%-15" y="65%" width="30" height="30" href="images/Twemoji.png" />
+  <image id="hrimage" x="87%-15" y="65%" width="30" height="30" href="images/Twemoji.png" />
   <text id="myHR" />
 /*  Changed width here to get rid of the gradient on the BG stuff, was 348 px. */
   <gradientRect id="clockShade" width="60%" height="40%"
@@ -40,9 +40,9 @@
                 gradient-opacity1="0"
                 gradient-opacity2="0.8"
   />
-  <arc x="12%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
-  <arc x="62%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
-  <arc x="87%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc id="stepsArcBckg" x="12%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc id="calsArcBckg" x="62%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
+  <arc id="hrtArcBckg" x="87%-25" y="62%" width="50" height="50" fill="#333344" arc-width="2" start-angle="0" sweep-angle="360" />
 
   <arc id="stepsArc" x="12%-25" y="62%" width="50" height="50" fill="#4edcfb" arc-width="2" start-angle="0" sweep-angle="0" />
   <arc id="calsArc" x="62%-25" y="62%" width="50" height="50" fill="#ff882c" arc-width="2" start-angle="0" sweep-angle="0" />

@@ -30,6 +30,7 @@ import clock from "clock";
 import document from "document";
 import userActivity from "user-activity";
 import device from "device";
+import { Barometer } from "barometer";
 import { HeartRateSensor } from "heart-rate";
 import { locale } from "user-settings";
 import { preferences } from "user-settings";
@@ -84,7 +85,6 @@ var dateFormat;
 
 //Normal Flashring handles below.
 let dailysteps = document.getElementById("mySteps");
-let dailystairs = document.getElementById("myStairs");
 let dailycals = document.getElementById("myCals");
 let currentheart = document.getElementById("myHR");
 let heartRing = document.getElementById("hrtArc");
@@ -94,7 +94,37 @@ let heart = document.getElementById("myHR");
 let otherData = document.getElementById("otherData");
 let upperLine = document.getElementById("upperLine");
 let bottomLine = document.getElementById("bottomLine");
-
+let dailystairs = document.getElementById("myStairs");
+if (Barometer) {
+  //console.log("This device has a Barometer!");
+} else {
+  //console.log("This device does NOT have a Barometer!");
+  //Hide Stairs
+  let stairsimage = document.getElementById("stairsimage");
+  dailystairs.display="none";
+  stairsimage.style.display="none";
+  //Move Steps
+  let stepsimage = document.getElementById("stepsimage");
+  let stepsArcBckg = document.getElementById("stepsArcBckg");
+  stepsimage.x=45;
+  dailysteps.x=60;
+  stepRing.x=35;
+  stepsArcBckg.x=35;
+  //Move Calories
+  let calorieimage = document.getElementById("calorieimage");
+  let calsArcBckg = document.getElementById("calsArcBckg");
+  calorieimage.x=140;
+  dailycals.x=150;
+  calRing.x=125;
+  calsArcBckg.x=125;
+  //Move HR
+  let hrimage = document.getElementById("hrimage");
+  let hrtArcBckg = document.getElementById("hrtArcBckg");
+  hrimage.x=225;
+  heart.x=240;
+  heartRing.x=215;
+  hrtArcBckg.x=215;
+}
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 //
@@ -173,9 +203,15 @@ function updateStats() {
   const amountSteps = userActivity.today.adjusted[metricSteps] || 0;
   const metricCals = "calories";  // distance, calories, elevationGain, activeMinutes
   const amountCals = userActivity.today.adjusted[metricCals] || 0;
-  const metricElevation = "elevationGain";
-  const amountElevation = userActivity.today.adjusted[metricElevation] || 0
-  dailystairs.text = amountElevation;
+  if (Barometer) {
+    //console.log("This device has a Barometer!");
+    const metricElevation = "elevationGain";
+    const amountElevation = userActivity.today.adjusted[metricElevation] || 0
+    dailystairs.text = amountElevation;
+ } else {
+    //console.log("This device does NOT have a Barometer!");
+ }
+
   let stepString = util.thsdDot(amountSteps);
   let calString = util.thsdDot(amountCals);
   dailysteps.text = stepString;

@@ -84,6 +84,7 @@ export default class Graph {
      
    // console.log("Updating Graph...");
     var scalingfactor = 0;
+    var redline = this._aHigh + 36;
    //this._bg.style.fill = this._bgcolor;
     if (device.screen.width === 300) {
       scalingfactor = -3;     
@@ -96,6 +97,7 @@ export default class Graph {
    this._tLowLine.y2 = this._height - ((this._aLow-this._ymin) / this._yscale) - scalingfactor;
    
     
+   console.log("Low/High/Red: " + this._aLow+"/"+this.a_High+"/"+ redline);
    for (var index = 0; index < this._vals.length; index++) {
    
     // console.log(`V${index}: ${v[index].sgv}`);
@@ -105,17 +107,15 @@ export default class Graph {
     //this._vals[index].cx = this._width - ((v[index]-this._xmin) / this._xscale);
 
      this._vals[index].cy = this._height - ((v[index]-this._ymin) / this._yscale) - scalingfactor;
- 
      if (v[index] <= this._aLow) {
        this._vals[index].style.fill = "red"
      } else if ((this._aLow < v[index]) && (v[index] <= this._aHigh)) {
        this._vals[index].style.fill = "fb-green"; 
-     } else if (this._aHigh < v[index]) {
-     this._vals[index].style.fill = "yellow"; 
-       if ((this.aHigh+36) <= v[index]) {
-        this._vals[index].style.fill = "red";
-       }
-     }
+     } else if ((this._aHigh < v[index]) && (v[index] <= (36+this._aHigh)))  {
+       this._vals[index].style.fill = "yellow"; 
+     } else if (redline < v[index]) { 
+       this._vals[index].style.fill = "red"; 
+    }
      //this._vals[index].cy = this._height - 20;
    }
    

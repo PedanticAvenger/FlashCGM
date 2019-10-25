@@ -29,7 +29,7 @@
   <image x="87%-15" y="69%" width="30" height="30" href="images/Twemoji.png" />
   <text id="myHR" />
 /*  Changed width here to get rid of the gradient on the BG stuff, was 348 px. */
-  <gradientRect id="clockShade" width="60%" height="40%"
+  <gradientRect id="clockShade" width="60%" height="41%"
                 gradient-type="linear"
                 gradient-x1="0"
                 gradient-y1="45%"
