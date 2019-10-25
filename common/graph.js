@@ -97,7 +97,7 @@ export default class Graph {
    this._tLowLine.y2 = this._height - ((this._aLow-this._ymin) / this._yscale) - scalingfactor;
    
     
-   console.log("Low/High/Red: " + this._aLow+"/"+this.a_High+"/"+ redline);
+   console.log("Low/High/Red: " + this._aLow+"/"+this._aHigh+"/"+ redline);
    for (var index = 0; index < this._vals.length; index++) {
    
     // console.log(`V${index}: ${v[index].sgv}`);
