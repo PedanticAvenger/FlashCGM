@@ -1,16 +1,15 @@
-# XDrip-Flashring
-Repository of work to alter Fitbit Ionic Flashring Watch Face to support Blood Glucose data display from XDrip+ and directly from nightscout sites.
+# FlashCGM
+Repository of work to alter Fitbit Ionic Flashring Watch Face to support Blood Glucose data display from XDrip+/Spike/etc. and directly from nightscout sites.
 
 Design Goals:
    1) Perform as much processing on phone companion app as possible to maintain watch battery life.
    2) Provide at-a-glance info about current BG, trend, and polling status.
-   3) Tap BG Value to view chart of last 24 readings graphically.  Tap to return.
-   4) Settings are pulled from xDrip+ or Nightscout to avoid having to set them up in watchface and consistency.  This includes units, High/Low limits, Target High/Low limits.
-   5) Document in-code as much as possible to support ongoing development/support of this watch face for users.
+   3) Tap BG Value to view chart of last 4 hours (48 readings) graphically.  Tap to return.
+   4) Units, High/Low limits, Target High/Low limits for alerts all configured on watch face to reduce polling and battery use.
 
 Current Watch Face Status:
 Screens currently look as follows. Tap the upper right box of main display to get to graph, anywhere on graph to get back to main.
-Currently deciding if I will submit this as-is to fitbit or add high/low vibe alerts first. everything works everywhere except grabbing target BG high/low values from xDrip+ as they are not included in the status.json endpoint yet.  Once they are this will just work.
+This is a v1.0 release and any v0.9 faces WILL have to redo settings for the watch to work.  Settings are simpler now and only require the preferences and the URL to your sgv.json on data source to work. 
 
 Ionic Main: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/WebContent/FlashCGM-Ionic-Main.png">
 Ionic Graph: <img align="middle" src="https://github.com/PedanticAvenger/FlashCGM/blob/master/WebContent/FlashCGM-Ionic-Graph.png">
