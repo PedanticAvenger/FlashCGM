@@ -7,6 +7,7 @@
   Add the BG stuff to the display
  */
   <line id="upperVert" x1="60%" y1="4%" x2="60%" y2="57%" fill="#333333" stroke-width="2" />
+  <text id="myDelta" >&#8710;xx</text>
   <text id="myCurrentBG" />
   <text id="myBGUnits" />
   /* Ok, changing this to an arc of 180 degrees with a white indicator arc on top and ability to change color.

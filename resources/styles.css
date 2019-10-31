@@ -23,6 +23,15 @@
   fill: #707070;
 }
 
+#myDelta {
+  font-size: 30;
+  font-family: Colfax-Regular;
+  text-length: 8;
+  text-anchor: end;
+  x: 98%;
+  y:9%;
+  fill: grey;
+}
 
 #myCurrentBG {
   font-size: 70;

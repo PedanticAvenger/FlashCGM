@@ -146,6 +146,7 @@ let arrowIcon = {"Flat":"\u{2192}","DoubleUp":"\u{2191}\u{2191}","SingleUp":"\u{
 
 //Inserted for main screen CGM Data
 let myCurrentBG = document.getElementById("myCurrentBG");
+let myDelta = document.getElementById("myDelta");
 let myBGUnits = document.getElementById("myBGUnits");
 let myBGPollCounterLabel1 = document.getElementById("myBGPollCounterLabel1");
 let myMissedBGPollCounter = document.getElementById("myMissedBGPollCounter");
@@ -382,6 +383,7 @@ function setBGColor(bgValue) {
 function updategraph(data) {
   var points = data.bgdata.graphData;
   var trend = data.bgdata.currentTrend;
+  var delta = 0;
   var lastPollTime = data.bgdata.lastPollTime;
   lastReadingTimestamp = data.bgdata.lastPollTime;
 
@@ -413,7 +415,20 @@ function updategraph(data) {
           console.log("Start Low Alert");
           alerts.startAlertProcess(message);
         }
-      }
+    }
+
+    delta = points[47] - points[46];
+
+    if (Math.abs(delta) < 9) { myDelta.style.fill = "fb-green";}
+    else if ((Math.abs(delta) >= 9) && (Math.abs(delta) < 18)) {myDelta.style.fill ="yellow"; }
+    else { myDelta.style.fill="red";}
+
+    if(prefBgUnits === "mg/dl") {
+      myDelta.text = "\u2206"+ delta;
+    } else if (prefBgUnits === "mmol") {
+      delta = mmol(delta);
+      myDelta.text = "\u2206"+ delta;
+    }
   } else if (points[47] == undefined) {
     function findValid(element) { return element != undefined; }     
     if(prefBgUnits === "mg/dl") {
