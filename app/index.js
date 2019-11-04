@@ -383,7 +383,7 @@ function setBGColor(bgValue) {
 function updategraph(data) {
   var points = data.bgdata.graphData;
   var trend = data.bgdata.currentTrend;
-  var delta = 0;
+  var delta = data.bgdata.delta;
   var lastPollTime = data.bgdata.lastPollTime;
   lastReadingTimestamp = data.bgdata.lastPollTime;
 
@@ -417,8 +417,6 @@ function updategraph(data) {
         }
     }
 
-    delta = points[47] - points[46];
-
     if (Math.abs(delta) < 9) { myDelta.style.fill = "fb-green";}
     else if ((Math.abs(delta) >= 9) && (Math.abs(delta) < 18)) {myDelta.style.fill ="yellow"; }
     else { myDelta.style.fill="red";}
@@ -434,9 +432,13 @@ function updategraph(data) {
     if(prefBgUnits === "mg/dl") {
       myCurrentBG.text = points[points.findIndex(findValid)];
       myCurrentBG.style.fill = "grey";
+      myDelta.style.fill="grey";
+      myDelta.tezt="stale";
     } else if (prefBgUnits === "mmol") {
       myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
       myCurrentBG.style.fill = "grey";
+      myDelta.style.fill="grey";
+      myDelta.tezt="stale";
     }
   }
 

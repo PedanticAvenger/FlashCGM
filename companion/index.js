@@ -120,6 +120,7 @@ function buildGraphData(data) {
   let graphpointindex = 0;
   var runningTimestamp = new Date().getTime();
   var indexarray = [];
+  let bgdelta = 0;
 
   // build the index
   obj.sort(function(a, b) { 
@@ -143,6 +144,7 @@ function buildGraphData(data) {
         if (!validTimeStamp) {
         lastTimestamp = obj[index].date;
         bgTrend = obj[index].direction;
+        bgdelta = obj[index].delta;
         validTimeStamp = true;
       }
     }
@@ -153,7 +155,8 @@ function buildGraphData(data) {
   const messageContent = {"bgdata" : {
       "graphData": flippedPoints, 
       "lastPollTime": lastTimestamp, 
-      "currentTrend": bgTrend
+      "currentTrend": bgTrend,
+      "delta": bgdelta
     }
   };
   // console.log(JSON.stringify(messageContent));
