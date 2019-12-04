@@ -416,11 +416,18 @@ function updategraph(data) {
           alerts.startAlertProcess(message);
         }
     }
-
-    if (Math.abs(delta) < 9) { myDelta.style.fill = "fb-green";}
-    else if ((Math.abs(delta) >= 9) && (Math.abs(delta) < 18)) {myDelta.style.fill ="yellow"; }
-    else { myDelta.style.fill="red";}
-
+    if (delta == undefined) {
+      if (points[46] == undefined) {
+        myDelta.text = "gap";
+        myDelta.style.fill="red";
+      } else {
+        delta = points[47] - points[46];
+      }
+    } else {
+      if (Math.abs(delta) < 9) { myDelta.style.fill = "fb-green";}
+      else if ((Math.abs(delta) >= 9) && (Math.abs(delta) < 18)) {myDelta.style.fill ="yellow"; }
+      else { myDelta.style.fill="red";}
+    }
     if(prefBgUnits === "mg/dl") {
       myDelta.text = "\u2206"+ delta;
     } else if (prefBgUnits === "mmol") {
@@ -433,12 +440,12 @@ function updategraph(data) {
       myCurrentBG.text = points[points.findIndex(findValid)];
       myCurrentBG.style.fill = "grey";
       myDelta.style.fill="grey";
-      myDelta.tezt="stale";
+      myDelta.text="stale";
     } else if (prefBgUnits === "mmol") {
       myCurrentBG.text = mmol(points[points.findIndex(findValid)]);
       myCurrentBG.style.fill = "grey";
       myDelta.style.fill="grey";
-      myDelta.tezt="stale";
+      myDelta.text="stale";
     }
   }
 
