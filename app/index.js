@@ -422,17 +422,21 @@ function updategraph(data) {
         myDelta.style.fill="red";
       } else {
         delta = points[47] - points[46];
+        if (Math.abs(delta) < 9) { myDelta.style.fill = "fb-green";}
+        else if ((Math.abs(delta) >= 9) && (Math.abs(delta) < 18)) {myDelta.style.fill ="yellow"; }
+        else { myDelta.style.fill="red";}
       }
+      
     } else {
       if (Math.abs(delta) < 9) { myDelta.style.fill = "fb-green";}
       else if ((Math.abs(delta) >= 9) && (Math.abs(delta) < 18)) {myDelta.style.fill ="yellow"; }
       else { myDelta.style.fill="red";}
-    }
-    if(prefBgUnits === "mg/dl") {
-      myDelta.text = "\u2206"+ delta;
-    } else if (prefBgUnits === "mmol") {
-      delta = mmol(delta);
-      myDelta.text = "\u2206"+ delta;
+      if(prefBgUnits === "mg/dl") {
+        myDelta.text = "\u2206"+ delta;
+      } else if (prefBgUnits === "mmol") {
+        delta = mmol(delta);
+        myDelta.text = "\u2206"+ delta;
+      }
     }
   } else if (points[47] == undefined) {
     function findValid(element) { return element != undefined; }     

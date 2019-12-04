@@ -67,7 +67,7 @@ const dataPoll = () => {
         // console.log(fetchError.stack);
       })
   } else {
-    // console.log('no url stored in settings to use to get data.');
+    console.log('no url stored in settings to use to get data.');
   }
   return true;
 };
