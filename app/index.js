@@ -422,6 +422,12 @@ function updategraph(data) {
         myDelta.style.fill="red";
       } else {
         delta = points[47] - points[46];
+        if(prefBgUnits === "mg/dl") {
+          myDelta.text = "\u2206"+ delta;
+        } else if (prefBgUnits === "mmol") {
+          delta = mmol(delta);
+          myDelta.text = "\u2206"+ delta;
+        }
         if (Math.abs(delta) < 9) { myDelta.style.fill = "fb-green";}
         else if ((Math.abs(delta) >= 9) && (Math.abs(delta) < 18)) {myDelta.style.fill ="yellow"; }
         else { myDelta.style.fill="red";}
@@ -515,7 +521,6 @@ function updateBGPollingStatus() {
   // console.log("Called Polling Status Update: " + timeCheck);
   let timeCheck = Math.round(Date.now()/1000 -  lastReadingTimestamp);
   var newMissedCounter = parseInt((timeCheck / 60), 10);
-    myMissedBGPollCounter.text = newMissedCounter;
     // If it's been > 5 min since last update ask for data.
   if (lastSettingsUpdate < (Date.now()/1000 - 3600)) {
     requestData("Settings");
@@ -523,6 +528,7 @@ function updateBGPollingStatus() {
   if (timeCheck >= 330 && lastSettingsUpdate != 0) {
     requestData("Data");
   }
+  myMissedBGPollCounter.text = newMissedCounter;
 }
 
 function updateSettings(data) {
@@ -675,4 +681,4 @@ btnRight.onclick = function(evt) {
 // Do I need data? functions.
 //
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-setInterval(updateBGPollingStatus, 10000);
+setInterval(updateBGPollingStatus, 5000);
