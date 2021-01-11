@@ -1,15 +1,48 @@
 .background {
   viewport-fill: black;
 }
+.application-fill { fill: fb-red;}
+.foreground-fill { fill: fb-white;}
+.background-fill { fill: fb-black;}
+#btnLeft #text {
 
-#myLabel {
-  font-size: 73;
+  text-buffer: "4Hr";
+}
+
+#btnRight #text {
+  text-buffer: "30Min";
+}
+
+#alertHeader {
+  font-size: 55;
   font-weight: bold;
   font-family: Colfax-Medium;
   text-length: 80;
   text-anchor: middle;
-  x: 30%;
+  x: 50%;
   y: 40%;
+  fill: fb-white;
+}
+
+#alertText {
+  font-size: 45;
+  font-weight: bold;
+  font-family: Colfax-Medium;
+  text-length: 80;
+  text-anchor: middle;
+  x: 50%;
+  y: 60%;
+  fill: fb-magenta;
+}
+
+#myLabel {
+  font-size: 68;
+  font-weight: bold;
+  font-family: Colfax-Medium;
+  text-length: 80;
+  text-anchor: middle;
+  x: 32%;
+  y: 35%;
   fill: #f8fcf8;
 }
 
@@ -27,9 +60,9 @@
   font-size: 30;
   font-family: Colfax-Regular;
   text-length: 8;
-  text-anchor: end;
-  x: 98%;
-  y:9%;
+  text-anchor: start;
+  x: 65%;
+  y:12%;
   fill: grey;
 }
 
@@ -39,17 +72,16 @@
   text-length: 20;
   text-anchor: middle;
   x: 80%;
-  y: 30%;
+  y: 33%;
   fill: orangered;
 }
-
 
 #myBGUnits {
   font-size: 24;
   font-family: Seville-Regular;
   text-length: 20;
   text-anchor: start;
-  x: 83%;
+  x: 80%;
   y: 40%;
   fill: orangered;
 }
@@ -60,7 +92,7 @@
   font-family: Colfax-Regular;
   text-length: 20;
   text-anchor: start;
-  x: 63%;
+  x: 55%;
   y: 57%;
   fill: orangered;
 }
@@ -71,7 +103,7 @@
   font-weight: regular;
   text-length: 30;
   text-anchor: middle;
-  x: 315;
+  x: 90%;
   y: 58%;
   fill: grey;
 }
@@ -101,8 +133,8 @@
   font-family: System-Regular;
   text-length: 80;
   text-anchor: middle;
-  x: 12%;
-  y: 96%;
+  x: 58;
+  y: 87%;
   fill: #f8fcf8;
 }
 
@@ -111,7 +143,7 @@
   font-family: System-Regular;
   text-length: 30;
   text-anchor: middle;
-  x: 37%;
+  x: 130;
   y: 75%;
   fill: #f8fcf8;
 }
@@ -123,7 +155,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 62%;
-  y: 96%;
+  y: 87%;
   fill: #f8fcf8;
 }
 
@@ -133,7 +165,7 @@
   text-length: 80;
   text-anchor: middle;
   x: 87%;
-  y: 96%;
+  y: 87%;
   fill: #f8fcf8;
 }
 
@@ -146,23 +178,24 @@
 
 #batteryBar {
   width: 30;
-  height: 17;
+  height: 15;
   fill: white;
-  x: 3%;
+  x: 48%;
   y: 4%;
 }
 
 #batteryPercent {
   text-length: 10;
   font-size: 18;
-  x:13%;
-  y:10%;
+  text-anchor: end;
+  x:47%;
+  y:8%;
 }
 
 .batteryBorder {
   width: 32;
   height: 32;
-  x: 3%;
+  x: 48%;
   y: 1%;
 }
 
@@ -170,7 +203,7 @@
   font-family: System-Light;
   font-size: 18;
   fill: white;
-  text-anchor: end;
+  text-anchor: start;
   text-length: 4;
 }
 

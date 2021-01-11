@@ -87,6 +87,7 @@ function mySettings(props) {
         <Text>
           Set your preferred BG Units and Low/High levels for watch to alert you. 
           On Graph anything above your high level but below your high level plus 2mmol/L (36 mg/dL) will be yelow, above that will be red.
+          For Snooze Time, set the number of minutes you would like the "Left" and "Right" snooze button intervals to be (default is 15 minutes and 4 Hours) in minutes.
         </Text>
         <Select
             label="Glucose Units"
@@ -104,6 +105,8 @@ function mySettings(props) {
           />
           <TextInput label="High Threshold" settingsKey="bgHighLevel" />
           <TextInput label="Low Threshold" settingsKey="bgLowLevel" />
+          <TextInput label="Left Button Alert Snooze Time" settingsKey="alertLeftSnooze" />
+          <TextInput label="Right Button Alert Snooze Time" settingsKey="alertRightSnooze" />
       </Section>
 
     </Page>

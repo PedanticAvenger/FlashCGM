@@ -163,7 +163,9 @@ myCurrentBG.style.fill = "grey";
 myBGUnits.style.fill = "grey";
 myBGPollCounterLabel1.style.fill = "grey";
 myMissedBGPollCounter.style.fill = "grey";
-let vibrationTimeout; 
+let vibrationTimeout;
+var myRightSnooze = 900;
+var myLeftSnooze = 14400; 
 // Alert handles
 let myPopup = document.getElementById("popup");
 let btnLeft = myPopup.getElementById("btnLeft");
@@ -481,8 +483,8 @@ function updategraph(data) {
     myGraph.setSize(300,172);
     myGraph.setPosition(0,64);      
   } else {
-    myGraph.setSize(348,200);
-    myGraph.setPosition(0,25);
+    myGraph.setSize(250,200);
+    myGraph.setPosition(30,60);
   }
   myGraph.setHiLo(prefHighLevel, prefLowLevel);
   // console.log("Hi/Lo: " + prefHighLevel + "/" + prefLowLevel);
@@ -538,6 +540,19 @@ function updateSettings(data) {
     prefLowLevel = data.settings.bgLowLevel;
     dateFormat = data.settings.dateFormat;
     myBGUnits.text = prefBgUnits;
+    myRightSnooze = data.settings.rightSnooze;
+    myLeftSnooze = data.settings.leftSnooze;
+    if (myRightSnooze >= 3600) {
+      btnRight.text = "Snooze "+(myRightSnooze/3600).toFixed(1)+"hr";
+    } else {
+      btnRight.text = "Snooze "+(myRightSnooze/60).toFixed(0)+"m";
+    }
+    if (myLeftSnooze >= 3600) {
+      btnLeft.text = "Snooze "+(myLeftSnooze/3600).toFixed(1)+"hr";
+    } else {
+      btnLeft.text = "Snooze "+(myLeftSnooze/60).toFixed(0)+"m";
+    }
+    
     lastSettingsUpdate = Date.now()/1000;
     updateClock();
   }
@@ -660,7 +675,7 @@ myNamespace.round = function(number, precision) {
 
 btnLeft.onclick = function(evt) {
   // console.log("Snooze 4hr");
-  reminderTimer = (Math.round(Date.now()/1000) + 14400); 
+  reminderTimer = (Math.round(Date.now()/1000) + myLeftSnooze); 
   // console.log("Sleep until: " + reminderTimer); 
   // console.log("Now: " + Math.round(Date.now()/1000));
   alerts.stopVibration();
@@ -669,7 +684,7 @@ btnLeft.onclick = function(evt) {
 
 btnRight.onclick = function(evt) {
   // console.log("Snooze 30min");
-  reminderTimer = (Math.round(Date.now()/1000) + 1800); 
+  reminderTimer = (Math.round(Date.now()/1000) + myRightSnooze); 
   // console.log("Sleep until: " + reminderTimer); 
   // console.log("Now: " + Math.round(Date.now()/1000));
   alerts.stopVibration();

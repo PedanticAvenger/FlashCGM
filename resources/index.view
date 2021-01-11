@@ -1,0 +1,23 @@
+<svg>
+  <link rel="import" href="MainScreen.view" />
+  <link rel="import" href="GraphScreen.view" />
+  <!-- Alert -->
+      <svg id="popup" display="none" >
+        <!-- Black background -->
+        <rect class="full-size" fill="fb-black" />
+
+        <!-- Display text -->
+        <text id="alertHeader" >----</text>
+        <text id="alertText" >Check BG!</text>
+        <!-- Left button -->
+        <use id="btnLeft" href="#text-button" class="text-button bottom left secondary application-fill">
+           <set href="#text" attributeName="text-buffer" to="Snooze 4hr" />
+        </use>
+
+        <!-- Right button -->
+        <use id="btnRight" href="#text-button" class="text-button bottom right application-fill">
+          <set href="#text" attributeName="text-buffer" to="Snooze 30m" />
+        </use>
+      </svg>
+</svg>
+ 

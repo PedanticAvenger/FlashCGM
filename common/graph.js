@@ -1,7 +1,7 @@
 import { me as device } from "device";
 
 // Screen dimension fallback for older firmware
-if (!device.screen) device.screen = { width: 348, height: 250 };
+if (!device.screen) device.screen = { width: 336, height: 336 };
 
 export default class Graph {
  
@@ -14,7 +14,9 @@ export default class Graph {
    this._xmax = 0;
    this._ymin = 0;
    this._ymax = 0;
-   this._pointsize = 2;   
+   this._pointsize = 2;
+   this._width = 220;
+   this._height = 200;   
    
    this._bg = this._id.getElementById("bg");
       
@@ -55,9 +57,9 @@ export default class Graph {
    this._ymin = ymin-1;
    this._ymax = ymax+1; 
    this._yscale = (ymax-ymin)/this._height;
-   // console.log("YMIN: "+ ymin);
-   // console.log("YMAX: "+ ymax);
-   // console.log("YSCALE: " + this._yscale);
+   console.log("YMIN: "+ ymin);
+   console.log("YMAX: "+ ymax);
+   console.log("YSCALE: " + this._yscale);
    
  } 
 
@@ -89,7 +91,7 @@ export default class Graph {
     if (device.screen.width === 300) {
       scalingfactor = -3;     
     } else {
-      scalingfactor = 0;
+      scalingfactor = -3;
     }
    this._tHighLine.y1 = this._height - ((this._aHigh-this._ymin) / this._yscale) - scalingfactor;
    this._tHighLine.y2 = this._height - ((this._aHigh-this._ymin) / this._yscale) - scalingfactor;
