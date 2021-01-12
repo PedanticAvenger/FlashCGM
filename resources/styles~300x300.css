@@ -3,7 +3,7 @@
 }
 
 #myLabel {
-  font-size: 68;
+  font-size: 64;
   font-weight: bold;
   font-family: Colfax-Medium;
   text-length: 78;
@@ -156,6 +156,13 @@
   font-size: 18;
   x:15%;
   y:8%;
+}
+
+#ButtonLabel {
+  text-anchor: middle;
+  fill: fb-white;
+  x: 50%;
+  y: 75%;
 }
 
 .batteryBorder {

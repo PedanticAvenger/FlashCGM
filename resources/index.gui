@@ -7,23 +7,18 @@
         <rect class="full-size" fill="fb-black" />
 
         <!-- Title and text -->
-        <use href="#mixed-text-center-mid" class="dialog-mixed-text" fill="fb-white" id="alertHeader">
-          <set href="#top-padding" attributeName="display" to="none" />
-          <set href="#header/text" attributeName="text-buffer"  to="----" />
-          <set href="#header/text" attributeName="fill" to="fb-magenta"/>
-          <set href="#copy/text" attributeName="text-buffer" to="Check BG!" />
-          <set href="#bottom-padding" attributeName="display" to="none" />
-        </use>
-
+        <textarea id="alertHeader" x="15%" y="15%" width="70%" fill="fb-magenta" font-size="70" font-weight="bold" text-anchor="middle">----</textarea> 
+        <textarea x="15%" y="50%" width="70%"  fill="fb-white" font-size="30" text-anchor="middle">Check BG!</textarea>
+        <textarea x="0" y="65%" width="100%" fill="fb-white" font-size="30" text-anchor="middle">Select Snooze:</textarea>
         <!-- Left button -->
         <use id="btnLeft" class="dialog-half-button-left" href="#square-button-negative">
-           <set href="#text" attributeName="text-buffer" to="Snooze 4hr" />
+           <set href="#text" attributeName="text-buffer" to="------" />
           <set href="#text" attributeName="text-anchor" to="middle" />
         </use>
 
         <!-- Right button -->
         <use id="btnRight" class="dialog-half-button-right" href="#square-button-neutral">
-          <set href="#text" attributeName="text-buffer" to="Snooze 30m" />
+          <set href="#text" attributeName="text-buffer" to="------" />
           <set href="#text" attributeName="text-anchor" to="middle" />
         </use>
       </svg>

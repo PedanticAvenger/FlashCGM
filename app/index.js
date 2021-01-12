@@ -163,7 +163,10 @@ myCurrentBG.style.fill = "grey";
 myBGUnits.style.fill = "grey";
 myBGPollCounterLabel1.style.fill = "grey";
 myMissedBGPollCounter.style.fill = "grey";
-let vibrationTimeout; 
+let vibrationTimeout;
+var myRightSnooze = 900;
+var myLeftSnooze = 14400; 
+ 
 // Alert handles
 let myPopup = document.getElementById("popup");
 let btnLeft = myPopup.getElementById("btnLeft");
@@ -538,6 +541,19 @@ function updateSettings(data) {
     prefLowLevel = data.settings.bgLowLevel;
     dateFormat = data.settings.dateFormat;
     myBGUnits.text = prefBgUnits;
+    myRightSnooze = data.settings.rightSnooze;
+    myLeftSnooze = data.settings.leftSnooze;
+    if (myRightSnooze >= 3600) {
+      btnRight.text = (myRightSnooze/3600).toFixed(1)+"hr";
+    } else {
+      btnRight.text = (myRightSnooze/60).toFixed(0)+"m";
+    }
+    if (myLeftSnooze >= 3600) {
+      btnLeft.text = (myLeftSnooze/3600).toFixed(1)+"hr";
+    } else {
+      btnLeft.text = (myLeftSnooze/60).toFixed(0)+"m";
+    }
+    
     lastSettingsUpdate = Date.now()/1000;
     updateClock();
   }
