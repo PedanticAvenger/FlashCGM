@@ -87,6 +87,7 @@ function mySettings(props) {
         <Text>
           Set your preferred BG Units and Low/High levels for watch to alert you. 
           On Graph anything above your high level but below your high level plus 2mmol/L (36 mg/dL) will be yelow, above that will be red.
+          Also set the custom timers for the alert buttons to snooze alarms when you go high/low, in minutes.
         </Text>
         <Select
             label="Glucose Units"
