@@ -105,6 +105,8 @@ function mySettings(props) {
           />
           <TextInput label="High Threshold" settingsKey="bgHighLevel" />
           <TextInput label="Low Threshold" settingsKey="bgLowLevel" />
+          <TextInput label="Left Button Alert Snooze Time" settingsKey="alertLeftSnooze" />
+          <TextInput label="Right Button Alert Snooze Time" settingsKey="alertRightSnooze" />
       </Section>
 
     </Page>

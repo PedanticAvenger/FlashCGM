@@ -159,6 +159,13 @@
   y:10%;
 }
 
+#ButtonLabel {
+  text-anchor: middle;
+  fill: fb-white;
+  x: 50%;
+  y: 75%;
+}
+
 .batteryBorder {
   width: 32;
   height: 32;
