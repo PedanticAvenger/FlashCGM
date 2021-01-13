@@ -7,9 +7,9 @@
         <rect class="full-size" fill="fb-black" />
 
         <!-- Title and text -->
-        <textarea id="alertHeader" x="10%" y="12%" width="80%" fill="fb-magenta" font-size="70" font-weight="bold" text-anchor="middle">----</textarea> 
-        <textarea x="15%" y="40%" width="70%"  fill="fb-white" font-size="30" text-anchor="middle">Check BG!</textarea>
-        <textarea x="0" y="55%" width="100%" fill="fb-white" font-size="30" text-anchor="middle">Select Snooze:</textarea>
+        <textarea id="alertHeader" x="15%" y="15%" width="70%" fill="fb-magenta" font-size="70" font-weight="bold" text-anchor="middle">----</textarea> 
+        <textarea x="15%" y="50%" width="70%"  fill="fb-white" font-size="30" text-anchor="middle">Check BG!</textarea>
+        <textarea x="0" y="65%" width="100%" fill="fb-white" font-size="30" text-anchor="middle">Select Snooze:</textarea>
         <!-- Left button -->
         <use id="btnLeft" class="dialog-half-button-left" href="#square-button-negative">
           <set href="#text" attributeName="text-buffer" to="------" />

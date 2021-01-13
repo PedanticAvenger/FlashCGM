@@ -12,6 +12,9 @@ var bgLowLevel = 0;
 var bgTargetTop = 0;
 var bgTargetBottom = 0;
 var bgTrend = "Flat";
+var rightSnooze = 300;
+var leftSnooze = 14400;
+
 
 var points = [220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220,220];
 var currentTimestamp = Math.round(new Date().getTime()/1000);
@@ -93,12 +96,25 @@ function buildSettings() {
   bgHighLevel = JSON.stringify(High).replace(/^"(.*)"$/, '$1');
   if (bgDataUnits === "mmol") { bgHighLevel = bgHighLevel*18; }
   console.log("bgHighLevel: " + bgHighLevel);
- 
+  
+  var rS = JSON.parse(settingsStorage.getItem("alertRightSnooze")).name;
+  rightSnooze = JSON.stringify(rS).replace(/^"(.*)"$/, '$1');
+  rightSnooze = rightSnooze*60;
+  console.log("shortSnooze: " + rightSnooze);
+
+  var lS = JSON.parse(settingsStorage.getItem("alertLeftSnooze")).name;
+  leftSnooze = JSON.stringify(lS).replace(/^"(.*)"$/, '$1');
+  leftSnooze = leftSnooze*60;
+  console.log("leftSnooze: " + leftSnooze);
+
   const messageContent = {"settings": {
       "bgDataUnits" : bgDataUnits,
       "bgHighLevel" : bgHighLevel,
       "bgLowLevel" : bgLowLevel,
-      "dateFormat" : dateFormat
+      "dateFormat" : dateFormat,
+      "rightSnooze" : rightSnooze,
+      "leftSnooze" : leftSnooze
+
     },
   }; // end of messageContent
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
