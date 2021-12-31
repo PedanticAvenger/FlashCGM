@@ -3,7 +3,7 @@ MIT License
 
 Copyright (c) 2017 Fitbit, Inc, Sammy Barkowski
 API Fetching base code and Vibe/Alert code Copyright (c) 2018 rytiggy
-CGM component integration code Copyright (c) 2018 PedanticAvenger
+CGM component integration code Copyright (c) 2022 PedanticAvenger
 CGM Graphing component code Copyright (c) 2018 NiVZ
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -674,7 +674,7 @@ myNamespace.round = function (number, precision) {
 };
 
 btnLeft.onclick = function (evt) {
-  // console.log("Snooze 4hr");
+  // console.log("Snooze Left");
   reminderTimer = (Math.round(Date.now() / 1000) + myLeftSnooze);
   // console.log("Sleep until: " + reminderTimer); 
   // console.log("Now: " + Math.round(Date.now()/1000));
@@ -683,7 +683,7 @@ btnLeft.onclick = function (evt) {
 }
 
 btnRight.onclick = function (evt) {
-  // console.log("Snooze 30min");
+  // console.log("Snooze Right");
   reminderTimer = (Math.round(Date.now() / 1000) + myRightSnooze);
   // console.log("Sleep until: " + reminderTimer); 
   // console.log("Now: " + Math.round(Date.now()/1000));
