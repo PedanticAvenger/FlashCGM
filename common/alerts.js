@@ -12,14 +12,14 @@ let myPopup = document.getElementById("popup");
 let btnLeft = myPopup.getElementById("btnLeft");
 let btnRight = myPopup.getElementById("btnRight");
 let alertHeader = document.getElementById("alertHeader");
-let vibrationTimeout; 
 
 export function startAlertProcess(message) {
   showAlert(message);
   startVibration("ring");
-  vibrationTimeout = setTimeout(function(){ startVibration("ring"); 
+  const vibrationTimeout = setInterval(function () {
+    startVibration("ring");
     // console.log("triggered vibe by setTimeout"); 
-    }, 10000);
+  }, 15000);
 }
 
 export function startVibration(type) {
@@ -27,7 +27,7 @@ export function startVibration(type) {
 }
 
 export function stopVibration() {
-  clearTimeout(vibrationTimeout);
+  clearInterval(vibrationTimeout);
   vibration.stop();
 }
 
@@ -36,6 +36,4 @@ export function showAlert(message) {
   // console.log(message)
   alertHeader.text = message
   myPopup.style.display = "inline";
- 
 }
-
