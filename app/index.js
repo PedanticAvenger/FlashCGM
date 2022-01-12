@@ -527,7 +527,7 @@ function updateBGPollingStatus() {
   if (lastSettingsUpdate < (Date.now() / 1000 - 3600)) {
     requestData("Settings");
   }
-  if (timeCheck >= 330 && lastSettingsUpdate != 0) {
+  if (timeCheck >= 305 && lastSettingsUpdate != 0) {
     requestData("Data");
   }
   myMissedBGPollCounter.text = newMissedCounter;
@@ -543,14 +543,14 @@ function updateSettings(data) {
   myRightSnooze = data.settings.rightSnooze;
   myLeftSnooze = data.settings.leftSnooze;
   if (myRightSnooze >= 3600) {
-    btnRight.text = "Snooze " + (myRightSnooze / 3600).toFixed(1) + "hr";
+    btnRight.text = "Pause " + (myRightSnooze / 3600).toFixed(1) + "h";
   } else {
-    btnRight.text = "Snooze " + (myRightSnooze / 60).toFixed(0) + "m";
+    btnRight.text = "Pause " + (myRightSnooze / 60).toFixed(0) + "m";
   }
   if (myLeftSnooze >= 3600) {
-    btnLeft.text = "Snooze " + (myLeftSnooze / 3600).toFixed(1) + "hr";
+    btnLeft.text = "Pause " + (myLeftSnooze / 3600).toFixed(1) + "h";
   } else {
-    btnLeft.text = "Snooze " + (myLeftSnooze / 60).toFixed(0) + "m";
+    btnLeft.text = "Pause " + (myLeftSnooze / 60).toFixed(0) + "m";
   }
 
   lastSettingsUpdate = Date.now() / 1000;

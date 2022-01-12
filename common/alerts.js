@@ -12,14 +12,12 @@ let myPopup = document.getElementById("popup");
 let btnLeft = myPopup.getElementById("btnLeft");
 let btnRight = myPopup.getElementById("btnRight");
 let alertHeader = document.getElementById("alertHeader");
+let vibrationTimeout;
 
 export function startAlertProcess(message) {
   showAlert(message);
   startVibration("ring");
-  const vibrationTimeout = setInterval(function () {
-    startVibration("ring");
-    // console.log("triggered vibe by setTimeout"); 
-  }, 15000);
+  vibrationTimeout = setInterval(startVibration("ring"), 15000);
 }
 
 export function startVibration(type) {
