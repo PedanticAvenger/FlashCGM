@@ -28,7 +28,6 @@ SOFTWARE.
 
 import clock from "clock";
 import document from "document";
-import userActivity from "user-activity";
 import device from "device";
 import { Barometer } from "barometer";
 import { HeartRateSensor } from "heart-rate";
@@ -40,6 +39,9 @@ import * as util from "../common/utils";
 import * as alerts from "../common/alerts";
 import Graph from "../common/graph";
 import BatteryStats from "../common/batteryinfo";
+import { goals } from "user-activity";
+import { today } from "user-activity";
+
 
 if (!device.screen) device.screen = { width: 348, height: 250 };
 
@@ -67,10 +69,10 @@ let backgdcol = json_themeread.backg || "#f8fcf8";
 let foregdcol = json_themeread.foreg || "#707070";
 
 // Get Goals to reach
-const distanceGoal = userActivity.goals.distance;
-const caloriesGoal = userActivity.goals["calories"];
-const stepsGoal = userActivity.goals.steps;
-const elevationGoal = userActivity.goals.elevationGain;
+const distanceGoal = goals.distance;
+const caloriesGoal = goals["calories"];
+const stepsGoal = goals.steps;
+const elevationGoal = goals.elevationGain;
 
 // Get a handle on the <text> element
 let myClock = document.getElementById("myLabel");
@@ -203,13 +205,13 @@ function applyTheme(background, foreground) {
 
 function updateStats() {
   const metricSteps = "steps";  // distance, calories, elevationGain, activeMinutes
-  const amountSteps = userActivity.today.adjusted[metricSteps] || 0;
+  const amountSteps = today.adjusted[metricSteps] || 0;
   const metricCals = "calories";  // distance, calories, elevationGain, activeMinutes
-  const amountCals = userActivity.today.adjusted[metricCals] || 0;
+  const amountCals = today.adjusted[metricCals] || 0;
   if (Barometer) {
     //console.log("This device has a Barometer!");
     const metricElevation = "elevationGain";
-    const amountElevation = userActivity.today.adjusted[metricElevation] || 0
+    const amountElevation = today.adjusted[metricElevation] || 0
     dailystairs.text = amountElevation;
   } else {
     //console.log("This device does NOT have a Barometer!");
@@ -397,24 +399,24 @@ function updategraph(data) {
       myCurrentBG.text = points[47];
       if ((points[47] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now() / 1000))) {
         let message = points[47];
-        console.log("Start High Alert");
+        // console.log("Start High Alert");
         alerts.startAlertProcess(message);
       }
       if ((points[47] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now() / 1000))) {
         let message = points[47];
-        console.log("Start Low Alert");
+        // console.log("Start Low Alert");
         alerts.startAlertProcess(message);
       }
     } else if (prefBgUnits === "mmol") {
       myCurrentBG.text = mmol(points[47]);
       if ((points[47] >= prefHighLevel) && (reminderTimer <= Math.round(Date.now() / 1000))) {
         let message = mmol(points[47]);
-        console.log("Start High Alert");
+        // console.log("Start High Alert");
         alerts.startAlertProcess(message);
       }
       if ((points[47] <= prefLowLevel) && (reminderTimer <= Math.round(Date.now() / 1000))) {
         let message = mmol(points[47]);
-        console.log("Start Low Alert");
+        // console.log("Start Low Alert");
         alerts.startAlertProcess(message);
       }
     }
@@ -572,7 +574,7 @@ messaging.peerSocket.close = () => {
 }
 
 function requestData(DataType) {
-  console.log("Asking for a " + DataType + " update from companion.");
+  // console.log("Asking for a " + DataType + " update from companion.");
   var messageContent = { "RequestType": DataType };
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(messageContent);
@@ -588,10 +590,10 @@ function requestData(DataType) {
 messaging.peerSocket.onmessage = function (evt) {
   // console.log(JSON.stringify(evt));
   if (evt.data.hasOwnProperty("settings")) {
-    console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
+    // console.log("Triggered watch settings update: " + JSON.stringify(evt.data));
     updateSettings(evt.data)
   } else if (evt.data.hasOwnProperty("bgdata")) {
-    console.log("Triggered watch data update: " + JSON.stringify(evt.data));
+    // console.log("Triggered watch data update: " + JSON.stringify(evt.data));
     updategraph(evt.data);
   } else if (evt.data.hasOwnProperty("dateFormat")) {
     // console.log("Triggered watch dateFormat update: " + JSON.stringify(evt.data));
